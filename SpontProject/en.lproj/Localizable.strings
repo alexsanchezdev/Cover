@@ -1,0 +1,17 @@
+/* 
+  Localizable.strings
+  SpontProject
+
+  Created by Alex Sanchez on 24/12/16.
+  Copyright © 2016 Alex Sanchez. All rights reserved.
+*/
+
+// Main Controller
+
+    Messages = "Messages";
+    Search = "Search";
+    Profile = "Profile";
+
+// Profile Controller
+
+    SendMessage = "Send message";
