@@ -13,6 +13,8 @@ extension ChatLogController {
 
     func handleSend(){
         
+        isSend = true
+        
         if self.inputTextField.text == nil || self.inputTextField.text == ""{
             return
         } else {
@@ -178,8 +180,15 @@ extension ChatLogController {
                     
                     self.tempMessages.append(message)
                     
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
+                    if self.isSend {
+                        self.messages = self.tempMessages
+                        self.messageCollectionView.reloadData()
+                        self.scrollToBottom(animated: true)
+                        self.isSend = false
+                    } else {
+                        self.timer?.invalidate()
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
+                    }
                     
                 }
             }, withCancel: nil)

@@ -51,6 +51,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     var numberOfMessagesLoaded = 0
     let MORE_MESSAGE_INCREMENT = 100
     var oldOffset: CGFloat?
+    var isSend = false
     
     var user: User? {
         didSet {
@@ -77,7 +78,9 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     let sendButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Send", for: .normal)
+        //button.setTitle("Send", for: .normal)
+        button.setImage(UIImage(named: "send"), for: .normal)
+        button.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
         button.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
         return button
     }()
@@ -142,15 +145,15 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         messageCollectionView.bottomAnchor.constraint(equalTo: inputMessageView.topAnchor).isActive = true
         
         inputMessageView.addSubview(sendButton)
-        sendButton.rightAnchor.constraint(equalTo: inputMessageView.rightAnchor).isActive = true
+        sendButton.rightAnchor.constraint(equalTo: inputMessageView.rightAnchor, constant: -16).isActive = true
         sendButton.centerYAnchor.constraint(equalTo: inputMessageView.centerYAnchor).isActive = true
-        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        sendButton.widthAnchor.constraint(equalToConstant: 49).isActive = true
         sendButton.heightAnchor.constraint(equalTo: inputMessageView.heightAnchor).isActive = true
         
         inputMessageView.addSubview(inputTextField)
-        inputTextField.leftAnchor.constraint(equalTo: inputMessageView.leftAnchor, constant: 8).isActive = true
+        inputTextField.leftAnchor.constraint(equalTo: inputMessageView.leftAnchor, constant: 16).isActive = true
         inputTextField.centerYAnchor.constraint(equalTo: inputMessageView.centerYAnchor).isActive = true
-        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
+        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor, constant: -8).isActive = true
         inputTextField.heightAnchor.constraint(equalTo: inputMessageView.heightAnchor).isActive = true
         
         inputMessageView.addSubview(separatorView)
