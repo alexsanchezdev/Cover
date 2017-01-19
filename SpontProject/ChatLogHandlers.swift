@@ -57,6 +57,7 @@ extension ChatLogController {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         return messages.count
     }
     
@@ -74,8 +75,12 @@ extension ChatLogController {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if (indexPath.row == 5) {
-            observeOldMessages(forLast: 50)
+        if (indexPath.row <= 50) {
+            
+            if messages.count >= numberOfMessagesLoaded - 1 {
+                
+                self.observeMessages(forLast: UInt(numberOfMessagesLoaded + MORE_MESSAGE_INCREMENT))
+            }
         }
     }
     
@@ -131,9 +136,7 @@ extension ChatLogController {
             if self.messages.count != 0 {
                 self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
             }
-        }, completion: { (completion) in
-            //self.scrollToBottom()
-        })
+        }, completion: nil)
         
     }
     
@@ -146,13 +149,23 @@ extension ChatLogController {
     
     
     
-    func observeLastMessages(forLast: UInt){
+    func observeMessages(forLast: UInt){
         guard let uid = FIRAuth.auth()?.currentUser?.uid, let toUser = user?.id else {
             return
         }
-        userMessageRef.removeAllObservers()
-        userMessageRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
-        userMessageRef.queryLimited(toLast: forLast).observe(.childAdded, with: { (snapshot) in
+        
+        if !firstTime {
+            let removeRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: UInt(numberOfMessagesLoaded))
+            removeRef.removeAllObservers()
+        }
+        
+        
+        self.tempMessages.removeAll()
+        self.numberOfMessagesLoaded = Int(forLast)
+        
+        let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
+        
+        ref.observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
             let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
             messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -163,10 +176,10 @@ extension ChatLogController {
                     message.to = dict["to"] as! String?
                     message.timestamp = dict["timestamp"] as! NSNumber?
                     
-                    self.messages.append(message)
-                
+                    self.tempMessages.append(message)
+                    
                     self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
                     
                 }
             }, withCancel: nil)
@@ -175,58 +188,50 @@ extension ChatLogController {
         Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(hideLoadingScreen), userInfo: nil, repeats: false)
     }
     
-    func observeOldMessages(forLast: UInt) {
-        guard let uid = FIRAuth.auth()?.currentUser?.uid, let toUser = user?.id else {
-            return
-        }
-        userMessageRef.removeAllObservers()
-        userMessageRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
-        userMessageRef.queryLimited(toLast: forLast).observe(.childAdded, with: { (snapshot) in
-            let messageId = snapshot.key
-            let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
-            messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let dict = snapshot.value as? [String: AnyObject] {
-                    let message = Message()
-                    message.from = dict["from"] as! String?
-                    message.text = dict["text"] as! String?
-                    message.to = dict["to"] as! String?
-                    message.timestamp = dict["timestamp"] as! NSNumber?
-                    
-                    self.messages.append(message)
-                    
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadCollection), userInfo: nil, repeats: false)
-                    
-                }
-            }, withCancel: nil)
-        }, withCancel: nil)
-    }
-    
-    func handleReloadCollection(){
-        DispatchQueue.main.async {
-            self.messageCollectionView.reloadData()
-        }
-    }
-    
     func handleReloadCollectionAndScroll(){
         DispatchQueue.main.async {
-            self.messageCollectionView.reloadData()
-            self.hideLoadingScreen()
-            self.scrollToBottom()
+            
+            if self.firstTime {
+                self.messages = self.tempMessages
+                self.messageCollectionView.reloadData()
+                self.scrollToBottom(animated: false)
+                self.hideLoadingScreen()
+                self.firstTime = false
+                print("Called reload and scroll")
+            } else {
+                self.messages = self.tempMessages
+                self.oldOffset = self.messageCollectionView.contentSize.height - self.messageCollectionView.contentOffset.y
+                print("Reload is called")
+                self.messageCollectionView.reloadData()
+                self.messageCollectionView.layoutIfNeeded()
+                self.messageCollectionView.contentOffset = CGPoint(x: 0, y: self.messageCollectionView.contentSize.height - self.oldOffset!)
+            }
+            
         }
     }
     
-    func scrollToBottom(){
+    func scrollToBottom(animated: Bool){
         //let item = self.collectionView(self.collectionView!, numberOfItemsInSection: 0) - 1
         
         let item = collectionView(self.messageCollectionView, numberOfItemsInSection: 0) - 1
         let lastItemIndex = IndexPath(item: item, section: 0)
         
-        self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+        self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: animated)
     }
     
     func hideLoadingScreen(){
         self.loadingScreen.isHidden = true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textfieldDidChange()
+    }
+    
+    func textfieldDidChange(){
+        if messages.count != 0 {
+            scrollToBottom(animated: true)
+        }
+        
     }
     
 }

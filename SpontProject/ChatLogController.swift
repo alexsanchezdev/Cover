@@ -9,12 +9,13 @@
 import UIKit
 import Firebase
 
-class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         messageCollectionView.delegate = self
         messageCollectionView.dataSource = self
+        inputTextField.delegate = self
         activityIndicator.startAnimating()
         //navigationItem.backBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: nil, action: nil)
         setupInputsComponents()
@@ -46,11 +47,15 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     }
     
     var messages = [Message]()
+    var tempMessages = [Message]()
+    var numberOfMessagesLoaded = 0
+    let MORE_MESSAGE_INCREMENT = 100
+    var oldOffset: CGFloat?
     
     var user: User? {
         didSet {
             navigationItem.title = user?.username
-            observeLastMessages(forLast: 20)
+            observeMessages(forLast: 100)
         }
     }
     
@@ -58,7 +63,8 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     var bottomMessageCollectionConstraint: NSLayoutConstraint?
     var timer: Timer?
     var notificationIds = [String]()
-    var userMessageRef = FIRDatabase.database().reference()
+    var firstTime = true
+    var observerHandle: FIRDatabaseHandle?
     
     
     let inputMessageView: UIView = {
@@ -76,10 +82,11 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         return button
     }()
     
-    let inputTextField: UITextField = {
+    lazy var inputTextField: UITextField = {
         let textfield = UITextField()
         textfield.translatesAutoresizingMaskIntoConstraints = false
         textfield.placeholder = "Enter message..."
+        textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
         return textfield
     }()
     
@@ -164,4 +171,5 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
         activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
     }
+    
 }
