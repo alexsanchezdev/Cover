@@ -31,8 +31,10 @@ extension ProfileController {
         
         let uid = FIRAuth.auth()?.currentUser?.uid
         OneSignal.idsAvailable { (userId, pushToken) in
-            let ref = FIRDatabase.database().reference().child("notifications").child(uid!).child(userId!)
-            ref.removeValue()
+            let userRef = FIRDatabase.database().reference().child("notifications").child(uid!).child(userId!)
+            userRef.removeValue()
+            //let notifRef = FIRDatabase.database().reference().child("notifications-user").child(userId!)
+            //notifRef.removeValue()
         }
         
         do {

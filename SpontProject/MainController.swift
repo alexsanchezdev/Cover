@@ -16,11 +16,11 @@ class MainController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBar()
-        OneSignal.promptLocation()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         checkIfUserIsLoggedIn()
+        OneSignal.promptLocation()
     }
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -67,11 +67,7 @@ class MainController: UITabBarController {
             
             messageController.observeUserMessages()
             
-            let uid = FIRAuth.auth()?.currentUser?.uid
-            OneSignal.idsAvailable({ (userId, pushToken) in
-                let ref = FIRDatabase.database().reference().child("notifications").child(uid!)
-                ref.updateChildValues([userId!: 1])
-            })
+            checkNotificationsIds()
         }
     }
     func handleLogout(){
@@ -83,6 +79,51 @@ class MainController: UITabBarController {
         
         let landingController = LandingController()
         present(landingController, animated: true, completion: nil)
+    }
+    
+    func checkNotificationsIds(){
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        
+        
+        OneSignal.idsAvailable({ (userId, pushToken) in
+            
+//            let notifRef = FIRDatabase.database().reference().child("notifications-user")
+            let userRef = FIRDatabase.database().reference().child("notifications").child(uid)
+            userRef.updateChildValues([userId!: 1])
+//            notifRef.observeSingleEvent(of: .value, with: { (snapshot) in
+//                if snapshot.hasChild(userId!) {
+//                    notifRef.child(userId!).observeSingleEvent(of: .value, with: { (snapshot) in
+//                        if snapshot.key == userId {
+//                            if snapshot.value as? String == uid {
+//                                return
+//                            } else {
+//                                notifRef.updateChildValues([userId!: uid])
+//                                userRef.updateChildValues([userId!: 1])
+//                            }
+//                        }
+//                    }, withCancel: nil)
+//                
+//                } else {
+//                    notifRef.updateChildValues([userId!: uid])
+//                    userRef.updateChildValues([userId!: 1])
+//                }
+//            }, withCancel: nil)
+            
+//            
+//            notifRef.observeSingleEvent(of: .value, with: { (snapshot) in
+//                if snapshot.key == userId {
+//                    if snapshot.value as? String == uid {
+//                        return
+//                    }
+//                
+//                }
+//            }, withCancel: nil)
+//            
+//            let ref = FIRDatabase.database().reference().child("user-notifications").child(uid!)
+//            ref.updateChildValues([userId!: 1])
+        })
     }
 }
 

@@ -21,6 +21,7 @@ extension MessagesController {
         let chatLogController = ChatLogController()
         chatLogController.user = user
         chatLogController.hidesBottomBarWhenPushed = true
+        chatLogController.loadingScreen.isHidden = false
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     
@@ -32,67 +33,49 @@ extension MessagesController {
         
         let ref = FIRDatabase.database().reference().child("user-messages").child(uid)
         ref.observe(.childAdded, with: { (snapshot) in
-            let messageId = snapshot.key
-            let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
-            
-            messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let dict = snapshot.value as? [String: AnyObject] {
-                    let message = Message()
-                    message.from = dict["from"] as! String?
-                    message.to = dict["to"] as! String?
-                    message.text = dict["text"] as! String?
-                    message.timestamp = dict["timestamp"] as! NSNumber?
-                    
-                    if let chatPartnerId = message.chatPartnerId() {
-                        self.messagesDictionary[chatPartnerId] = message
-                        self.messages = Array(self.messagesDictionary.values)
+            let userId = snapshot.key
+            FIRDatabase.database().reference().child("user-messages").child(uid).child(userId).observe(.childAdded, with: { (snapshot) in
+                let messageId = snapshot.key
+                
+                let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
+                messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                    if let dict = snapshot.value as? [String: AnyObject] {
+                        let message = Message()
+                        message.from = dict["from"] as! String?
+                        message.to = dict["to"] as! String?
+                        message.text = dict["text"] as! String?
+                        message.timestamp = dict["timestamp"] as! NSNumber?
                         
-                        self.messages.sort(by: { (m1, m2) -> Bool in
-                            return (m1.timestamp?.intValue)! > (m2.timestamp?.intValue)!
-                        })
+                        if let chatPartnerId = message.chatPartnerId() {
+                            self.messagesDictionary[chatPartnerId] = message
+                        }
+                        
+                        self.timer?.invalidate()
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+                        
                     }
-                    
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                    
-                }
+                }, withCancel: nil)
             }, withCancel: nil)
+        }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            self.messagesDictionary.removeValue(forKey: snapshot.key)
+            self.handleReloadTable()
         }, withCancel: nil)
     }
     
    func handleReloadTable(){
         DispatchQueue.main.async {
             print("Is this called?")
+            self.messages = Array(self.messagesDictionary.values)
+            
+            self.messages.sort(by: { (m1, m2) -> Bool in
+                return (m1.timestamp?.intValue)! > (m2.timestamp?.intValue)!
+            })
+            
             self.tableView.reloadData()
         }
     }
-    
-//    func observeMessages(){
-//        let ref = FIRDatabase.database().reference().child("messages")
-//        ref.observe(.childAdded, with: { (snapshot) in
-//            if let dict = snapshot.value as? [String: AnyObject] {
-//                let message = Message()
-//                message.from = dict["from"] as! String?
-//                message.to = dict["to"] as! String?
-//                message.text = dict["text"] as! String?
-//                message.timestamp = dict["timestamp"] as! NSNumber?
-//                
-//                if let toUser = message.to {
-//                    self.messagesDictionary[toUser] = message
-//                    self.messages = Array(self.messagesDictionary.values)
-//                    
-//                    self.messages.sort(by: { (m1, m2) -> Bool in
-//                        return (m1.timestamp?.intValue)! > (m2.timestamp?.intValue)!
-//                    })
-//                }
-//                
-//                
-//                DispatchQueue.main.async {
-//                    self.tableView.reloadData()
-//                }
-//            }
-//        }, withCancel: nil)
-//    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count

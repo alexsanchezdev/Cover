@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
@@ -49,7 +50,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     var user: User? {
         didSet {
             navigationItem.title = user?.username
-            observeMessages()
+            observeLastMessages(forLast: 20)
         }
     }
     
@@ -57,6 +58,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     var bottomMessageCollectionConstraint: NSLayoutConstraint?
     var timer: Timer?
     var notificationIds = [String]()
+    var userMessageRef = FIRDatabase.database().reference()
     
     
     let inputMessageView: UIView = {

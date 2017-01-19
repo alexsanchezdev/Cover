@@ -16,13 +16,15 @@ extension ChatLogController {
         if self.inputTextField.text == nil || self.inputTextField.text == ""{
             return
         } else {
+            
+            guard let toUser = user?.id, let fromUser = FIRAuth.auth()?.currentUser?.uid else {
+                return
+            }
         
             let ref = FIRDatabase.database().reference().child("messages")
             let childRef = ref.childByAutoId()
-            let toUser = user?.id
-            let fromUser = FIRAuth.auth()?.currentUser?.uid
             let timestamp = Int(Date().timeIntervalSince1970)
-            let values = ["text": inputTextField.text!, "to": toUser!, "from": fromUser!, "timestamp": timestamp] as [String : Any]
+            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp] as [String : Any]
             //childRef.updateChildValues(values)
             self.inputTextField.text = nil
             childRef.updateChildValues(values) { (error, ref) in
@@ -31,18 +33,18 @@ extension ChatLogController {
                     return
                 }
                 
-                let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromUser!)
+                let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromUser).child(toUser)
                 let messageId = childRef.key
                 userMessagesRef.updateChildValues([messageId: 1])
                 
-                let recipientMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toUser!)
+                let recipientMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toUser).child(fromUser)
                 recipientMessagesRef.updateChildValues([messageId: 1])
             }
             
-            FIRDatabase.database().reference().child("notifications").child(toUser!).observeSingleEvent(of: .childAdded, with: { (snapshot) in
+            FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .childAdded, with: { (snapshot) in
                 self.notificationIds.append(snapshot.key)
-                print(self.notificationIds)
-                FIRDatabase.database().reference().child("users").child(toUser!).observeSingleEvent(of: .value, with: { (snapshot) in
+        
+                FIRDatabase.database().reference().child("users").child(toUser).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dict = snapshot.value as? [String: AnyObject]{
                         let sender = dict["name"]
                         OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser]])
@@ -69,6 +71,12 @@ extension ChatLogController {
         cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 28
        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if (indexPath.row == 5) {
+            observeOldMessages(forLast: 50)
+        }
     }
     
     private func setupCell(cell: ChatMessageCell, message: Message) {
@@ -120,7 +128,9 @@ extension ChatLogController {
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.view.layoutIfNeeded()
-            self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+            if self.messages.count != 0 {
+                self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+            }
         }, completion: { (completion) in
             //self.scrollToBottom()
         })
@@ -134,13 +144,15 @@ extension ChatLogController {
         }, completion: nil)
     }
     
-    func observeMessages(){
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+    
+    
+    func observeLastMessages(forLast: UInt){
+        guard let uid = FIRAuth.auth()?.currentUser?.uid, let toUser = user?.id else {
             return
         }
-        
-        let userMessageRef = FIRDatabase.database().reference().child("user-messages").child(uid)
-        userMessageRef.observe(.childAdded, with: { (snapshot) in
+        userMessageRef.removeAllObservers()
+        userMessageRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
+        userMessageRef.queryLimited(toLast: forLast).observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
             let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
             messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -151,13 +163,39 @@ extension ChatLogController {
                     message.to = dict["to"] as! String?
                     message.timestamp = dict["timestamp"] as! NSNumber?
                     
-                    if message.chatPartnerId() == self.user?.id {
-                        self.messages.append(message)
-                        
-                        self.timer?.invalidate()
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadCollection), userInfo: nil, repeats: false)
-                        
-                    }
+                    self.messages.append(message)
+                
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
+                    
+                }
+            }, withCancel: nil)
+        }, withCancel: nil)
+        
+        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(hideLoadingScreen), userInfo: nil, repeats: false)
+    }
+    
+    func observeOldMessages(forLast: UInt) {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid, let toUser = user?.id else {
+            return
+        }
+        userMessageRef.removeAllObservers()
+        userMessageRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
+        userMessageRef.queryLimited(toLast: forLast).observe(.childAdded, with: { (snapshot) in
+            let messageId = snapshot.key
+            let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
+            messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                if let dict = snapshot.value as? [String: AnyObject] {
+                    let message = Message()
+                    message.from = dict["from"] as! String?
+                    message.text = dict["text"] as! String?
+                    message.to = dict["to"] as! String?
+                    message.timestamp = dict["timestamp"] as! NSNumber?
+                    
+                    self.messages.append(message)
+                    
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadCollection), userInfo: nil, repeats: false)
                     
                 }
             }, withCancel: nil)
@@ -167,8 +205,14 @@ extension ChatLogController {
     func handleReloadCollection(){
         DispatchQueue.main.async {
             self.messageCollectionView.reloadData()
-            self.scrollToBottom()
+        }
+    }
+    
+    func handleReloadCollectionAndScroll(){
+        DispatchQueue.main.async {
+            self.messageCollectionView.reloadData()
             self.hideLoadingScreen()
+            self.scrollToBottom()
         }
     }
     
@@ -182,8 +226,7 @@ extension ChatLogController {
     }
     
     func hideLoadingScreen(){
-        loadingScreen.isHidden = true
+        self.loadingScreen.isHidden = true
     }
-    
     
 }
