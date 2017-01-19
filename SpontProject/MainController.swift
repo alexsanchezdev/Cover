@@ -29,7 +29,7 @@ class MainController: UITabBarController {
     // MARK: - Setup methods
     
     let profileController = ProfileController()
-    let messageController = MessagesController()
+    let messageController = MessagesController.sharedInstance
     
     func setupTabBar(){
         
@@ -41,14 +41,18 @@ class MainController: UITabBarController {
         
         // Set UITabBar to not translucent
         tabBar.isTranslucent = false
+        let imageInsets =   UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
         
         // Set icons and insets for tab bar images
         message.tabBarItem.image = UIImage(named: "message_tabbar")?.withRenderingMode(.alwaysTemplate)
-        message.title = NSLocalizedString("Messages", comment: "Messages tab bar title")
+        message.tabBarItem.imageInsets = imageInsets
+        //message.title = NSLocalizedString("Messages", comment: "Messages tab bar title")
         search.tabBarItem.image = UIImage(named: "search_tabbar")?.withRenderingMode(.alwaysTemplate)
-        search.title = NSLocalizedString("Search", comment: "Search tab bar title")
+        search.tabBarItem.imageInsets = imageInsets
+        //search.title = NSLocalizedString("Search", comment: "Search tab bar title")
         profile.tabBarItem.image = UIImage(named: "profile_tabbar")?.withRenderingMode(.alwaysTemplate)
-        profile.title = NSLocalizedString("Profile", comment: "Profile tab bar title")
+        profile.tabBarItem.imageInsets = imageInsets
+        //profile.title = NSLocalizedString("Profile", comment: "Profile tab bar title")
         
         // Assing controllers
         viewControllers = [message, search, profile]

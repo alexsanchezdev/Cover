@@ -13,6 +13,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor.white
         messageCollectionView.delegate = self
         messageCollectionView.dataSource = self
         inputTextField.delegate = self
@@ -52,6 +53,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     let MORE_MESSAGE_INCREMENT = 100
     var oldOffset: CGFloat?
     var isSend = false
+    var shouldVibrate = false
     
     var user: User? {
         didSet {
@@ -111,6 +113,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         collection.alwaysBounceVertical = true
         collection.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.isHidden = true
         
         return collection
     }()
@@ -126,10 +129,17 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         let indicator = UIActivityIndicatorView()
         indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
         indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
         return indicator
     }()
     
     func setupInputsComponents() {
+        
+        view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         view.addSubview(inputMessageView)
         inputMessageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -162,17 +172,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         separatorView.widthAnchor.constraint(equalTo: inputMessageView.widthAnchor).isActive = true
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
-        view.addSubview(loadingScreen)
-        loadingScreen.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        loadingScreen.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        loadingScreen.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        loadingScreen.bottomAnchor.constraint(equalTo: separatorView.topAnchor).isActive = true
         
-        loadingScreen.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: loadingScreen.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: loadingScreen.centerYAnchor).isActive = true
-        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
     }
     
 }

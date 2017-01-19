@@ -7,6 +7,7 @@
 //
 
 import Firebase
+import AudioToolbox
 
 extension MessagesController {
 
@@ -46,12 +47,17 @@ extension MessagesController {
                         message.text = dict["text"] as! String?
                         message.timestamp = dict["timestamp"] as! NSNumber?
                         
+                        if message.to == uid {
+                            self.shouldVibrate = true
+                            
+                        }
+                        
                         if let chatPartnerId = message.chatPartnerId() {
                             self.messagesDictionary[chatPartnerId] = message
                         }
                         
                         self.timer?.invalidate()
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                         
                     }
                 }, withCancel: nil)
@@ -74,6 +80,12 @@ extension MessagesController {
             })
             
             self.tableView.reloadData()
+            
+            if self.shouldVibrate && !self.firstTime {
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                self.shouldVibrate = false
+            }
+            self.firstTime = false
         }
     }
     
@@ -112,8 +124,10 @@ extension MessagesController {
                 user.name = dict["name"] as? String
                 user.username = dict["username"] as? String
                 user.profileImageURL = dict["profileImageURL"] as? String
+                
                 self.showChatControllerFor(user)
             }
         }, withCancel: nil)
+        
     }
 }

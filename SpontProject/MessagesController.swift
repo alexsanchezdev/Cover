@@ -11,9 +11,20 @@ import Firebase
 
 class MessagesController: UITableViewController {
     
+    static let sharedInstance = MessagesController()
+    private init() {
+        super.init(style: .plain)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     var timer: Timer?
+    var shouldVibrate = false
+    var firstTime = true
     
     let cellId = "cellId"
     
@@ -27,7 +38,7 @@ class MessagesController: UITableViewController {
         
         tableView.register(DateUserCell.self, forCellReuseIdentifier: cellId)
         tableView.tableFooterView = UIView()
-        tabBarController?.tabBar.items?[0].badgeValue = ""
+        //tabBarController?.tabBar.items?[0].badgeValue = ""
         
         tableView.allowsMultipleSelectionDuringEditing = true
     }

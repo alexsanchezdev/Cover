@@ -23,10 +23,11 @@ extension ChatLogController {
                 return
             }
         
+            let isRead = false
             let ref = FIRDatabase.database().reference().child("messages")
             let childRef = ref.childByAutoId()
             let timestamp = Int(Date().timeIntervalSince1970)
-            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp] as [String : Any]
+            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": isRead] as [String : Any]
             //childRef.updateChildValues(values)
             self.inputTextField.text = nil
             childRef.updateChildValues(values) { (error, ref) in
@@ -194,7 +195,7 @@ extension ChatLogController {
             }, withCancel: nil)
         }, withCancel: nil)
         
-        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(hideLoadingScreen), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(showCollectionView), userInfo: nil, repeats: false)
     }
     
     func handleReloadCollectionAndScroll(){
@@ -204,7 +205,8 @@ extension ChatLogController {
                 self.messages = self.tempMessages
                 self.messageCollectionView.reloadData()
                 self.scrollToBottom(animated: false)
-                self.hideLoadingScreen()
+                self.showCollectionView()
+                //self.hideLoadingScreen()
                 self.firstTime = false
                 print("Called reload and scroll")
             } else {
@@ -214,7 +216,10 @@ extension ChatLogController {
                 self.messageCollectionView.reloadData()
                 self.messageCollectionView.layoutIfNeeded()
                 self.messageCollectionView.contentOffset = CGPoint(x: 0, y: self.messageCollectionView.contentSize.height - self.oldOffset!)
+                
             }
+            
+            
             
         }
     }
@@ -228,8 +233,8 @@ extension ChatLogController {
         self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: animated)
     }
     
-    func hideLoadingScreen(){
-        self.loadingScreen.isHidden = true
+    func showCollectionView(){
+        self.messageCollectionView.isHidden = false
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {

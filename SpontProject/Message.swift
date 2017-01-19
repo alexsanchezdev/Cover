@@ -14,6 +14,7 @@ class Message: NSObject {
     var to: String?
     var text: String?
     var timestamp: NSNumber?
+    var read: Bool?
     
     func chatPartnerId() -> String? {
         
