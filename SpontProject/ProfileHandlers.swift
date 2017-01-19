@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import OneSignal
 
 extension ProfileController {
     
@@ -27,6 +28,13 @@ extension ProfileController {
     }
     
     func handleLogout(){
+        
+        let uid = FIRAuth.auth()?.currentUser?.uid
+        OneSignal.idsAvailable { (userId, pushToken) in
+            let ref = FIRDatabase.database().reference().child("notifications").child(uid!).child(userId!)
+            ref.removeValue()
+        }
+        
         do {
             try FIRAuth.auth()?.signOut()
         } catch let logoutError {

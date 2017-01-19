@@ -12,40 +12,54 @@ import OneSignal
 extension ChatLogController {
 
     func handleSend(){
-        let ref = FIRDatabase.database().reference().child("messages")
-        let childRef = ref.childByAutoId()
-        let toUser = user?.id
-        let fromUser = FIRAuth.auth()?.currentUser?.uid
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let values = ["text": inputTextField.text!, "to": toUser!, "from": fromUser!, "timestamp": timestamp] as [String : Any]
-        //childRef.updateChildValues(values)
-        self.inputTextField.text = nil
-        childRef.updateChildValues(values) { (error, ref) in
-            if error != nil {
-                print(error!)
-                return
-            }
-            
-            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromUser!)
-            let messageId = childRef.key
-            userMessagesRef.updateChildValues([messageId: 1])
-            
-            let recipientMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toUser!)
-            recipientMessagesRef.updateChildValues([messageId: 1])
-        }
         
-        FIRDatabase.database().reference().child("notifications").observe(.value, with: { (snapshot) in
-            if let _ = snapshot.value as? [String: AnyObject]{
-                OneSignal.postNotification(["headings": ["en": "Alex Sanchez"], "contents": ["en": values["text"]], "include_player_ids": ["61e7fb1c-3428-4048-a834-eae837dd9f53"], "data": ["sender": "owue098ruew_w09e8"]])
+        if self.inputTextField.text == nil || self.inputTextField.text == ""{
+            return
+        } else {
+        
+            let ref = FIRDatabase.database().reference().child("messages")
+            let childRef = ref.childByAutoId()
+            let toUser = user?.id
+            let fromUser = FIRAuth.auth()?.currentUser?.uid
+            let timestamp = Int(Date().timeIntervalSince1970)
+            let values = ["text": inputTextField.text!, "to": toUser!, "from": fromUser!, "timestamp": timestamp] as [String : Any]
+            //childRef.updateChildValues(values)
+            self.inputTextField.text = nil
+            childRef.updateChildValues(values) { (error, ref) in
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                
+                let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromUser!)
+                let messageId = childRef.key
+                userMessagesRef.updateChildValues([messageId: 1])
+                
+                let recipientMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toUser!)
+                recipientMessagesRef.updateChildValues([messageId: 1])
             }
-        }, withCancel: nil)
+            
+            FIRDatabase.database().reference().child("notifications").child(toUser!).observeSingleEvent(of: .childAdded, with: { (snapshot) in
+                self.notificationIds.append(snapshot.key)
+                print(self.notificationIds)
+                FIRDatabase.database().reference().child("users").child(toUser!).observeSingleEvent(of: .value, with: { (snapshot) in
+                    if let dict = snapshot.value as? [String: AnyObject]{
+                        let sender = dict["name"]
+                        OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser]])
+                        self.notificationIds.removeAll()
+                    }
+                    
+                }, withCancel: nil)
+            }, withCancel: nil)
+        }
     }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return messages.count
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath) as! ChatMessageCell
         let message = messages[indexPath.item]
         cell.textView.text = message.text
@@ -67,8 +81,8 @@ extension ChatLogController {
             // outgoing gray
             cell.bubbleView.backgroundColor = ChatMessageCell.sendColor
             cell.profileImageView.isHidden = true
-            cell.bubbleViewRightAnchor?.isActive = true
             cell.bubbleViewLeftAnchor?.isActive = false
+            cell.bubbleViewRightAnchor?.isActive = true
         } else {
             // outgoing white
             cell.bubbleView.backgroundColor = ChatMessageCell.receivedColor
@@ -100,18 +114,21 @@ extension ChatLogController {
         let userInfo = notification.userInfo!
         let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
         
-        bottomMessageConstraint.constant = -keyboardHeight
+        bottomTextInputConstraint?.constant = -keyboardHeight
+        let item = collectionView(self.messageCollectionView, numberOfItemsInSection: 0) - 1
+        let lastItemIndex = IndexPath(item: item, section: 0)
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.view.layoutIfNeeded()
+            self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
         }, completion: { (completion) in
-            self.scrollToBottom(true)
+            //self.scrollToBottom()
         })
         
     }
     
     func keyboardWillHide(notification: NSNotification){
-        bottomMessageConstraint.constant = 0
+        bottomTextInputConstraint?.constant = 0
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: nil)
@@ -137,10 +154,9 @@ extension ChatLogController {
                     if message.chatPartnerId() == self.user?.id {
                         self.messages.append(message)
                         
-                        DispatchQueue.main.async {
-                            self.collectionView?.reloadData()
-                            self.scrollToBottom(true)
-                        }
+                        self.timer?.invalidate()
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.handleReloadCollection), userInfo: nil, repeats: false)
+                        
                     }
                     
                 }
@@ -148,9 +164,26 @@ extension ChatLogController {
         }, withCancel: nil)
     }
     
-    func scrollToBottom(_ animated: Bool){
-        let item = self.collectionView(self.collectionView!, numberOfItemsInSection: 0) - 1
-        let lastItemIndex = IndexPath(item: item, section: 0)
-        self.collectionView?.scrollToItem(at: lastItemIndex, at: .bottom, animated: animated)
+    func handleReloadCollection(){
+        DispatchQueue.main.async {
+            self.messageCollectionView.reloadData()
+            self.scrollToBottom()
+            self.hideLoadingScreen()
+        }
     }
+    
+    func scrollToBottom(){
+        //let item = self.collectionView(self.collectionView!, numberOfItemsInSection: 0) - 1
+        
+        let item = collectionView(self.messageCollectionView, numberOfItemsInSection: 0) - 1
+        let lastItemIndex = IndexPath(item: item, section: 0)
+        
+        self.messageCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+    }
+    
+    func hideLoadingScreen(){
+        loadingScreen.isHidden = true
+    }
+    
+    
 }

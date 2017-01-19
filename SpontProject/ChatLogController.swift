@@ -8,28 +8,27 @@
 
 import UIKit
 
-class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
-    
-    var sizingCell: ChatMessageCell = ChatMessageCell()
+class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        collectionView?.backgroundColor = UIColor.white
-        collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cellId")
-        collectionView?.alwaysBounceVertical = true
-        collectionView?.contentInset = UIEdgeInsets(top: 14, left: 0, bottom: 60, right: 0)
-        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 48, right: 0)
-    
+        messageCollectionView.delegate = self
+        messageCollectionView.dataSource = self
+        activityIndicator.startAnimating()
+        //navigationItem.backBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: nil, action: nil)
         setupInputsComponents()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: self, action: #selector(goBack))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
     
+    func goBack(){
+        _ = self.navigationController?.popViewController(animated: true)
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
@@ -40,7 +39,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         self.view.endEditing(true)
     }
     
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.inputMessageView.endEditing(true)
         self.view.endEditing(true)
     }
@@ -54,7 +53,11 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         }
     }
     
-    var bottomMessageConstraint: NSLayoutConstraint!
+    var bottomTextInputConstraint: NSLayoutConstraint?
+    var bottomMessageCollectionConstraint: NSLayoutConstraint?
+    var timer: Timer?
+    var notificationIds = [String]()
+    
     
     let inputMessageView: UIView = {
         let view = UIView()
@@ -85,14 +88,49 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         return view
     }()
     
-    func setupInputsComponents() {
+    lazy var messageCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 8
+        
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cellId")
+        collection.backgroundColor = UIColor.white
+        collection.alwaysBounceVertical = true
+        collection.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        
+        return collection
+    }()
     
+    let loadingScreen: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.white
+        return view
+    }()
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        return indicator
+    }()
+    
+    func setupInputsComponents() {
+        
         view.addSubview(inputMessageView)
         inputMessageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        bottomMessageConstraint = inputMessageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        bottomMessageConstraint.isActive = true
+        bottomTextInputConstraint = inputMessageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomTextInputConstraint?.isActive = true
         inputMessageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         inputMessageView.heightAnchor.constraint(equalToConstant: 49).isActive = true
+        
+        view.addSubview(messageCollectionView)
+        messageCollectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        messageCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        messageCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        messageCollectionView.bottomAnchor.constraint(equalTo: inputMessageView.topAnchor).isActive = true
         
         inputMessageView.addSubview(sendButton)
         sendButton.rightAnchor.constraint(equalTo: inputMessageView.rightAnchor).isActive = true
@@ -111,5 +149,17 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         separatorView.centerXAnchor.constraint(equalTo: inputMessageView.centerXAnchor).isActive = true
         separatorView.widthAnchor.constraint(equalTo: inputMessageView.widthAnchor).isActive = true
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        view.addSubview(loadingScreen)
+        loadingScreen.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        loadingScreen.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        loadingScreen.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        loadingScreen.bottomAnchor.constraint(equalTo: separatorView.topAnchor).isActive = true
+        
+        loadingScreen.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: loadingScreen.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: loadingScreen.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
     }
 }

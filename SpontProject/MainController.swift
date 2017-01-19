@@ -69,8 +69,8 @@ class MainController: UITabBarController {
             
             let uid = FIRAuth.auth()?.currentUser?.uid
             OneSignal.idsAvailable({ (userId, pushToken) in
-                let ref = FIRDatabase.database().reference().child("notifications")
-                ref.updateChildValues([uid! : userId!])
+                let ref = FIRDatabase.database().reference().child("notifications").child(uid!)
+                ref.updateChildValues([userId!: 1])
             })
         }
     }

@@ -18,7 +18,7 @@ extension MessagesController {
     }
     
     func showChatControllerFor(_ user: User){
-        let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        let chatLogController = ChatLogController()
         chatLogController.user = user
         chatLogController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(chatLogController, animated: true)
