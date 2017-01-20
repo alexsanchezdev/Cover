@@ -36,14 +36,7 @@ class MessageUserCell: UITableViewCell {
         return label
     }()
     
-    let newMessageIndicator: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
-        view.layer.cornerRadius = 3
-        view.isHidden = true
-        return view
-    }()
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -67,12 +60,6 @@ class MessageUserCell: UITableViewCell {
         descriptionTextLabel.topAnchor.constraint(equalTo: profileImageView.centerYAnchor, constant: 2).isActive = true
         descriptionTextLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
         descriptionTextLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        
-        addSubview(newMessageIndicator)
-        newMessageIndicator.leftAnchor.constraint(equalTo: leftAnchor, constant: 5).isActive = true
-        newMessageIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        newMessageIndicator.widthAnchor.constraint(equalToConstant: 6).isActive = true
-        newMessageIndicator.heightAnchor.constraint(equalToConstant: 6).isActive = true
         
     }
     

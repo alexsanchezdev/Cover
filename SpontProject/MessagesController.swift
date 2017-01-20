@@ -43,6 +43,11 @@ class MessagesController: UITableViewController {
         tableView.allowsMultipleSelectionDuringEditing = true
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.tabBarController?.tabBar.items?[0].badgeValue = nil
+    }
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }

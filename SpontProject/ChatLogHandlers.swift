@@ -28,6 +28,7 @@ extension ChatLogController {
             let childRef = ref.childByAutoId()
             let timestamp = Int(Date().timeIntervalSince1970)
             let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": isRead] as [String : Any]
+            
             //childRef.updateChildValues(values)
             self.inputTextField.text = nil
             childRef.updateChildValues(values) { (error, ref) in
@@ -182,10 +183,13 @@ extension ChatLogController {
                     self.tempMessages.append(message)
                     
                     if self.isSend {
-                        self.messages = self.tempMessages
-                        self.messageCollectionView.reloadData()
-                        self.scrollToBottom(animated: true)
-                        self.isSend = false
+                        DispatchQueue.main.async {
+                            self.messages = self.tempMessages
+                            self.messageCollectionView.reloadData()
+                            self.scrollToBottom(animated: true)
+                            self.isSend = false
+                            print("Is send called")
+                        }
                     } else {
                         self.timer?.invalidate()
                         self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)

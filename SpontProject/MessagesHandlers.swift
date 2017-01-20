@@ -46,10 +46,10 @@ extension MessagesController {
                         message.to = dict["to"] as! String?
                         message.text = dict["text"] as! String?
                         message.timestamp = dict["timestamp"] as! NSNumber?
+                        message.read = dict["read"] as! Bool?
                         
-                        if message.to == uid {
+                        if message.to == uid && !self.firstTime {
                             self.shouldVibrate = true
-                            
                         }
                         
                         if let chatPartnerId = message.chatPartnerId() {
@@ -84,7 +84,15 @@ extension MessagesController {
             if self.shouldVibrate && !self.firstTime {
                 AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                 self.shouldVibrate = false
+                if self.tabBarController?.selectedIndex == 0 {
+                    return
+                } else {
+                    self.tabBarController?.tabBar.items?[0].badgeValue = ""
+                }
+                
+                
             }
+            
             self.firstTime = false
         }
     }
@@ -98,7 +106,7 @@ extension MessagesController {
         
         let message = messages[indexPath.row]
         cell.message = message
-        
+    
         cell.preservesSuperviewLayoutMargins = false
         cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cell.layoutMargins = UIEdgeInsets.zero

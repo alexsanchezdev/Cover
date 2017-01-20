@@ -27,6 +27,14 @@ class DateUserCell: MessageUserCell {
         return label
     }()
     
+    let newMessageIndicator: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
+        view.layer.cornerRadius = 3
+        return view
+    }()
+    
     override func setupViews() {
         super.setupViews()
         
@@ -35,6 +43,13 @@ class DateUserCell: MessageUserCell {
         dateTextLabel.centerYAnchor.constraint(equalTo: titleTextLabel.centerYAnchor).isActive = true
         dateTextLabel.widthAnchor.constraint(equalToConstant: 72).isActive = true
         dateTextLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
+        
+        addSubview(newMessageIndicator)
+        newMessageIndicator.leftAnchor.constraint(equalTo: leftAnchor, constant: 5).isActive = true
+        newMessageIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        newMessageIndicator.widthAnchor.constraint(equalToConstant: 6).isActive = true
+        newMessageIndicator.heightAnchor.constraint(equalToConstant: 6).isActive = true
+        newMessageIndicator.isHidden = true
     }
     
     private func setupInfo(){
@@ -50,6 +65,7 @@ class DateUserCell: MessageUserCell {
                     }
                 }
             }, withCancel: nil)
+            
         }
         
         descriptionTextLabel.text = message?.text
