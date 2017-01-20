@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +48,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     var descriptionHeightConstraint, descriptionBottomConstraint, activityDescriptionHeight: NSLayoutConstraint!
     var activitiesTagCloudHeight: NSLayoutConstraint!
     var moreInfoHeight: NSLayoutConstraint!
+    let locationManager = CLLocationManager()
     
     lazy var profileScrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -99,12 +100,13 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         return label
     }()
     
-    let sendMessageButton: UIButton = {
+    lazy var sendMessageButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         button.setTitle("Enviar mensaje", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.addTarget(self, action: #selector(updateCurrentLocation), for: .touchUpInside)
         return button
     }()
     

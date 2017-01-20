@@ -50,8 +50,8 @@ class TextField : UITextField {
     
     override func draw(_ rect: CGRect) {
         
-        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY)
-        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY)
+        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY - 4)
+        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY - 4)
         
         let path = UIBezierPath()
         

@@ -10,7 +10,23 @@ import UIKit
 
 class TextFieldInsets: UITextField {
 
-    let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 128);
+    let padding = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0);
+    
+    override func draw(_ rect: CGRect) {
+        
+        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY)
+        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY)
+        
+        let path = UIBezierPath()
+        
+        path.move(to: startingPoint)
+        path.addLine(to: endingPoint)
+        path.lineWidth = 2.0
+        
+        UIColor.lightGray.setStroke()
+        
+        path.stroke()
+    }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
         return UIEdgeInsetsInsetRect(bounds, padding)

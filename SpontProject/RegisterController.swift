@@ -28,6 +28,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
         scroll.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
+        scroll.alwaysBounceVertical = true
         return scroll
     }()
     
@@ -45,35 +46,23 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         return imageView
     }()
     
-    lazy var profileLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Selecciona una imagen de perfil"
-        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightSemibold)
-        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
-        label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImage)))
-        return label
-    }()
     
-    let countryLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "País"
-        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightSemibold)
-        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        return label
-    }()
-    
-    lazy var countryTextField: TextField = {
-        let textfield = TextField()
+    lazy var usernameTextField: TextFieldInsets = {
+        let textfield = TextFieldInsets()
         textfield.translatesAutoresizingMaskIntoConstraints = false
-        textfield.font = UIFont.systemFont(ofSize: 14)
+        textfield.font = UIFont.systemFont(ofSize: 16)
         textfield.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
-        textfield.attributedPlaceholder = NSMutableAttributedString(string: "Selecciona tu país de residencia", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)])
-        textfield.addTarget(self, action: #selector(showCountryList), for: .editingChanged)
+        textfield.attributedPlaceholder = NSMutableAttributedString(string: "Nombre de usuario", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 16)])
         return textfield
+    }()
+    
+    let usernameIcon: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "user_icon")?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        iv.tintColor = UIColor.lightGray
+        iv.contentMode = .scaleToFill
+        return iv
     }()
     
     func setupViews(){
@@ -84,28 +73,22 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         registerScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         registerScrollView.addSubview(profileImage)
-        profileImage.centerXAnchor.constraint(equalTo: registerScrollView.centerXAnchor).isActive = true
+        profileImage.leftAnchor.constraint(equalTo: registerScrollView.leftAnchor, constant: 20).isActive = true
         profileImage.topAnchor.constraint(equalTo: registerScrollView.topAnchor, constant: 20).isActive = true
         profileImage.widthAnchor.constraint(equalToConstant: 96).isActive = true
         profileImage.heightAnchor.constraint(equalToConstant: 96).isActive = true
         
-        registerScrollView.addSubview(profileLabel)
-        profileLabel.centerXAnchor.constraint(equalTo: registerScrollView.centerXAnchor).isActive = true
-        profileLabel.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 20).isActive = true
-        profileLabel.widthAnchor.constraint(equalTo: registerScrollView.widthAnchor, constant: -32).isActive = true
-        profileLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
+        registerScrollView.addSubview(usernameTextField)
+        usernameTextField.leftAnchor.constraint(equalTo: profileImage.rightAnchor, constant: 20).isActive = true
+        usernameTextField.topAnchor.constraint(equalTo: profileImage.topAnchor).isActive = true
+        usernameTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        usernameTextField.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
-        registerScrollView.addSubview(countryLabel)
-        countryLabel.centerXAnchor.constraint(equalTo: registerScrollView.centerXAnchor).isActive = true
-        countryLabel.topAnchor.constraint(equalTo: profileLabel.bottomAnchor, constant: 36).isActive = true
-        countryLabel.widthAnchor.constraint(equalTo: registerScrollView.widthAnchor, constant: -40).isActive = true
-        countryLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
-        
-        registerScrollView.addSubview(countryTextField)
-        countryTextField.centerXAnchor.constraint(equalTo: registerScrollView.centerXAnchor).isActive = true
-        countryTextField.topAnchor.constraint(equalTo: countryLabel.bottomAnchor).isActive = true
-        countryTextField.widthAnchor.constraint(equalTo: registerScrollView.widthAnchor, constant: -40).isActive = true
-        countryTextField.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        usernameTextField.addSubview(usernameIcon)
+        usernameIcon.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor, constant: 4).isActive = true
+        usernameIcon.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+        usernameIcon.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        usernameIcon.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
     }
 }

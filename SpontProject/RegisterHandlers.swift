@@ -57,7 +57,4 @@ extension RegisterController {
         dismiss(animated: true, completion: nil)
     }
     
-    func showCountryList(){
-        print("Show list of countries")
-    }
 }

@@ -48,6 +48,21 @@ extension ProfileController {
         present(landingController, animated: true, completion: nil)
     }
     
+    func updateCurrentLocation(){
+        let geoFireRef = FIRDatabase.database().reference().child("locations")
+        let geoFire = GeoFire(firebaseRef: geoFireRef)
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
+        
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            geoFire?.setLocation(locationManager.location, forKey: uid)
+            locationManager.stopUpdatingLocation()
+        }
+        
+    }
+    
     // MARK: Collection view delegate methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return activitiesArray.count
