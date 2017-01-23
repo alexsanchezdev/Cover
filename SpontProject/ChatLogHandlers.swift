@@ -29,7 +29,6 @@ extension ChatLogController {
             let timestamp = Int(Date().timeIntervalSince1970)
             let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": isRead] as [String : Any]
             
-            //childRef.updateChildValues(values)
             self.inputTextField.text = nil
             childRef.updateChildValues(values) { (error, ref) in
                 if error != nil {
@@ -48,7 +47,7 @@ extension ChatLogController {
             FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .childAdded, with: { (snapshot) in
                 self.notificationIds.append(snapshot.key)
         
-                FIRDatabase.database().reference().child("users").child(toUser).observeSingleEvent(of: .value, with: { (snapshot) in
+                FIRDatabase.database().reference().child("users").child(fromUser).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dict = snapshot.value as? [String: AnyObject]{
                         let sender = dict["name"]
                         OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser]])

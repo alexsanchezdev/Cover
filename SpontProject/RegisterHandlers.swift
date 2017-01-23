@@ -70,7 +70,7 @@ extension RegisterController {
         dismiss(animated: true, completion: nil)
     }
 
-    func closeRegister(){
+    func dismissRegisterController(){
         dismiss(animated: true, completion: nil)
     }
     
@@ -78,7 +78,6 @@ extension RegisterController {
         
         guard let username = usernameTextField.text, !username.isEmpty else {
             print("Username nil")
-            usernameTextField.becomeFirstResponder()
             return
         }
         
@@ -102,35 +101,84 @@ extension RegisterController {
             return
         }
         
-        if isAvailable(username) {
-        
-        }
-        
-        
-        
-    }
-    
-    func isAvailable(_ username: String) -> Bool {
-        var available: Bool?
-        
         let ref = FIRDatabase.database().reference().child("usernames")
         ref.queryOrderedByKey().queryEqual(toValue: username).observeSingleEvent(of: .value, with: { (snapshot) in
             if snapshot.value is NSNull {
                 print("Username available")
-                available = true
+                
+                FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
+                    if error != nil {
+                        print("Is this called?")
+                        print(error!)
+                        return
+                    }
+                    
+                    print("Or is this??")
+                    
+                    guard let uid = user?.uid else {
+                        return
+                    }
+                    
+                    let imageName = NSUUID().uuidString
+                    let storageRef = FIRStorage.storage().reference().child("profile-images").child("\(imageName).jpeg")
+                    if let uploadData = UIImageJPEGRepresentation(self.profileImage.image!, 0.1) {
+                        storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
+                            if error != nil {
+                                print (error!)
+                                return
+                            }
+                            
+                            if let profileImageURL = metadata?.downloadURL()?.absoluteString {
+                                let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username]
+                                self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
+                            }
+                        })
+                    }
+                })
                 
             } else {
                 print("Username already used")
-                available = false
+                
             }
         }, withCancel: nil)
+    }
+    
+    func registerUserIntoDatabaseWithUID(_ uid: String, username: String, values: [String: AnyObject]) {
+        let ref = FIRDatabase.database().reference()
+        let usersReference = ref.child("users").child(uid)
+        let usernameReference = ref.child("usernames")
+        let usernameUsersReference = ref.child("usernames-user")
         
-        if let result = available {
-            return result
-        } else {
-            return false
+        
+        usersReference.updateChildValues(values) { (error, ref) in
+            if error != nil {
+                print(error!)
+                return
+            }
+            
+            usernameReference.updateChildValues([username: 1], withCompletionBlock: { (error, ref) in
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                
+                usernameUsersReference.updateChildValues([username: uid], withCompletionBlock: { (error, ref) in
+                    if error != nil {
+                        print(error!)
+                        return
+                    }
+                    
+                    self.dissmissLoginController()
+                    print("Saved user successfully into Firebase!")
+                })
+            })
         }
     }
+    
+    func dissmissLoginController() {
+        self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+    
     
     func isValidEmail(_ email:String) -> Bool {
         // print("validate calendar: \(testStr)")

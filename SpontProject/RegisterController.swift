@@ -28,7 +28,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         navigationItem.title = "Registro"
         
         let closeImg = UIImage(named: "close_img")?.withRenderingMode(.alwaysOriginal)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: closeImg, style: .plain, target: self, action: #selector(closeRegister))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: closeImg, style: .plain, target: self, action: #selector(dismissRegisterController))
         
     }
     
