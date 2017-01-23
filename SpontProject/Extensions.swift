@@ -46,12 +46,32 @@ extension UILabel{
     
 }
 
-class TextField : UITextField {
+//class TextField : UITextField {
+//    
+//    override func draw(_ rect: CGRect) {
+//        
+//        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY - 4)
+//        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY - 4)
+//        
+//        let path = UIBezierPath()
+//        
+//        path.move(to: startingPoint)
+//        path.addLine(to: endingPoint)
+//        path.lineWidth = 2.0
+//        
+//        UIColor.lightGray.setStroke()
+//        
+//        path.stroke()
+//    }
+//}
+
+class RegisterTextField: UITextField {
+    let padding = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0);
     
     override func draw(_ rect: CGRect) {
         
-        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY - 4)
-        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY - 4)
+        let startingPoint   = CGPoint(x: rect.minX, y: rect.maxY)
+        let endingPoint     = CGPoint(x: rect.maxX, y: rect.maxY)
         
         let path = UIBezierPath()
         
@@ -63,15 +83,37 @@ class TextField : UITextField {
         
         path.stroke()
     }
+    
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return UIEdgeInsetsInsetRect(bounds, padding)
+    }
+    
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return UIEdgeInsetsInsetRect(bounds, padding)
+    }
+    
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return UIEdgeInsetsInsetRect(bounds, padding)
+    }
 }
 
 extension UIViewController {
-    func scrollViewFit(scrollView: UIScrollView){
-        var contentRect: CGRect = .zero
-        for view in scrollView.subviews {
-            contentRect = contentRect.union(view.frame)
+    func resizeToFitViews(scrollview: UIScrollView){
+        var width: CGFloat = 0
+        var height: CGFloat = 0
+        
+        for v in view.subviews {
+            let w = v.frame.origin.x + v.frame.size.width
+            let h = v.frame.origin.y + v.frame.size.height
+            
+            width = max(w, width)
+            height = max(h, height)
         }
-        scrollView.contentSize = CGSize(width: view.frame.width, height: contentRect.size.height + 16)
+        
+        scrollview.contentSize = CGSize(width: width, height: height)
+        print(width)
+        print(height)
+        
     }
 }
 
@@ -101,5 +143,18 @@ extension UIImageView {
                 
             }
         }).resume()
+    }
+}
+
+extension UIImage {
+    
+    func alpha(value:CGFloat)->UIImage
+    {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: CGPoint.zero, blendMode: .normal, alpha: value)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
+        
     }
 }

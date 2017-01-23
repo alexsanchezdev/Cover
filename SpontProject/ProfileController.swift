@@ -36,7 +36,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         autoSizeDescription()
-        scrollViewFit(scrollView: profileScrollView)
+        resizeToFitViews(scrollview: profileScrollView)
     }
     
     var viewHeight: CGFloat = 0.0

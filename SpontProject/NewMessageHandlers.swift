@@ -21,7 +21,7 @@ extension NewMessageController {
                 return
             }
             
-            let ref = FIRDatabase.database().reference().child("usernames")
+            let ref = FIRDatabase.database().reference().child("usernames-user")
             ref.queryOrderedByKey().queryStarting(atValue: (searchString as! String).lowercased()).queryEnding(atValue: (searchString as! String).lowercased() + "\u{f8ff}").observe(.childAdded, with: {(snapshot) in
                 let uid = snapshot.value as! String
                 self.tempUsers.removeAll()
