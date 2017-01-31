@@ -37,6 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarAppearance.tintColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
         tabBarAppearance.isTranslucent = false
         
+        let defaults = UserDefaults.standard
+        
         return true
     }
 

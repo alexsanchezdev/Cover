@@ -7,15 +7,16 @@
 //
 
 import UIKit
+import Firebase
 
 class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        loadUserInfo()
         setupViews()
         descriptionLabel.isHidden = true
-        profilePicture.image = UIImage(named: "oscar")
         
         activitiesTagCloud.delegate = self
         activitiesTagCloud.dataSource = self
@@ -29,19 +30,26 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         activitySectionLabel.isHidden = true
         
         activityIndicator.startAnimating()
-        sendMessageButton.setTitle("", for: .normal)
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if UserDefaults.standard.bool(forKey: "FreshStart"){
+            loadUserInfo()
+            setupViews()
+            UserDefaults.standard.set(false, forKey: "FreshStart")
+        }
+        
         autoSizeDescription()
         resizeToFitViews(scrollview: profileScrollView)
     }
     
     var viewHeight: CGFloat = 0.0
     var viewWidth: CGFloat = 0.0
-    var activitiesArray = ["BODYATTACK", "BODYCOMBAT", "BODYJAM"]//, "BORN TO MOVE", "LES MILLS GRIT", "LES MILLS SPRINT", "BODYSTEP", "BODYPUMP", "BODYVIVE 3.1", "BODYBALANCE", "SH'BAM", "CXWORX", "RPM"]
+    var activitiesArray = [String]()
+    var verifiedArray = [Int]()
+    var userToShow = User()
     
     var sizingCell: TagCell = TagCell()
 
@@ -53,7 +61,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     lazy var profileScrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
-        scroll.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
+        scroll.backgroundColor = UIColor.white
         return scroll
     }()
     
@@ -61,6 +69,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
+        iv.image = UIImage(named: "user")
         iv.layer.cornerRadius = 50
         iv.layer.masksToBounds = true
         iv.layer.borderColor = UIColor.rgb(r: 151, g: 151, b: 151, a: 1).cgColor
@@ -76,16 +85,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         label.textAlignment = .center
         return label
     }()
-    
-    let locationLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
-        label.text = "Las Rozas, Madrid"
-        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
-        return label
-    }()
+
     
     let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -104,7 +104,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
-        button.setTitle("Enviar mensaje", for: .normal)
+        
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(updateCurrentLocation), for: .touchUpInside)
         return button
@@ -123,7 +123,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         label.text = "Actividades"
         label.font = UIFont.systemFont(ofSize: 24, weight: UIFontWeightBold)
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
+        label.textAlignment = .left
         return label
     }()
     
@@ -135,14 +135,14 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
         return label
     }()
     
     lazy var activitiesTagCloud: UICollectionView = {
-        let layout = CenterFlowLayout()
+        let layout = TagFlowLayout()
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 8
         
@@ -173,11 +173,20 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         return view
     }()
     
+    let userBackground: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
+        return view
+    }()
+    
    
 
     func setupViews(){
         
         view.addSubview(profileScrollView)
+        profileScrollView.addSubview(userBackground)
+        
         profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         profileScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -185,25 +194,19 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor, constant: 16).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor, constant: 20).isActive = true
         profilePicture.widthAnchor.constraint(equalToConstant: 100).isActive = true
         profilePicture.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         profileScrollView.addSubview(nameLabel)
         nameLabel.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 16).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
         nameLabel.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor, constant: -40).isActive = true
         
-        profileScrollView.addSubview(locationLabel)
-        locationLabel.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
-        locationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4).isActive = true
-        locationLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
-        locationLabel.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor, constant: -40).isActive = true
-        
         profileScrollView.addSubview(descriptionLabel)
         descriptionLabel.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
-        descriptionBottomConstraint = descriptionLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 0)
+        descriptionBottomConstraint = descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0)
         descriptionLabel.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor, constant: -40).isActive = true
         descriptionHeightConstraint = descriptionLabel.heightAnchor.constraint(equalToConstant: 0)
         descriptionHeightConstraint.isActive = true
@@ -215,38 +218,56 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         sendMessageButton.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor).isActive = true
         sendMessageButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
         
+        userBackground.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        userBackground.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        userBackground.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        userBackground.bottomAnchor.constraint(equalTo: sendMessageButton.topAnchor).isActive = true
+        
         sendMessageButton.addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
         activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
         activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
-        profileScrollView.addSubview(backgroundTagCells)
+        
         profileScrollView.addSubview(activitySectionLabel)
         profileScrollView.addSubview(activityDescriptionLabel)
         profileScrollView.addSubview(activitiesTagCloud)
-        activitySectionLabel.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor, constant: 28).isActive = true
-        activitySectionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 28).isActive = true
-        activitySectionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -28).isActive = true
+        activitySectionLabel.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor, constant: 20).isActive = true
+        activitySectionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        activitySectionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         activitySectionLabel.heightAnchor.constraint(equalToConstant: 28).isActive = true
         
         activityDescriptionLabel.topAnchor.constraint(equalTo: activitySectionLabel.bottomAnchor, constant: 8).isActive = true
-        activityDescriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 28).isActive = true
-        activityDescriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -28).isActive = true
+        activityDescriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        activityDescriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         activityDescriptionHeight = activityDescriptionLabel.heightAnchor.constraint(equalToConstant: 0)
         activityDescriptionHeight.isActive = true
         
         activitiesTagCloud.topAnchor.constraint(equalTo: activityDescriptionLabel.bottomAnchor, constant: 16).isActive = true
-        activitiesTagCloud.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 28).isActive = true
+        activitiesTagCloud.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 12).isActive = true
         activitiesTagCloudHeight = activitiesTagCloud.heightAnchor.constraint(equalToConstant: 0)
         activitiesTagCloudHeight.isActive = true
-        activitiesTagCloud.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -28).isActive = true
+        activitiesTagCloud.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -12).isActive = true
         
-        backgroundTagCells.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor, constant: 16).isActive = true
-        backgroundTagCells.bottomAnchor.constraint(equalTo: activitiesTagCloud.bottomAnchor, constant: 16).isActive = true
-        backgroundTagCells.leftAnchor.constraint(equalTo: activitiesTagCloud.leftAnchor, constant: -16).isActive = true
-        backgroundTagCells.rightAnchor.constraint(equalTo: activitiesTagCloud.rightAnchor, constant: 16).isActive = true
         
+    }
+    
+    func loadUserInfo(){
+        
+        if let profile = userToShow.profileImageURL {
+            profilePicture.loadImageUsingCacheWithURLString(profile)
+        }
+        
+        nameLabel.text = userToShow.name
+        
+        if let tags = userToShow.tags {
+            activitiesArray = tags
+        }
+        
+        if let verified = userToShow.verified {
+            verifiedArray = verified
+        }
     }
     
     func autoSizeDescription(){
@@ -261,7 +282,13 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         descriptionLabel.isHidden = false
         activitySectionLabel.isHidden = false
         activityIndicator.stopAnimating()
-        sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
+        
+        if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
+            sendMessageButton.setTitle(NSLocalizedString("EditInfo", comment: "Edit information from profile view"), for: .normal)
+        } else {
+            sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
+        }
+        
     }
 
 }

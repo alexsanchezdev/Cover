@@ -13,7 +13,7 @@ extension NewMessageController {
     func searchUsersWithString(_ timer: Timer){
         if let searchString = timer.userInfo {
             
-            if (searchString as! String) == "" {
+            if (searchString as! String).isEmpty {
                 //self.usersTableView.isHidden = true
                 self.users = []
                 self.usersTableView.reloadData()
@@ -33,7 +33,7 @@ extension NewMessageController {
                         user.id = uid
                         user.name = userDict["name"] as? String
                         user.username = userDict["username"] as? String
-                        user.profileImageURL = userDict["profileImageURL"] as? String
+                        user.profileImageURL = userDict["profileImg"] as? String
                         
                         if user.id == FIRAuth.auth()?.currentUser?.uid {
                             return
@@ -41,21 +41,22 @@ extension NewMessageController {
                             self.tempUsers.append(user)
                         }
                         
+                        DispatchQueue.main.async {
+                            self.users.removeAll()
+                            self.users = self.tempUsers
+                            self.usersTableView.reloadData()
+                            //self.usersTableView.isHidden = false
+                        }
+                        
                     }
                     
-                    DispatchQueue.main.async {
-                        self.users.removeAll()
-                        self.users = self.tempUsers
-                        self.usersTableView.reloadData()
-                        //self.usersTableView.isHidden = false
-                    }
+                    
                 }, withCancel: nil)
             })
             
         }
     }
-
-
+    
     func handleCancel() {
         dismiss(animated: true, completion: nil)
     }

@@ -15,4 +15,7 @@ class User: NSObject {
     var email: String?
     var phone: String?
     var profileImageURL: String?
+    var distance: Double?
+    var tags: [String]?
+    var verified: [Int]?
 }

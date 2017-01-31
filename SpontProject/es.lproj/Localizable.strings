@@ -15,3 +15,4 @@
 // Profile Controller
 
     SendMessage = "Enviar mensaje";
+    EditInfo = "Editar información";

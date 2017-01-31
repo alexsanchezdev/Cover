@@ -7,8 +7,16 @@
 //
 
 import UIKit
+import Firebase
 
 class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    var users = [User]()
+    var usersDictionary = [String: User]()
+    var timer: Timer?
+    var tempTags = [String]()
+    var tempVerified = [Int]()
+    var searchTerm: String?
     
     lazy var resultsTableView: UITableView = {
         let table = UITableView()
@@ -23,8 +31,13 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         
         resultsTableView.delegate = self
         resultsTableView.dataSource = self
+        
+        resultsTableView.tableFooterView = UIView()
     
         setupViews()
+        
+        retrieveUsersAround()
+        
     }
     
     func setupViews(){
@@ -36,7 +49,7 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return users.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -44,18 +57,114 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         cell.preservesSuperviewLayoutMargins = false
         cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cell.layoutMargins = UIEdgeInsets.zero
+        
+        let user = users[indexPath.row]
+        cell.nameTextLabel.text = user.name
+        cell.usernameTextLabel.text = "@\(user.username!)"
+        cell.locationTextLabel.text = String(format: "%.0f km", user.distance!)
+        cell.tags = user.tags!
+        cell.verified = user.verified!
+        
+        if let profileImageURL = user.profileImageURL {
+            print(profileImageURL)
+            cell.profileImageView.loadImageUsingCacheWithURLString(profileImageURL)
+        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 86
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let user = users[indexPath.row]
         let profileController = ProfileController()
-        profileController.navigationItem.title = "madfit_lifestyle"
+        profileController.navigationItem.title = user.username
+        profileController.userToShow = user
         tableView.deselectRow(at: indexPath, animated: true)
         navigationController?.pushViewController(profileController, animated: true)
+    }
+    
+    func retrieveUsersAround(){
+        let geoFireRef = FIRDatabase.database().reference().child("locations")
+        let geoFire = GeoFire(firebaseRef: geoFireRef)
+    
+
+        let center = Filters.sharedInstance.locationManager.location
+        let circleQuery = geoFire?.query(at: center, withRadius: 5000.00)
+        
+        circleQuery?.observe(.keyEntered, with: { (key, location) in
+            
+            let activitiesRef = FIRDatabase.database().reference().child("activities").child(key!)
+            activitiesRef.observe(.childAdded, with: { (snapshot) in
+                if self.searchTerm == snapshot.key {
+                    
+                    let ref = FIRDatabase.database().reference().child("users")
+                    ref.queryOrderedByKey().queryEqual(toValue: key).observe(.childAdded, with: { (snapshot) in
+                        
+                        let user = User()
+                        
+                        if snapshot.key == FIRAuth.auth()?.currentUser?.uid {
+                            return
+                        } else {
+                            user.id = snapshot.key as String?
+                        }
+                        if let dict = snapshot.value as? [String: AnyObject] {
+                            self.tempVerified.removeAll()
+                            self.tempTags.removeAll()
+                            
+                            
+                            user.username = dict["username"] as! String?
+                            user.name = dict["name"] as! String?
+                            user.profileImageURL = dict["profileImg"] as! String?
+                            let activities = dict["activities"] as! [String: Int]
+                            
+                            for (keys, values) in activities {
+                                if keys == self.searchTerm {
+                                    self.tempTags.insert(keys, at: 0)
+                                    self.tempVerified.insert(values, at: 0)
+                                } else {
+                                    self.tempTags.append(keys)
+                                    self.tempVerified.append(values)
+                                }
+                            }
+                            
+                            user.tags = self.tempTags
+                            user.verified = self.tempVerified
+                            
+                            if let distance = location?.distance(from: Filters.sharedInstance.locationManager.location!) {
+                                var distanceToKms = distance / 1000
+                                if distanceToKms < 1 {
+                                    distanceToKms = 1
+                                }
+                                user.distance = distanceToKms
+                            }
+                            
+                            self.usersDictionary[user.username!] = user
+                            
+                            self.timer?.invalidate()
+                            self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+                            
+                        }
+                    }, withCancel: nil)
+                }
+            }, withCancel: nil)
+            
+            
+        })
+        
+    }
+    
+    func handleReloadTable(){
+        DispatchQueue.main.async {
+            print("Reload result table")
+            self.users = Array(self.usersDictionary.values)
+            self.users.sort(by: { (m1, m2) -> Bool in
+                return (Int(m1.distance!)) < (Int(m2.distance!))
+                //return (m1.distance.intValue)! > (m2.distance.intValue)!
+            })
+            self.resultsTableView.reloadData()
+        }
     }
     
 }

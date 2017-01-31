@@ -71,6 +71,13 @@ extension ProfileController {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activitiesTagCell", for: indexPath) as! TagCell
         cell.tagName.text = activitiesArray[indexPath.row]
+        
+        if verifiedArray[indexPath.row] == 1 {
+            cell.backgroundColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25)
+            cell.layer.borderColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1).cgColor
+            cell.layer.borderWidth = 1
+            cell.tagName.textColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
+        }
     
         return cell
     }

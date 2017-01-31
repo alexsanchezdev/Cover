@@ -10,15 +10,37 @@ import UIKit
 import Firebase
 import OneSignal
 
-class MainController: UITabBarController {
+class MainController: UITabBarController, CLLocationManagerDelegate {
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        return indicator
+    }()
     
     // MARK: - Init methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTabBar()
+        view.backgroundColor = UIColor.white
+        
+        view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        
+        fetchUserData()
+        
+        
+        Filters.sharedInstance.locationManager.delegate = self
+        Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        Filters.sharedInstance.locationManager.startUpdatingLocation()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         checkIfUserIsLoggedIn()
         OneSignal.promptLocation()
     }
@@ -30,10 +52,16 @@ class MainController: UITabBarController {
     
     let profileController = ProfileController()
     let messageController = MessagesController.sharedInstance
+    var currentUser = User()
+    var tempTags = [String]()
+    var tempVerified = [Int]()
     
     func setupTabBar(){
         
+        activityIndicator.stopAnimating()
         
+        profileController.navigationItem.title = currentUser.username
+        profileController.userToShow = currentUser
         
         let message = UINavigationController(rootViewController: messageController)
         let search = UINavigationController(rootViewController: SearchController())
@@ -57,7 +85,40 @@ class MainController: UITabBarController {
         // Assing controllers
         viewControllers = [message, search, profile]
         
+        
         self.selectedIndex = 1
+    }
+    
+    func fetchUserData(){
+        if let uid = FIRAuth.auth()?.currentUser?.uid{
+            let ref = FIRDatabase.database().reference().child("users").child(uid)
+            ref.observe(.value, with: { (snapshot) in
+                print("Fetch user called")
+                let user = User()
+                
+                user.id = snapshot.key
+                
+                if let dict = snapshot.value as? [String: AnyObject] {
+                    user.name = dict["name"] as! String?
+                    user.profileImageURL = dict["profileImg"] as! String?
+                    user.username = dict["username"] as! String?
+                    let activities = dict["activities"] as! [String: Int]
+                
+                    for (keys, values) in activities {
+                        self.tempTags.append(keys)
+                        self.tempVerified.append(values)
+                    }
+                    
+                    user.tags = self.tempTags
+                    user.verified = self.tempVerified
+                }
+                
+                self.currentUser = user
+                self.setupTabBar()
+                
+            }, withCancel: nil)
+        }
+        
     }
     
     // MARK: - Auth state methods
@@ -68,6 +129,8 @@ class MainController: UITabBarController {
             messageController.messages.removeAll()
             messageController.messagesDictionary.removeAll()
             messageController.tableView.reloadData()
+            
+            // TODO: Need to call observe messages only on load and not everytime view appear. Need to check if the user uid change in any case and if that is the case remove the observer and reload another observer.
             
             messageController.observeUserMessages()
             

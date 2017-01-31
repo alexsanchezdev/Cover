@@ -11,7 +11,8 @@ import UIKit
 class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     // MARK: - Variables
     // Temp activities arrays while Firebase get implemented
-    let TAGS = ["LES MILLS SPRINT", "BODYBALANCE", "BODYCOMBAT", "BODYJAM", "BODYPUMP", "BODYSTEP"]
+    var tags = [String]()
+    var verified = [Int]()
     // Sizing cell template to calculate size of cell on content
     var sizingCell: UserTagCell = UserTagCell()
     
@@ -19,7 +20,7 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
     let profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.image = UIImage(named: "oscar")
+        iv.image = UIImage(named: "user")
         iv.contentMode = .scaleAspectFill
         iv.layer.masksToBounds = true
         iv.layer.cornerRadius = 32
@@ -29,7 +30,7 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.7
         return label
@@ -93,7 +94,7 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
         nameTextLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
         nameTextLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
         nameTextLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -76).isActive = true
-        nameTextLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        nameTextLabel.heightAnchor.constraint(equalToConstant: 17).isActive = true
         
         addSubview(usernameTextLabel)
         usernameTextLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
@@ -105,10 +106,10 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
         locationTextLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -8).isActive = true
         locationTextLabel.centerYAnchor.constraint(equalTo: nameTextLabel.centerYAnchor).isActive = true
         locationTextLabel.leftAnchor.constraint(equalTo: nameTextLabel.rightAnchor, constant: 8).isActive = true
-        locationTextLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
+        locationTextLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
         
         addSubview(activitiesTagCloud)
-        activitiesTagCloud.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
+        activitiesTagCloud.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
         activitiesTagCloud.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
         activitiesTagCloud.rightAnchor.constraint(equalTo: rightAnchor, constant: -8).isActive = true
         activitiesTagCloud.heightAnchor.constraint(equalToConstant: 30).isActive = true
@@ -122,24 +123,52 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
     
     // MARK: - Delegates collection view methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 2
+        var numberOfItems = 0
+        
+        if tags.count == 1 {
+            numberOfItems = 1
+        } else if tags.count >= 2 {
+            numberOfItems = 2
+        }
+        
+        return numberOfItems
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "userTagCell", for: indexPath) as! UserTagCell
+        var activate = 0
         
         if indexPath.row == 0 {
-            cell.tagName.text = TAGS[indexPath.row]
+            cell.tagName.text = tags[indexPath.row]
+            if verified[indexPath.row] == 1 {
+                cell.backgroundColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25)
+                cell.layer.borderColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1).cgColor
+                cell.layer.borderWidth = 1
+                cell.tagName.textColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
+            }
         } else {
-            cell.tagName.text = "+ \(TAGS.count - 1) MÁS"
+            cell.tagName.text = "+ \(tags.count - 1) MÁS"
+            
+            for (index, value) in verified.enumerated() {
+                if index != 0 {
+                    activate = activate + value
+                    
+                    if activate > 0 {
+                        cell.backgroundColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25)
+                        cell.layer.borderColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1).cgColor
+                        cell.layer.borderWidth = 1
+                        cell.tagName.textColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
+                    }
+                }
+            }
         }
         
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath.row == 0 {
-            sizingCell.tagName.text = TAGS[indexPath.row]
+            sizingCell.tagName.text = tags[indexPath.row]
         } else {
-            sizingCell.tagName.text = "+ \(TAGS.count - 1) MÁS"
+            sizingCell.tagName.text = "+ \(tags.count - 1) MÁS"
         }
         return self.sizingCell.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
     }

@@ -23,6 +23,8 @@ class UserTagCell: UICollectionViewCell {
         super.init(frame: frame)
         
         backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1).cgColor
         tagName.textColor = UIColor.rgb(r: 90, g: 90, b: 90, a: 1)
         tagName.font = UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)
         layer.cornerRadius = 4

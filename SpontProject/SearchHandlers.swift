@@ -38,9 +38,11 @@ extension SearchController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let resultsController = ResultsController()
         if shouldShowSearchResults {
+            resultsController.searchTerm = filteredArray[indexPath.row]
             resultsController.navigationItem.title = filteredArray[indexPath.row]
         }
         else {
+            resultsController.searchTerm = dataArray[indexPath.row]
             resultsController.navigationItem.title = dataArray[indexPath.row]
         }
         
@@ -104,6 +106,7 @@ extension SearchController {
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let resultsController = ResultsController()
+        resultsController.searchTerm = topSearchArray[indexPath.row]
         resultsController.navigationItem.title = topSearchArray[indexPath.row]
         navigationController?.pushViewController(resultsController, animated: true)
     }
