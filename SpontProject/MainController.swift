@@ -12,38 +12,26 @@ import OneSignal
 
 class MainController: UITabBarController, CLLocationManagerDelegate {
     
-    let activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView()
-        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.startAnimating()
-        return indicator
-    }()
-    
     // MARK: - Init methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
-        
-        view.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        listenForMessages()
+        OneSignal.promptLocation()
         
         fetchUserData()
+        
+        
+        
         
         
         Filters.sharedInstance.locationManager.delegate = self
         Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         Filters.sharedInstance.locationManager.startUpdatingLocation()
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
-        checkIfUserIsLoggedIn()
-        OneSignal.promptLocation()
+        
     }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -55,13 +43,12 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
     var currentUser = User()
     var tempTags = [String]()
     var tempVerified = [Int]()
+    let group = DispatchGroup()
     
     func setupTabBar(){
         
-        activityIndicator.stopAnimating()
-        
-        profileController.navigationItem.title = currentUser.username
-        profileController.userToShow = currentUser
+        profileController.userToShow = self.currentUser
+        profileController.navigationItem.title = self.currentUser.username
         
         let message = UINavigationController(rootViewController: messageController)
         let search = UINavigationController(rootViewController: SearchController())
@@ -90,6 +77,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
     }
     
     func fetchUserData(){
+        
+        group.enter()
         if let uid = FIRAuth.auth()?.currentUser?.uid{
             let ref = FIRDatabase.database().reference().child("users").child(uid)
             ref.observe(.value, with: { (snapshot) in
@@ -98,44 +87,48 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                 
                 user.id = snapshot.key
                 
+                print(snapshot)
                 if let dict = snapshot.value as? [String: AnyObject] {
                     user.name = dict["name"] as! String?
                     user.profileImageURL = dict["profileImg"] as! String?
                     user.username = dict["username"] as! String?
-                    let activities = dict["activities"] as! [String: Int]
+                    user.activities = dict["activities"] as! [String: Int]?
                 
-                    for (keys, values) in activities {
-                        self.tempTags.append(keys)
-                        self.tempVerified.append(values)
+                    if let activities = user.activities {
+                        for (key, value) in activities {
+                            self.tempTags.append(key)
+                            self.tempVerified.append(value)
+                        }
+                        
+                        user.tags = self.tempTags
+                        user.verified = self.tempVerified
                     }
+                
+                    self.currentUser = user
                     
-                    user.tags = self.tempTags
-                    user.verified = self.tempVerified
+                    self.group.leave()
                 }
                 
-                self.currentUser = user
-                self.setupTabBar()
                 
             }, withCancel: nil)
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            print("Done loading")
+            self.setupTabBar()
         }
         
     }
     
     // MARK: - Auth state methods
-    func checkIfUserIsLoggedIn(){
-        if FIRAuth.auth()?.currentUser?.uid == nil {
-            handleLogout()
-        } else {
-            messageController.messages.removeAll()
-            messageController.messagesDictionary.removeAll()
-            messageController.tableView.reloadData()
-            
-            // TODO: Need to call observe messages only on load and not everytime view appear. Need to check if the user uid change in any case and if that is the case remove the observer and reload another observer.
-            
-            messageController.observeUserMessages()
-            
-            checkNotificationsIds()
-        }
+    
+    func listenForMessages(){
+        messageController.messages.removeAll()
+        messageController.messagesDictionary.removeAll()
+        messageController.tableView.reloadData()
+        messageController.observeUserMessages()
+        
+        checkNotificationsIds()
     }
     func handleLogout(){
         do {

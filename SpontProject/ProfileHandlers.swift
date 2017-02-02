@@ -29,13 +29,15 @@ extension ProfileController {
     
     func handleLogout(){
         
-        let uid = FIRAuth.auth()?.currentUser?.uid
-        OneSignal.idsAvailable { (userId, pushToken) in
-            let userRef = FIRDatabase.database().reference().child("notifications").child(uid!).child(userId!)
-            userRef.removeValue()
-            //let notifRef = FIRDatabase.database().reference().child("notifications-user").child(userId!)
-            //notifRef.removeValue()
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            OneSignal.idsAvailable { (userId, pushToken) in
+                let userRef = FIRDatabase.database().reference().child("notifications").child(uid).child(userId!)
+                userRef.removeValue()
+                //let notifRef = FIRDatabase.database().reference().child("notifications-user").child(userId!)
+                //notifRef.removeValue()
+            }
         }
+        
         
         do {
             try FIRAuth.auth()?.signOut()
@@ -44,8 +46,7 @@ extension ProfileController {
         }
         
         print("Succesfully logged out!")
-        let landingController = LandingController()
-        present(landingController, animated: true, completion: nil)
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     func updateCurrentLocation(){

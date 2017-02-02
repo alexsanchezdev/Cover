@@ -13,9 +13,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loadUserInfo()
-        setupViews()
+    
         descriptionLabel.isHidden = true
         
         activitiesTagCloud.delegate = self
@@ -33,23 +31,29 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loadUserInfo()
+        setupViews()
+        
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if UserDefaults.standard.bool(forKey: "FreshStart"){
-            loadUserInfo()
-            setupViews()
-            UserDefaults.standard.set(false, forKey: "FreshStart")
-        }
+        
         
         autoSizeDescription()
         resizeToFitViews(scrollview: profileScrollView)
     }
     
+    // MARK: - Variables
     var viewHeight: CGFloat = 0.0
     var viewWidth: CGFloat = 0.0
     var activitiesArray = [String]()
     var verifiedArray = [Int]()
     var userToShow = User()
+    var selfProfile = false
     
     var sizingCell: TagCell = TagCell()
 
@@ -181,7 +185,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     }()
     
    
-
+    // MARK: - Methods
     func setupViews(){
         
         view.addSubview(profileScrollView)
@@ -259,7 +263,9 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
             profilePicture.loadImageUsingCacheWithURLString(profile)
         }
         
-        nameLabel.text = userToShow.name
+        if let name = userToShow.name {
+            nameLabel.text = name
+        }
         
         if let tags = userToShow.tags {
             activitiesArray = tags
@@ -267,6 +273,12 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         
         if let verified = userToShow.verified {
             verifiedArray = verified
+        }
+        
+        if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
+            sendMessageButton.setTitle(NSLocalizedString("EditInfo", comment: "Edit information from profile view"), for: .normal)
+        } else {
+            sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
         }
     }
     
@@ -282,12 +294,6 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         descriptionLabel.isHidden = false
         activitySectionLabel.isHidden = false
         activityIndicator.stopAnimating()
-        
-        if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
-            sendMessageButton.setTitle(NSLocalizedString("EditInfo", comment: "Edit information from profile view"), for: .normal)
-        } else {
-            sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
-        }
         
     }
 

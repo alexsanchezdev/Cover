@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        window?.rootViewController = MainController()
+        window?.rootViewController = LandingController()
         
         let navigationBarAppearance = UINavigationBar.appearance()
         navigationBarAppearance.tintColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
@@ -36,8 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let tabBarAppearance = UITabBar.appearance()
         tabBarAppearance.tintColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
         tabBarAppearance.isTranslucent = false
-        
-        let defaults = UserDefaults.standard
         
         return true
     }

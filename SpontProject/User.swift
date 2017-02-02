@@ -18,4 +18,5 @@ class User: NSObject {
     var distance: Double?
     var tags: [String]?
     var verified: [Int]?
+    var activities: [String: Int]?
 }

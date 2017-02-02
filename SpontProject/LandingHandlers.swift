@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 extension LandingController {
     
@@ -23,6 +24,21 @@ extension LandingController {
         
         let registerController = UINavigationController(rootViewController: RegisterController())
         present(registerController, animated: true, completion: nil)
+    }
+    
+    func checkIfUserIsLoggedIn(){
+        if FIRAuth.auth()?.currentUser?.uid == nil {
+            handleLogout()
+        } else {
+            present(MainController(), animated: true, completion: nil)
+        }
+    }
+    func handleLogout(){
+        do {
+            try FIRAuth.auth()?.signOut()
+        } catch let logoutError {
+            print(logoutError)
+        }
     }
 
 }

@@ -13,6 +13,7 @@
 		6B2011D21E1534590050E66F /* NewMessageHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2011D11E1534590050E66F /* NewMessageHandlers.swift */; };
 		6B21986B1E1306A000A19C1C /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B21986A1E1306A000A19C1C /* Activity.swift */; };
 		6B2550F41E11B33100DFB4F6 /* RegisterHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2550F31E11B33100DFB4F6 /* RegisterHandlers.swift */; };
+		6B2B67551E421E8B0022408B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B2B67541E421E8B0022408B /* GoogleService-Info.plist */; };
 		6B3205161E0943FE00286430 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205151E0943FE00286430 /* LoginController.swift */; };
 		6B3205181E094D3F00286430 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205171E094D3F00286430 /* MessagesController.swift */; };
 		6B32051A1E096DB700286430 /* LandingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205191E096DB700286430 /* LandingController.swift */; };
@@ -36,7 +37,6 @@
 		6BA388031E104B80003AA155 /* TextFieldLoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA388021E104B80003AA155 /* TextFieldLoginScreen.swift */; };
 		6BADC2121E0A897C00DC400B /* TopCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BADC2111E0A897C00DC400B /* TopCell.swift */; };
 		6BB64F421E02969000C26E53 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB64F411E02969000C26E53 /* User.swift */; };
-		6BCAED7E1E3022E900F12A31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BCAED7D1E3022E900F12A31 /* GoogleService-Info.plist */; };
 		6BCC11D81E0ECA660075027F /* UserTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCC11D71E0ECA660075027F /* UserTagCell.swift */; };
 		6BD5E7061DFEE84A007D02DF /* SearchHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E7051DFEE84A007D02DF /* SearchHandlers.swift */; };
 		6BD5E7081DFEE859007D02DF /* ProfileHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E7071DFEE859007D02DF /* ProfileHandlers.swift */; };
@@ -68,6 +68,7 @@
 		6B2011D11E1534590050E66F /* NewMessageHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageHandlers.swift; sourceTree = "<group>"; };
 		6B21986A1E1306A000A19C1C /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 		6B2550F31E11B33100DFB4F6 /* RegisterHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterHandlers.swift; sourceTree = "<group>"; };
+		6B2B67541E421E8B0022408B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6B3205151E0943FE00286430 /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		6B3205171E094D3F00286430 /* MessagesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		6B3205191E096DB700286430 /* LandingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingController.swift; sourceTree = "<group>"; };
@@ -93,7 +94,6 @@
 		6BADC2111E0A897C00DC400B /* TopCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopCell.swift; sourceTree = "<group>"; };
 		6BB64F411E02969000C26E53 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6BB64F451E02AB0100C26E53 /* SpontProject.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpontProject.entitlements; sourceTree = "<group>"; };
-		6BCAED7D1E3022E900F12A31 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6BCC11D71E0ECA660075027F /* UserTagCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTagCell.swift; sourceTree = "<group>"; };
 		6BD5E7051DFEE84A007D02DF /* SearchHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchHandlers.swift; sourceTree = "<group>"; };
 		6BD5E7071DFEE859007D02DF /* ProfileHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileHandlers.swift; sourceTree = "<group>"; };
@@ -271,8 +271,8 @@
 				6BE399CD1DFEE3C000C6F0DC /* Assets.xcassets */,
 				6BE399CF1DFEE3C000C6F0DC /* LaunchScreen.storyboard */,
 				6BE399D21DFEE3C000C6F0DC /* Info.plist */,
+				6B2B67541E421E8B0022408B /* GoogleService-Info.plist */,
 				6BF483B71E0BE2B800308C94 /* SpontProject-Bridging-Header.h */,
-				6BCAED7D1E3022E900F12A31 /* GoogleService-Info.plist */,
 				6B5DFB9D1E0DF74300D1EEA4 /* Localizable.strings */,
 			);
 			name = Cover;
@@ -446,7 +446,7 @@
 			files = (
 				6B5DFB9B1E0DF74300D1EEA4 /* Localizable.strings in Resources */,
 				6BE399D11DFEE3C000C6F0DC /* LaunchScreen.storyboard in Resources */,
-				6BCAED7E1E3022E900F12A31 /* GoogleService-Info.plist in Resources */,
+				6B2B67551E421E8B0022408B /* GoogleService-Info.plist in Resources */,
 				6B3205261E09978500286430 /* activities.txt in Resources */,
 				6BE399CE1DFEE3C000C6F0DC /* Assets.xcassets in Resources */,
 			);
