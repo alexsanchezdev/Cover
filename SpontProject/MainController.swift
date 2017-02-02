@@ -91,6 +91,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                 if let dict = snapshot.value as? [String: AnyObject] {
                     user.name = dict["name"] as! String?
                     user.profileImageURL = dict["profileImg"] as! String?
+                    user.caption = dict["caption"] as! String?
                     user.username = dict["username"] as! String?
                     user.activities = dict["activities"] as! [String: Int]?
                 

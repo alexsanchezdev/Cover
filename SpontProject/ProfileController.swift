@@ -13,7 +13,10 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        loadUserInfo()
+        setupViews()
+        
         descriptionLabel.isHidden = true
         
         activitiesTagCloud.delegate = self
@@ -21,7 +24,9 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         profileScrollView.delegate = self
         
         activitiesTagCloud.contentInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: -20, right: 0)
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: -9, bottom: -10, right: -9)
+        profileScrollView.alwaysBounceVertical = true
+        profileScrollView.alwaysBounceHorizontal = false
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more_icon"), style: .plain, target: self, action: #selector(handleOptions))
         
@@ -34,17 +39,20 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loadUserInfo()
-        setupViews()
+        
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        
-        autoSizeDescription()
+        print(profileScrollView.frame.height)
         resizeToFitViews(scrollview: profileScrollView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        autoSizeDescription()
     }
     
     // MARK: - Variables
@@ -95,7 +103,6 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
-        label.text = "Owner @smartclubtr (www.smart-club.es), REEBOK sponsored athlete, Les Mills Trainer, BeachBody LesMillsCombat & ETIXX Ambassador. Twitter@PeiroOscar"
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
@@ -189,37 +196,37 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     func setupViews(){
         
         view.addSubview(profileScrollView)
-        profileScrollView.addSubview(userBackground)
-        
         profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         profileScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
+        profileScrollView.addSubview(userBackground)
+        
         profileScrollView.addSubview(profilePicture)
-        profilePicture.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
+        profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor, constant: 20).isActive = true
         profilePicture.widthAnchor.constraint(equalToConstant: 100).isActive = true
         profilePicture.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         profileScrollView.addSubview(nameLabel)
-        nameLabel.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
+        nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        nameLabel.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor, constant: -40).isActive = true
+        nameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
         profileScrollView.addSubview(descriptionLabel)
-        descriptionLabel.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
+        descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         descriptionBottomConstraint = descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0)
-        descriptionLabel.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor, constant: -40).isActive = true
+        descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         descriptionHeightConstraint = descriptionLabel.heightAnchor.constraint(equalToConstant: 0)
         descriptionHeightConstraint.isActive = true
         descriptionBottomConstraint.isActive = true
         
         profileScrollView.addSubview(sendMessageButton)
-        sendMessageButton.centerXAnchor.constraint(equalTo: profileScrollView.centerXAnchor).isActive = true
+        sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         sendMessageButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
-        sendMessageButton.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor).isActive = true
+        sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         sendMessageButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
         
         userBackground.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -232,7 +239,6 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
         activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
         activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        
         
         profileScrollView.addSubview(activitySectionLabel)
         profileScrollView.addSubview(activityDescriptionLabel)
@@ -275,6 +281,9 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
             verifiedArray = verified
         }
         
+        if let caption = userToShow.caption {
+            descriptionLabel.text = caption
+        }
         if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
             sendMessageButton.setTitle(NSLocalizedString("EditInfo", comment: "Edit information from profile view"), for: .normal)
         } else {

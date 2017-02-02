@@ -116,6 +116,7 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
                             
                             user.username = dict["username"] as! String?
                             user.name = dict["name"] as! String?
+                            user.caption = dict["caption"] as! String?
                             user.profileImageURL = dict["profileImg"] as! String?
                             let activities = dict["activities"] as! [String: Int]
                             

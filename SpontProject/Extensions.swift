@@ -98,22 +98,30 @@ class RegisterTextField: UITextField {
 }
 
 extension UIViewController {
-    func resizeToFitViews(scrollview: UIScrollView){
-        var width: CGFloat = 0
-        var height: CGFloat = 0
-        
-        for v in view.subviews {
-            let w = v.frame.origin.x + v.frame.size.width
-            let h = v.frame.origin.y + v.frame.size.height
-            
-            width = max(w, width)
-            height = max(h, height)
+//    func resizeToFitViews(scrollview: UIScrollView){
+//        var width: CGFloat = 0
+//        var height: CGFloat = 0
+//        
+//        for v in view.subviews {
+//            let w = v.frame.origin.x + v.frame.size.width
+//            let h = v.frame.origin.y + v.frame.size.height
+//            
+//            width = max(w, width)
+//            height = max(h, height)
+//            
+//            
+//        }
+//        
+//        scrollview.contentSize = CGSize(width: width, height: height)
+//    }
+    
+    func resizeToFitViews(scrollview: UIScrollView) {
+        var contentRect = CGRect.zero
+        for view in scrollview.subviews {
+            contentRect = contentRect.union(view.frame)
         }
         
-        scrollview.contentSize = CGSize(width: width, height: height)
-        print(width)
-        print(height)
-        
+        scrollview.contentSize = contentRect.size
     }
 }
 

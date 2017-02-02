@@ -24,6 +24,7 @@
 		6B3AD6FA1E0BD4DD004F1484 /* TagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3AD6F91E0BD4DD004F1484 /* TagCell.swift */; };
 		6B3AD6FC1E0BD9B3004F1484 /* TagFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3AD6FB1E0BD9B3004F1484 /* TagFlowLayout.swift */; };
 		6B40E6091E081B720060E2F2 /* LandingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B40E6081E081B720060E2F2 /* LandingHandlers.swift */; };
+		6B47FBCF1E43584800A1616C /* TempProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B47FBCE1E43584800A1616C /* TempProfile.swift */; };
 		6B56348E1E00532E008E78FF /* TextFieldInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B56348D1E00532E008E78FF /* TextFieldInsets.swift */; };
 		6B5DFB9B1E0DF74300D1EEA4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6B5DFB9D1E0DF74300D1EEA4 /* Localizable.strings */; };
 		6B6D84101E0B4BC000681B38 /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D840F1E0B4BC000681B38 /* ProfileController.swift */; };
@@ -79,6 +80,7 @@
 		6B3AD6F91E0BD4DD004F1484 /* TagCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagCell.swift; sourceTree = "<group>"; };
 		6B3AD6FB1E0BD9B3004F1484 /* TagFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagFlowLayout.swift; sourceTree = "<group>"; };
 		6B40E6081E081B720060E2F2 /* LandingHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingHandlers.swift; sourceTree = "<group>"; };
+		6B47FBCE1E43584800A1616C /* TempProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TempProfile.swift; sourceTree = "<group>"; };
 		6B56348D1E00532E008E78FF /* TextFieldInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldInsets.swift; sourceTree = "<group>"; };
 		6B5DFB9C1E0DF74300D1EEA4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6B5DFB9E1E0DF75800D1EEA4 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				6B6D840F1E0B4BC000681B38 /* ProfileController.swift */,
 				6B2011D41E1535200050E66F /* Messages */,
 				6BAFD3CC1E11EB160026D42B /* Login/Register */,
+				6B47FBCE1E43584800A1616C /* TempProfile.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -525,6 +528,7 @@
 				6B3205201E0982E700286430 /* LogoCell.swift in Sources */,
 				6B2550F41E11B33100DFB4F6 /* RegisterHandlers.swift in Sources */,
 				6BF8CAAF1E2017B5001C36D0 /* Message.swift in Sources */,
+				6B47FBCF1E43584800A1616C /* TempProfile.swift in Sources */,
 				6BD5E70C1DFF10EA007D02DF /* LoginHandlers.swift in Sources */,
 				6BF8CAAD1E200096001C36D0 /* ChatLogHandlers.swift in Sources */,
 				6BEA057C1E11819D00C36E2D /* Filters.swift in Sources */,

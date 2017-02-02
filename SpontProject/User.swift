@@ -12,6 +12,7 @@ class User: NSObject {
     var id: String?
     var name: String?
     var username: String?
+    var caption: String?
     var email: String?
     var phone: String?
     var profileImageURL: String?
