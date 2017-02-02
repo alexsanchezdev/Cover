@@ -24,7 +24,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         profileScrollView.delegate = self
         
         activitiesTagCloud.contentInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: -9, bottom: -10, right: -9)
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: -9, bottom: -50, right: -9)
         profileScrollView.alwaysBounceVertical = true
         profileScrollView.alwaysBounceHorizontal = false
         
@@ -46,13 +46,13 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        print(profileScrollView.frame.height)
+        autoSizeDescription()
         resizeToFitViews(scrollview: profileScrollView)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        autoSizeDescription()
+        
     }
     
     // MARK: - Variables
@@ -195,27 +195,20 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
     // MARK: - Methods
     func setupViews(){
         
-        view.addSubview(profileScrollView)
-        profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        profileScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
-        profileScrollView.addSubview(userBackground)
-        
-        profileScrollView.addSubview(profilePicture)
+        view.addSubview(userBackground)
+        view.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor, constant: 20).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
         profilePicture.widthAnchor.constraint(equalToConstant: 100).isActive = true
         profilePicture.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
-        profileScrollView.addSubview(nameLabel)
+        view.addSubview(nameLabel)
         nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
         nameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        profileScrollView.addSubview(descriptionLabel)
+        view.addSubview(descriptionLabel)
         descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         descriptionBottomConstraint = descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0)
         descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
@@ -223,7 +216,7 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         descriptionHeightConstraint.isActive = true
         descriptionBottomConstraint.isActive = true
         
-        profileScrollView.addSubview(sendMessageButton)
+        view.addSubview(sendMessageButton)
         sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         sendMessageButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
         sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -239,6 +232,12 @@ class ProfileController: UIViewController, UIScrollViewDelegate, UICollectionVie
         activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
         activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
         activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        
+        view.addSubview(profileScrollView)
+        profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        profileScrollView.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor).isActive = true
+        profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         profileScrollView.addSubview(activitySectionLabel)
         profileScrollView.addSubview(activityDescriptionLabel)

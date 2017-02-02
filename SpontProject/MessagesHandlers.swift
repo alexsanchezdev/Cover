@@ -131,7 +131,7 @@ extension MessagesController {
                 user.id = chatPartnerId
                 user.name = dict["name"] as? String
                 user.username = dict["username"] as? String
-                user.profileImageURL = dict["profileImageURL"] as? String
+                user.profileImageURL = dict["profileImg"] as? String
                 
                 self.showChatControllerFor(user)
             }

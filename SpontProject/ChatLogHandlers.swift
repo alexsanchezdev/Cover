@@ -50,7 +50,7 @@ extension ChatLogController {
                 FIRDatabase.database().reference().child("users").child(fromUser).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dict = snapshot.value as? [String: AnyObject]{
                         let sender = dict["name"]
-                        OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser]])
+                        OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser], "ios_badgeType": "Increase", "ios_badgeCount": 1])
                         self.notificationIds.removeAll()
                     }
                     
