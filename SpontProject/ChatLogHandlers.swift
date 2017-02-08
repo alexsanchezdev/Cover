@@ -23,11 +23,11 @@ extension ChatLogController {
                 return
             }
         
-            let isRead = false
+            
             let ref = FIRDatabase.database().reference().child("messages")
             let childRef = ref.childByAutoId()
             let timestamp = Int(Date().timeIntervalSince1970)
-            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": isRead] as [String : Any]
+            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": false] as [String : Any]
             
             self.inputTextField.text = nil
             childRef.updateChildValues(values) { (error, ref) in
@@ -250,5 +250,4 @@ extension ChatLogController {
         }
         
     }
-    
 }

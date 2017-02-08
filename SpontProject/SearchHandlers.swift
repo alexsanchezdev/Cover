@@ -25,12 +25,12 @@ extension SearchController {
         
         if shouldShowSearchResults {
             cell.nameTextLabel.text = filteredArray[indexPath.row]
-            cell.logoImageView.image = UIImage(named: filteredArray[indexPath.row])
+            //cell.logoImageView.image = UIImage(named: filteredArray[indexPath.row])
             
         }
         else {
             cell.nameTextLabel.text = dataArray[indexPath.row]
-            cell.logoImageView.image = UIImage(named: dataArray[indexPath.row])
+            //cell.logoImageView.image = UIImage(named: dataArray[indexPath.row])
         }
         
         return cell
@@ -51,7 +51,7 @@ extension SearchController {
         searchBar.resignFirstResponder()
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 64.0
+        return 48.0
     }
     
     // MARK: - Search bar delegates methods

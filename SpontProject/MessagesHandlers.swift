@@ -38,28 +38,11 @@ extension MessagesController {
             FIRDatabase.database().reference().child("user-messages").child(uid).child(userId).observe(.childAdded, with: { (snapshot) in
                 let messageId = snapshot.key
                 
-                let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
-                messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                    if let dict = snapshot.value as? [String: AnyObject] {
-                        let message = Message()
-                        message.from = dict["from"] as! String?
-                        message.to = dict["to"] as! String?
-                        message.text = dict["text"] as! String?
-                        message.timestamp = dict["timestamp"] as! NSNumber?
-                        message.read = dict["read"] as! Bool?
-                        
-                        if message.to == uid && !self.firstTime {
-                            self.shouldVibrate = true
-                        }
-                        
-                        if let chatPartnerId = message.chatPartnerId() {
-                            self.messagesDictionary[chatPartnerId] = message
-                        }
-                        
-                        self.timer?.invalidate()
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                        
-                    }
+                self.fetchData(messageId: messageId)
+                
+                FIRDatabase.database().reference().child("messages").child(messageId).observe(.childChanged, with: { (snapshot) in
+                    self.fetchData(messageId: messageId)
+                    
                 }, withCancel: nil)
             }, withCancel: nil)
         }, withCancel: nil)
@@ -68,6 +51,7 @@ extension MessagesController {
             self.messagesDictionary.removeValue(forKey: snapshot.key)
             self.handleReloadTable()
         }, withCancel: nil)
+        
     }
     
    func handleReloadTable(){
@@ -81,20 +65,30 @@ extension MessagesController {
             
             self.tableView.reloadData()
             
-            if self.shouldVibrate && !self.firstTime {
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-                self.shouldVibrate = false
-                if self.tabBarController?.selectedIndex == 0 {
-                    return
-                } else {
-                    self.tabBarController?.tabBar.items?[0].badgeValue = ""
+        }
+    }
+    
+    func fetchData(messageId: String){
+        let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
+        messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let dict = snapshot.value as? [String: AnyObject] {
+                let message = Message()
+                message.from = dict["from"] as! String?
+                message.to = dict["to"] as! String?
+                message.text = dict["text"] as! String?
+                message.timestamp = dict["timestamp"] as! NSNumber?
+                message.read = dict["read"] as! Bool?
+                
+                if let chatPartnerId = message.chatPartnerId() {
+                    self.messagesDictionary[chatPartnerId] = message
                 }
                 
+                self.timer?.invalidate()
+                self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                 
             }
-            
-            self.firstTime = false
-        }
+        }, withCancel: nil)
+
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -105,8 +99,17 @@ extension MessagesController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! DateUserCell
         
         let message = messages[indexPath.row]
+        
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            if message.read == false && message.from != uid {
+                cell.newMessageIndicator.isHidden = false
+            } else {
+                cell.newMessageIndicator.isHidden = true
+            }
+        }
+        
         cell.message = message
-    
+        
         cell.preservesSuperviewLayoutMargins = false
         cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cell.layoutMargins = UIEdgeInsets.zero

@@ -35,6 +35,7 @@
 		6B7FE5471E12CD78000A036C /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7FE5461E12CD78000A036C /* NewMessageController.swift */; };
 		6B8F104B1E2F781D001AB6CC /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8F104A1E2F781D001AB6CC /* ChatMessageCell.swift */; };
 		6B8FA66E1E127D7A00B7FC5D /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8FA66D1E127D7A00B7FC5D /* Variables.swift */; };
+		6BA0CC5F1E47EFEE00424945 /* CollapsibleTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA0CC5E1E47EFEE00424945 /* CollapsibleTableViewHeader.swift */; };
 		6BA388031E104B80003AA155 /* TextFieldLoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA388021E104B80003AA155 /* TextFieldLoginScreen.swift */; };
 		6BADC2121E0A897C00DC400B /* TopCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BADC2111E0A897C00DC400B /* TopCell.swift */; };
 		6BB64F421E02969000C26E53 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB64F411E02969000C26E53 /* User.swift */; };
@@ -92,6 +93,7 @@
 		6B7FE5461E12CD78000A036C /* NewMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		6B8F104A1E2F781D001AB6CC /* ChatMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		6B8FA66D1E127D7A00B7FC5D /* Variables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
+		6BA0CC5E1E47EFEE00424945 /* CollapsibleTableViewHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollapsibleTableViewHeader.swift; sourceTree = "<group>"; };
 		6BA388021E104B80003AA155 /* TextFieldLoginScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldLoginScreen.swift; sourceTree = "<group>"; };
 		6BADC2111E0A897C00DC400B /* TopCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopCell.swift; sourceTree = "<group>"; };
 		6BB64F411E02969000C26E53 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				6B2B67541E421E8B0022408B /* GoogleService-Info.plist */,
 				6BF483B71E0BE2B800308C94 /* SpontProject-Bridging-Header.h */,
 				6B5DFB9D1E0DF74300D1EEA4 /* Localizable.strings */,
+				6BA0CC5E1E47EFEE00424945 /* CollapsibleTableViewHeader.swift */,
 			);
 			name = Cover;
 			path = SpontProject;
@@ -518,6 +521,7 @@
 				6B75E0311E002374008AE308 /* UserCell.swift in Sources */,
 				6B8F104B1E2F781D001AB6CC /* ChatMessageCell.swift in Sources */,
 				6B7FE5431E12C734000A036C /* MessagesHandlers.swift in Sources */,
+				6BA0CC5F1E47EFEE00424945 /* CollapsibleTableViewHeader.swift in Sources */,
 				6B40E6091E081B720060E2F2 /* LandingHandlers.swift in Sources */,
 				6B6FC0AD1E02D840000BB705 /* RegisterControllerTemp.swift in Sources */,
 				6BEA05791E114DB300C36E2D /* GFQuery.m in Sources */,

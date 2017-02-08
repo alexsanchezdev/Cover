@@ -60,7 +60,7 @@ class DateUserCell: MessageUserCell {
                 if let dict = snapshot.value as? [String: AnyObject] {
                     self.titleTextLabel.text = dict["username"] as? String
                     
-                    if let profileImageURL = dict["profileImageURL"] as? String {
+                    if let profileImageURL = dict["profileImg"] as? String {
                         self.profileImageView.loadImageUsingCacheWithURLString(profileImageURL)
                     }
                 }

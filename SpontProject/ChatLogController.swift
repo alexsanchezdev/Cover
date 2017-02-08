@@ -35,6 +35,12 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
+        removeObserversForMessage()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateReadStatus()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -146,7 +152,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         bottomTextInputConstraint = inputMessageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomTextInputConstraint?.isActive = true
         inputMessageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        inputMessageView.heightAnchor.constraint(equalToConstant: 49).isActive = true
+        inputMessageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         view.addSubview(messageCollectionView)
         messageCollectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -157,8 +163,8 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         inputMessageView.addSubview(sendButton)
         sendButton.rightAnchor.constraint(equalTo: inputMessageView.rightAnchor, constant: -16).isActive = true
         sendButton.centerYAnchor.constraint(equalTo: inputMessageView.centerYAnchor).isActive = true
-        sendButton.widthAnchor.constraint(equalToConstant: 49).isActive = true
-        sendButton.heightAnchor.constraint(equalTo: inputMessageView.heightAnchor).isActive = true
+        sendButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        sendButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         inputMessageView.addSubview(inputTextField)
         inputTextField.leftAnchor.constraint(equalTo: inputMessageView.leftAnchor, constant: 16).isActive = true
@@ -173,6 +179,29 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         
+    }
+    
+    func updateReadStatus(){
+        
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
+        
+        if let toUser = user?.id {
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            ref.observe(.childAdded, with: { (snapshot) in
+                let messageId = snapshot.key
+                let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
+                messagesRef.updateChildValues(["read": true])
+            }, withCancel: nil)
+        }
+    }
+    
+    func removeObserversForMessage(){
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
+        
+        if let toUser = user?.id {
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            ref.removeAllObservers()
+        }
     }
     
 }

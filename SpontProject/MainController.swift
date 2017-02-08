@@ -21,14 +21,9 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         
         fetchUserData()
         
-        
-        
-        
-        
         Filters.sharedInstance.locationManager.delegate = self
         Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         Filters.sharedInstance.locationManager.startUpdatingLocation()
-        
         
     }
 

@@ -23,8 +23,6 @@ class MessagesController: UITableViewController {
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     var timer: Timer?
-    var shouldVibrate = false
-    var firstTime = true
     
     let cellId = "cellId"
     
@@ -45,6 +43,7 @@ class MessagesController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.tableView.reloadData()
         self.tabBarController?.tabBar.items?[0].badgeValue = nil
     }
     
