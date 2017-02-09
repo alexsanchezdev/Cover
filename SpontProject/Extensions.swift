@@ -130,7 +130,11 @@ extension UIViewController {
         var contentRect = CGRect.zero
         for view in scrollview.subviews {
             contentRect = contentRect.union(view.frame)
+            print(contentRect.size)
+            print(view)
         }
+        
+        
         
         scrollview.contentSize = contentRect.size
     }
@@ -162,5 +166,18 @@ extension UIImageView {
                 
             }
         }).resume()
+    }
+}
+
+extension UIScrollView{
+    func resizeContentSize(){
+        
+        var contentRect = CGRect.zero
+        for view in self.subviews{
+            contentRect = contentRect.union(view.frame)
+        }
+        
+        self.contentSize = contentRect.size
+        
     }
 }

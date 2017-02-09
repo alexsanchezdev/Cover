@@ -79,6 +79,7 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = users[indexPath.row]
         let profileController = ProfileController()
+        profileController.hidesBottomBarWhenPushed = true
         profileController.navigationItem.title = user.username
         profileController.userToShow = user
         tableView.deselectRow(at: indexPath, animated: true)

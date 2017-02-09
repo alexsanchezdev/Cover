@@ -53,7 +53,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         
 //        activitySectionLabel.isHidden = true
         
-        activityIndicator.startAnimating()
         
     }
     
@@ -68,13 +67,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         super.viewDidAppear(animated)
         
         autoSizeDescription()
-        //resizeToFitViews(scrollview: profileScrollView)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
         
     }
+
     
     // MARK: - Variables
     var viewHeight: CGFloat = 0.0
@@ -88,37 +83,48 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     
     var messagesController: MessagesController?
 
-    var descriptionHeightConstraint, descriptionBottomConstraint, activityDescriptionHeight: NSLayoutConstraint!
-    var activitiesTagCloudHeight: NSLayoutConstraint!
-    var moreInfoHeight: NSLayoutConstraint!
+    var descriptionHeightConstraint, descriptionTopConstraint, activityDescriptionHeight: NSLayoutConstraint!
+//    var activitiesTagCloudHeight: NSLayoutConstraint!
+//    var moreInfoHeight: NSLayoutConstraint!
     let locationManager = CLLocationManager()
     var activities = [String: Int]()
     
-//    lazy var profileScrollView: UIScrollView = {
-//        let scroll = UIScrollView()
-//        scroll.translatesAutoresizingMaskIntoConstraints = false
-//        scroll.backgroundColor = UIColor.white
-//        return scroll
-//    }()
+    lazy var profileScrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.backgroundColor = UIColor.white
+        scroll.isScrollEnabled = true
+        scroll.bounces = true
+        return scroll
+    }()
     
     lazy var profilePicture: UIImageView = {
-        let iv = UIImageView()
+        let screenSize = UIScreen.main.bounds
+        let iv = UIImageView(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.width))
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
-        iv.image = UIImage(named: "user")
-        iv.layer.cornerRadius = 50
-        iv.layer.masksToBounds = true
-        iv.layer.borderColor = UIColor.rgb(r: 151, g: 151, b: 151, a: 1).cgColor
-        iv.layer.borderWidth = 1
+        iv.backgroundColor = UIColor.red
+        
         return iv
     }()
     
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightBold)
-        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 28, weight: UIFontWeightRegular)
+        //label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
+        label.textColor = UIColor.white
+        label.textAlignment = .left
+        return label
+    }()
+    
+    let locationLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightLight)
+        label.textColor = UIColor.white
+        label.textAlignment = .left
+        label.text = "Torre del Mar"
         return label
     }()
 
@@ -131,6 +137,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
         label.textAlignment = .center
+        label.backgroundColor = UIColor.red
         
         return label
     }()
@@ -140,54 +147,10 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: UIFontWeightMedium)
         button.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         return button
     }()
-    
-    let profileCardBackground: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
-        return view
-    }()
-    
-//    let activitySectionLabel: UILabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.text = "Actividades"
-//        label.font = UIFont.systemFont(ofSize: 24, weight: UIFontWeightBold)
-//        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-//        label.textAlignment = .left
-//        return label
-//    }()
-    
-//    let activityDescriptionLabel: UILabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
-//        label.text = "Estas son las actividades introducidas por el instructor. Confirmalas cuando os pongais en contacto."
-//        label.numberOfLines = 0
-//        label.lineBreakMode = NSLineBreakMode.byWordWrapping
-//        label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-//        label.textAlignment = .left
-//        label.adjustsFontSizeToFitWidth = true
-//        label.minimumScaleFactor = 0.8
-//        return label
-//    }()
-//    
-//    lazy var activitiesTagCloud: UICollectionView = {
-//        let layout = TagFlowLayout()
-//        layout.minimumLineSpacing = 8
-//        layout.minimumInteritemSpacing = 8
-//        
-//        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collection.register(TagCell.self, forCellWithReuseIdentifier: "activitiesTagCell")
-//        collection.backgroundColor = UIColor.clear
-//        collection.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        return collection
-//    }()
     
     let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -195,25 +158,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
-    
-//    let backgroundTagCells: UIView = {
-//        let view = UIView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.backgroundColor = UIColor.white
-//        view.layer.shadowColor = UIColor.lightGray.cgColor
-//        view.layer.shadowOpacity = 0.5
-//        view.layer.shadowOffset = CGSize.zero
-//        view.layer.shadowRadius = 4
-//        view.layer.shouldRasterize = true
-//        return view
-//    }()
-    
-    let userBackground: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
-        return view
-    }()
+
     
     let informationTable: UITableView = {
         let table = UITableView()
@@ -225,76 +170,63 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     // MARK: - Methods
     func setupViews(){
         
-        view.addSubview(userBackground)
-        view.addSubview(profilePicture)
-        profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        profilePicture.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        profilePicture.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        let screenSize = UIScreen.main.bounds
         
-        view.addSubview(nameLabel)
-        nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        view.addSubview(profileScrollView)
+        profileScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profileScrollView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        profileScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        profileScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
+        profileScrollView.addSubview(profilePicture)
+        profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor).isActive = true
+        profilePicture.widthAnchor.constraint(equalToConstant: screenSize.width).isActive = true
+        profilePicture.heightAnchor.constraint(equalToConstant: screenSize.width).isActive = true
+        
+        let layer = CAGradientLayer()
+        let gradientHeight: CGFloat = 150
+        layer.frame = CGRect(x: 0, y: view.bounds.width - gradientHeight, width: view.bounds.width, height: gradientHeight)
+        layer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        profilePicture.layer.addSublayer(layer)
+        
+        profilePicture.addSubview(locationLabel)
+        locationLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant:20).isActive = true
+        locationLabel.bottomAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: -20).isActive = true
+        locationLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        locationLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        
+        profilePicture.addSubview(nameLabel)
+        nameLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant: 20).isActive = true
+        nameLabel.bottomAnchor.constraint(equalTo: locationLabel.topAnchor).isActive = true
+        nameLabel.heightAnchor.constraint(equalToConstant: 36).isActive = true
         nameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        view.addSubview(descriptionLabel)
+        profileScrollView.addSubview(descriptionLabel)
         descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        descriptionBottomConstraint = descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0)
+        descriptionTopConstraint = descriptionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor)
         descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         descriptionHeightConstraint = descriptionLabel.heightAnchor.constraint(equalToConstant: 0)
         descriptionHeightConstraint.isActive = true
-        descriptionBottomConstraint.isActive = true
+        descriptionTopConstraint.isActive = true
         
-        view.addSubview(sendMessageButton)
-        sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        sendMessageButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
-        sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        sendMessageButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        
-        userBackground.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        userBackground.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        userBackground.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        userBackground.bottomAnchor.constraint(equalTo: sendMessageButton.topAnchor).isActive = true
-        
-        sendMessageButton.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
-        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        
-//        view.addSubview(profileScrollView)
-//        profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//        profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-//        profileScrollView.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor).isActive = true
-//        profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//
-//        profileScrollView.addSubview(activitySectionLabel)
-//        profileScrollView.addSubview(activityDescriptionLabel)
-//        profileScrollView.addSubview(activitiesTagCloud)
-//        activitySectionLabel.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor, constant: 20).isActive = true
-//        activitySectionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-//        activitySectionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-//        activitySectionLabel.heightAnchor.constraint(equalToConstant: 28).isActive = true
+//        profileScrollView.addSubview(informationTable)
+//        informationTable.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor).isActive = true
+//        informationTable.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+//        informationTable.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+//        informationTable.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 //        
-//        activityDescriptionLabel.topAnchor.constraint(equalTo: activitySectionLabel.bottomAnchor, constant: 8).isActive = true
-//        activityDescriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-//        activityDescriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-//        activityDescriptionHeight = activityDescriptionLabel.heightAnchor.constraint(equalToConstant: 0)
-//        activityDescriptionHeight.isActive = true
+//        view.addSubview(sendMessageButton)
+//        sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+//        sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+//        sendMessageButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
 //        
-//        activitiesTagCloud.topAnchor.constraint(equalTo: activityDescriptionLabel.bottomAnchor, constant: 16).isActive = true
-//        activitiesTagCloud.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 12).isActive = true
-//        activitiesTagCloudHeight = activitiesTagCloud.heightAnchor.constraint(equalToConstant: 0)
-//        activitiesTagCloudHeight.isActive = true
-//        activitiesTagCloud.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -12).isActive = true
-        
-        view.addSubview(informationTable)
-        informationTable.topAnchor.constraint(equalTo: sendMessageButton.bottomAnchor).isActive = true
-        informationTable.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        informationTable.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        informationTable.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
+//        sendMessageButton.addSubview(activityIndicator)
+//        activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
+//        activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
+//        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+//        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
     }
     
@@ -320,7 +252,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
             descriptionLabel.text = caption
         }
         if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
-            sendMessageButton.setTitle(NSLocalizedString("EditInfo", comment: "Edit information from profile view"), for: .normal)
+            sendMessageButton.isHidden = true
         } else {
             sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
         }
@@ -340,17 +272,15 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     }
     
     func autoSizeDescription(){
-        //activityDescriptionHeight.constant = activityDescriptionLabel.requiredHeight()
         
         if (descriptionLabel.requiredHeight() > 0){
-            descriptionHeightConstraint.constant = descriptionLabel.requiredHeight()
-            descriptionBottomConstraint.constant = 16
+            
+            print(descriptionLabel.requiredHeight())
+            let topAndBottomConstant: CGFloat = 40
+            descriptionHeightConstraint.constant = descriptionLabel.requiredHeight() + topAndBottomConstant
+            profileScrollView.resizeContentSize()
+            
         }
-    
-        //activitiesTagCloudHeight.constant = activitiesTagCloud.contentSize.height
-        descriptionLabel.isHidden = false
-        //activitySectionLabel.isHidden = false
-        activityIndicator.stopAnimating()
         
     }
 
