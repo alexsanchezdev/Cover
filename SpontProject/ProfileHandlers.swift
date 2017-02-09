@@ -139,9 +139,9 @@ extension ProfileController {
         return 56.0
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        scrollView.bounces = (scrollView.contentOffset.y > 10)
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        scrollView.bounces = (scrollView.contentOffset.y > 10)
+//    }
     
 
 

@@ -36,10 +36,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         informationTable.tableFooterView = UIView()
         informationTable.allowsSelection = false
         
-        descriptionLabel.isHidden = true
-        
-        
-        
 //        activitiesTagCloud.delegate = self
 //        activitiesTagCloud.dataSource = self
 //        profileScrollView.delegate = self
@@ -66,7 +62,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        autoSizeDescription()
+        //autoSizeDescription()ç
+        profileScrollView.resizeContentSize()
+        print(profileScrollView.contentSize)
         
     }
 
@@ -127,17 +125,15 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         label.text = "Torre del Mar"
         return label
     }()
-
     
-    let descriptionLabel: UILabel = {
+    let captionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
         label.textAlignment = .center
-        label.backgroundColor = UIColor.red
         
         return label
     }()
@@ -170,19 +166,21 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     // MARK: - Methods
     func setupViews(){
         
-        let screenSize = UIScreen.main.bounds
-        
         view.addSubview(profileScrollView)
         profileScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         profileScrollView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         profileScrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         profileScrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         
+        profileScrollView.showsVerticalScrollIndicator = false
+        profileScrollView.showsHorizontalScrollIndicator = false
+        profileScrollView.alwaysBounceVertical = true
+        
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor).isActive = true
-        profilePicture.widthAnchor.constraint(equalToConstant: screenSize.width).isActive = true
-        profilePicture.heightAnchor.constraint(equalToConstant: screenSize.width).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        profilePicture.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        profilePicture.heightAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
         let layer = CAGradientLayer()
         let gradientHeight: CGFloat = 150
@@ -202,13 +200,19 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         nameLabel.heightAnchor.constraint(equalToConstant: 36).isActive = true
         nameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        profileScrollView.addSubview(descriptionLabel)
-        descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        descriptionTopConstraint = descriptionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor)
-        descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
-        descriptionHeightConstraint = descriptionLabel.heightAnchor.constraint(equalToConstant: 0)
-        descriptionHeightConstraint.isActive = true
-        descriptionTopConstraint.isActive = true
+        profileScrollView.addSubview(captionLabel)
+        captionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        captionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
+        captionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        
+//        view.addSubview(descriptionLabel)
+//        descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        descriptionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor).isActive = true
+//        descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+//        descriptionLabel.heightAnchor.constraint(equalToConstant: 67).isActive = true
+        
+//        descriptionHeightConstraint.isActive = true
+//        descriptionTopConstraint.isActive = true
         
 //        profileScrollView.addSubview(informationTable)
 //        informationTable.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor).isActive = true
@@ -216,17 +220,17 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
 //        informationTable.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
 //        informationTable.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 //        
-//        view.addSubview(sendMessageButton)
-//        sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//        sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//        sendMessageButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
-//        
-//        sendMessageButton.addSubview(activityIndicator)
-//        activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
-//        activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
-//        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
-//        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        view.addSubview(sendMessageButton)
+        sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        sendMessageButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
+        
+        sendMessageButton.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
     }
     
@@ -249,7 +253,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         }
         
         if let caption = userToShow.caption {
-            descriptionLabel.text = caption
+            print(caption)
+            captionLabel.text = caption
         }
         if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
             sendMessageButton.isHidden = true
@@ -271,17 +276,17 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         
     }
     
-    func autoSizeDescription(){
-        
-        if (descriptionLabel.requiredHeight() > 0){
-            
-            print(descriptionLabel.requiredHeight())
-            let topAndBottomConstant: CGFloat = 40
-            descriptionHeightConstraint.constant = descriptionLabel.requiredHeight() + topAndBottomConstant
-            profileScrollView.resizeContentSize()
-            
-        }
-        
-    }
+//    func autoSizeDescription(){
+//        
+//        if (descriptionLabel.requiredHeight() > 0){
+//            
+//            print(descriptionLabel.requiredHeight())
+//            let topAndBottomConstant: CGFloat = 40
+//            descriptionHeightConstraint.constant = descriptionLabel.requiredHeight() + topAndBottomConstant
+//            profileScrollView.resizeContentSize()
+//            
+//        }
+//        
+//    }
 
 }

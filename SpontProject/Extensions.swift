@@ -136,7 +136,7 @@ extension UIViewController {
         
         
         
-        scrollview.contentSize = contentRect.size
+        scrollview.contentSize = CGSize(width: self.view.frame.width, height: contentRect.size.height)
     }
 }
 
