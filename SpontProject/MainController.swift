@@ -15,6 +15,12 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
     // MARK: - Init methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let logo = UIImage(named: "logo_navbar")
+        navigationItem.titleView = UIImageView(image: logo)
+        
+        
+        
         view.backgroundColor = UIColor.white
         listenForMessages()
         OneSignal.promptLocation()
@@ -24,12 +30,11 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         Filters.sharedInstance.locationManager.delegate = self
         Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         Filters.sharedInstance.locationManager.startUpdatingLocation()
-        
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
     
     // MARK: - Setup methods
     
@@ -126,7 +131,9 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         
         group.notify(queue: DispatchQueue.main) {
             print("Done loading")
+            self.navigationController?.isNavigationBarHidden = true
             self.setupTabBar()
+            
         }
         
     }

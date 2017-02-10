@@ -38,7 +38,12 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         
         profileScrollView.delegate = self
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more_icon"), style: .plain, target: self, action: #selector(handleOptions))
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            if userToShow.id == uid {
+                navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more_icon"), style: .plain, target: self, action: #selector(handleOptions))
+            }
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -125,7 +130,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
-        label.textAlignment = .center
+        label.textAlignment = .left
         
         return label
     }()
@@ -135,7 +140,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: UIFontWeightMedium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 19, weight: UIFontWeightSemibold)
         button.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         return button
     }()

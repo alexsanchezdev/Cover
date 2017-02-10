@@ -16,3 +16,4 @@
 
     SendMessage = "Send message";
     EditInfo = "Edit information";
+    MenuTitle = "Account options";

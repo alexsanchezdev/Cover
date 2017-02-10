@@ -30,7 +30,8 @@ extension LandingController {
         if FIRAuth.auth()?.currentUser?.uid == nil {
             handleLogout()
         } else {
-            present(MainController(), animated: true, completion: nil)
+            let navigationController = UINavigationController(rootViewController: MainController())
+            present(navigationController, animated: true, completion: nil)
         }
     }
     func handleLogout(){
