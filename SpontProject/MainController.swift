@@ -42,8 +42,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
     
     func setupTabBar(){
         
-        profileController.userToShow = self.currentUser
         profileController.navigationItem.title = self.currentUser.username
+        profileController.userToShow = self.currentUser
         
         let message = UINavigationController(rootViewController: messageController)
         let search = UINavigationController(rootViewController: SearchController())
@@ -71,6 +71,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         self.selectedIndex = 1
     }
     
+    var freshLoad: Bool = true
+    
     func fetchUserData(){
         
         group.enter()
@@ -79,6 +81,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             ref.observe(.value, with: { (snapshot) in
                 print("Fetch user called")
                 let user = User()
+                
+                
                 
                 user.id = snapshot.key
                 
@@ -98,15 +102,26 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                         
                         user.tags = self.tempTags
                         user.verified = self.tempVerified
+                        print(user.caption?.characters.count)
                     }
                 
                     self.currentUser = user
+                    // TODO: Check for group when a change occur
                     
-                    self.group.leave()
+                    if self.freshLoad {
+                        self.freshLoad = false
+                        self.group.leave()
+                    } else {
+                        self.profileController.captionLabel.text = user.caption
+                        self.profileController.nameLabel.text = user.name
+                        self.profileController.view.layoutIfNeeded()
+                    }
+                    
                 }
                 
-                
             }, withCancel: nil)
+            
+            
         }
         
         group.notify(queue: DispatchQueue.main) {
