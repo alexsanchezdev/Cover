@@ -72,7 +72,8 @@ extension ChatLogController {
         
         setupCell(cell: cell, message: message)
         
-        cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 28
+        //message.text!
+        cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: cell.textView.text).width + 28
        
         return cell
     }
@@ -158,17 +159,17 @@ extension ChatLogController {
         }
         
         if !firstTime {
-            let removeRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: UInt(numberOfMessagesLoaded))
-            removeRef.removeAllObservers()
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
+            ref.removeObserver(withHandle: observerHandle)
         }
         
         
         self.tempMessages.removeAll()
         self.numberOfMessagesLoaded = Int(forLast)
         
-        let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
         
-        ref.observe(.childAdded, with: { (snapshot) in
+        let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
+        observerHandle = ref.observe(.childAdded, with: { (snapshot) in
             let messageId = snapshot.key
             let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
             messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -193,7 +194,7 @@ extension ChatLogController {
                         self.timer?.invalidate()
                         self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadCollectionAndScroll), userInfo: nil, repeats: false)
                     }
-                    
+                
                 }
             }, withCancel: nil)
         }, withCancel: nil)

@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ProfileController: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, CollapsibleTableViewHeaderDelegate {
+class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollViewDelegate {
     
     struct Section {
         var name: String!
@@ -31,25 +31,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         loadUserInfo()
         setupViews()
         
-        informationTable.delegate = self
-        informationTable.dataSource = self
-        informationTable.tableFooterView = UIView()
-        informationTable.allowsSelection = false
+//        informationTable.delegate = self
+//        informationTable.dataSource = self
+//        informationTable.tableFooterView = UIView()
+//        informationTable.allowsSelection = false
         
-//        activitiesTagCloud.delegate = self
-//        activitiesTagCloud.dataSource = self
-//        profileScrollView.delegate = self
-        
-//        activitiesTagCloud.contentInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-//        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: -9, bottom: -50, right: -9)
-//        profileScrollView.alwaysBounceVertical = true
-//        profileScrollView.alwaysBounceHorizontal = false
+        profileScrollView.delegate = self
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more_icon"), style: .plain, target: self, action: #selector(handleOptions))
-        
-//        activitySectionLabel.isHidden = true
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,6 +56,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         print(profileScrollView.contentSize)
         
     }
+    
+    
 
     
     // MARK: - Variables
@@ -81,7 +72,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
     
     var messagesController: MessagesController?
 
-    var descriptionHeightConstraint, descriptionTopConstraint, activityDescriptionHeight: NSLayoutConstraint!
+    var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint: NSLayoutConstraint!
 //    var activitiesTagCloudHeight: NSLayoutConstraint!
 //    var moreInfoHeight: NSLayoutConstraint!
     let locationManager = CLLocationManager()
@@ -100,8 +91,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         let screenSize = UIScreen.main.bounds
         let iv = UIImageView(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.width))
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFit
-        iv.backgroundColor = UIColor.red
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.image = UIImage(named: "user")
         
         return iv
     }()
@@ -162,9 +154,13 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         return table
     }()
     
-   
+    let gradientLayer = CAGradientLayer()
+    var origin: CGFloat = 0
+    
     // MARK: - Methods
     func setupViews(){
+        
+        let buttonHeight: CGFloat = 52
         
         view.addSubview(profileScrollView)
         profileScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -174,19 +170,22 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         
         profileScrollView.showsVerticalScrollIndicator = false
         profileScrollView.showsHorizontalScrollIndicator = false
-        profileScrollView.alwaysBounceVertical = true
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight + 20, right: 0)
         
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        profilePicture.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        profilePicture.heightAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        profileTopConstraint = profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor)
+        profileTopConstraint.isActive = true
+        profilePicture.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor).isActive = true
+        profileHeightConstraint = profilePicture.heightAnchor.constraint(equalTo: profileScrollView.widthAnchor)
+        profileHeightConstraint.isActive = true
         
-        let layer = CAGradientLayer()
+        
         let gradientHeight: CGFloat = 150
-        layer.frame = CGRect(x: 0, y: view.bounds.width - gradientHeight, width: view.bounds.width, height: gradientHeight)
-        layer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        profilePicture.layer.addSublayer(layer)
+        gradientLayer.frame = CGRect(x: 0, y: view.bounds.width - gradientHeight, width: view.bounds.width, height: gradientHeight)
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        profilePicture.layer.addSublayer(gradientLayer)
+        origin = gradientLayer.frame.origin.y
         
         profilePicture.addSubview(locationLabel)
         locationLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant:20).isActive = true
@@ -224,7 +223,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UITableVie
         sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        sendMessageButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
+        sendMessageButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         
         sendMessageButton.addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true

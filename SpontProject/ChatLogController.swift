@@ -73,7 +73,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     var timer: Timer?
     var notificationIds = [String]()
     var firstTime = true
-    var observerHandle: FIRDatabaseHandle?
+    var observerHandle: UInt = 0
     
     
     let inputMessageView: UIView = {
@@ -181,16 +181,27 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
     }
     
+    var handle: UInt = 0
+    
     func updateReadStatus(){
         
         guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
         
+        print("Update read is called")
         if let toUser = user?.id {
             let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
-            ref.observe(.childAdded, with: { (snapshot) in
+            handle = ref.observe(.childAdded, with: { (snapshot) in
                 let messageId = snapshot.key
                 let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
-                messagesRef.updateChildValues(["read": true])
+                messagesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                    if let dict = snapshot.value as? [String:AnyObject] {
+                        let to = dict["to"] as? String
+                        if to == uid {
+                            messagesRef.updateChildValues(["read": true])
+                        }
+                    }
+                })
+                
             }, withCancel: nil)
         }
     }
@@ -200,7 +211,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         if let toUser = user?.id {
             let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
-            ref.removeAllObservers()
+            ref.removeObserver(withHandle: handle)
         }
     }
     

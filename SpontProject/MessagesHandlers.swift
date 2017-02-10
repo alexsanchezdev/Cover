@@ -102,8 +102,10 @@ extension MessagesController {
         
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if message.read == false && message.from != uid {
+                print("Called not readed")
                 cell.newMessageIndicator.isHidden = false
             } else {
+                print("Called readed")
                 cell.newMessageIndicator.isHidden = true
             }
         }

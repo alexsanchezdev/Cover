@@ -97,70 +97,68 @@ extension ProfileController {
 //        return self.sizingCell.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
 //    }
 //    
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        scrollView.bounces = (scrollView.contentOffset.y > 10)
-//    }
-
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sections[section].items.count
-    
-    }
-
-
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as UITableViewCell? ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
-    
-        cell.textLabel?.text = sections[indexPath.section].items[indexPath.row]
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
         
-        return cell
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return sections[indexPath.section].collapsed! ? 0 : 44.0
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? CollapsibleTableViewHeader ?? CollapsibleTableViewHeader(reuseIdentifier: "header")
-        
-        header.titleLabel.text = sections[section].name
-        header.arrowLabel.text = ">"
-        header.setCollapsed(collapsed: sections[section].collapsed)
-        
-        header.section = section
-        header.delegate = self
-        
-        return header
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 56.0
-    }
-    
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        scrollView.bounces = (scrollView.contentOffset.y > 10)
-//    }
-    
-
-
-    
-    func toggleSection(header: CollapsibleTableViewHeader, section: Int) {
-        let collapsed = !sections[section].collapsed
-        
-        // Toggle collapse
-        sections[section].collapsed = collapsed
-        header.setCollapsed(collapsed: collapsed)
-        
-        // Adjust the height of the rows inside the section
-        informationTable.beginUpdates()
-        for i in 0 ..< sections[section].items.count {
-            informationTable.reloadRows(at: [NSIndexPath.init(row: i, section: section) as IndexPath], with: .automatic)
+        if offsetY < 0 {
+            profileHeightConstraint.constant = -offsetY
+            profileTopConstraint.constant = offsetY
         }
-        informationTable.endUpdates()
     }
+
+    
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return sections[section].items.count
 //    
+//    }
+//
+//
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as UITableViewCell? ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
+//    
+//        cell.textLabel?.text = sections[indexPath.section].items[indexPath.row]
+//        
+//        return cell
+//    }
+//    
+//    
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return sections[indexPath.section].collapsed! ? 0 : 44.0
+//    }
+//    
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? CollapsibleTableViewHeader ?? CollapsibleTableViewHeader(reuseIdentifier: "header")
+//        
+//        header.titleLabel.text = sections[section].name
+//        header.arrowLabel.text = ">"
+//        header.setCollapsed(collapsed: sections[section].collapsed)
+//        
+//        header.section = section
+//        header.delegate = self
+//        
+//        return header
+//    }
+//    
+//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        return 56.0
+//    }
+//    
+//    func toggleSection(header: CollapsibleTableViewHeader, section: Int) {
+//        let collapsed = !sections[section].collapsed
+//        
+//        // Toggle collapse
+//        sections[section].collapsed = collapsed
+//        header.setCollapsed(collapsed: collapsed)
+//        
+//        // Adjust the height of the rows inside the section
+//        informationTable.beginUpdates()
+//        for i in 0 ..< sections[section].items.count {
+//            informationTable.reloadRows(at: [NSIndexPath.init(row: i, section: section) as IndexPath], with: .automatic)
+//        }
+//        informationTable.endUpdates()
+//    }
+//
 //    func getSectionIndex(row: NSInteger) -> Int {
 //        let indices = getHeaderIndices()
 //        
@@ -220,9 +218,3 @@ extension ProfileController {
 //    }
     
 }
-
-
-
-
-
-
