@@ -40,6 +40,11 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.title = searchTerm
+    }
+    
     func setupViews(){
         view.addSubview(resultsTableView)
         resultsTableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -83,6 +88,7 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         profileController.navigationItem.title = user.username
         profileController.userToShow = user
         tableView.deselectRow(at: indexPath, animated: true)
+        navigationItem.title = nil
         navigationController?.pushViewController(profileController, animated: true)
     }
     
@@ -141,6 +147,23 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
                                 }
                                 user.distance = distanceToKms
                             }
+                            
+                            geoFire?.getLocationForKey(user.id, withCallback: { (location, error) in
+                                if error != nil {
+                                    print(error)
+                                }
+                                
+                                let geoCoder = CLGeocoder()
+                                geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
+                                    if error != nil {
+                                        print(error)
+                                    }
+                                    
+                                    let placemark = placemarks?[0]
+                                    user.cityName = placemark?.addressDictionary?["City"] as! String?
+                                    
+                                })
+                            })
                             
                             self.usersDictionary[user.username!] = user
                             

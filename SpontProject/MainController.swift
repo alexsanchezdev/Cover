@@ -9,12 +9,25 @@
 import UIKit
 import Firebase
 import OneSignal
+import MapKit
 
 class MainController: UITabBarController, CLLocationManagerDelegate {
+    
+    public let newMessageIndicator: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.red
+        view.layer.cornerRadius = 2
+        return view
+    }()
     
     // MARK: - Init methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let defaults = UserDefaults.standard
+        
+        defaults.set(true, forKey: "firstLoad")
         
         let logo = UIImage(named: "logo_navbar")
         navigationItem.titleView = UIImageView(image: logo)
@@ -22,6 +35,17 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         
         
         view.backgroundColor = UIColor.white
+        tabBar.addSubview(newMessageIndicator)
+        newMessageIndicator.centerXAnchor.constraint(equalTo: tabBar.centerXAnchor).isActive = true
+        newMessageIndicator.bottomAnchor.constraint(equalTo: tabBar.bottomAnchor, constant: -3).isActive = true
+        newMessageIndicator.widthAnchor.constraint(equalToConstant: 4).isActive = true
+        newMessageIndicator.heightAnchor.constraint(equalToConstant: 4).isActive = true
+        newMessageIndicator.isHidden = true
+        
+        
+        
+        
+        
         listenForMessages()
         OneSignal.promptLocation()
         
@@ -70,10 +94,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         //profile.title = NSLocalizedString("Profile", comment: "Profile tab bar title")
         
         // Assing controllers
-        viewControllers = [message, search, profile]
-        
-        
-        self.selectedIndex = 1
+        viewControllers = [search, message, profile]
+        Filters.sharedInstance.locationManager.stopUpdatingLocation()
     }
     
     var freshLoad: Bool = true
@@ -86,9 +108,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             ref.observe(.value, with: { (snapshot) in
                 print("Fetch user called")
                 let user = User()
-                
-                
-                
+            
                 user.id = snapshot.key
                 
                 print(snapshot)
@@ -109,18 +129,55 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                         user.verified = self.tempVerified
                         print(user.caption?.characters.count)
                     }
-                
-                    self.currentUser = user
-                    // TODO: Check for group when a change occur
                     
-                    if self.freshLoad {
-                        self.freshLoad = false
-                        self.group.leave()
-                    } else {
-                        self.profileController.captionLabel.text = user.caption
-                        self.profileController.nameLabel.text = user.name
-                        self.profileController.view.layoutIfNeeded()
-                    }
+                    let geoRef = FIRDatabase.database().reference().child("locations")
+                    let geoFire = GeoFire(firebaseRef: geoRef)
+                    
+                    geoFire?.getLocationForKey(uid, withCallback: { (location, error) in
+                        if error != nil {
+                            print(error)
+                        }
+                        
+                        if location != nil {
+                            let geoCoder = CLGeocoder()
+                            geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
+                                if error != nil {
+                                    print(error)
+                                }
+                                
+                                let placemark = placemarks?[0]
+                                user.cityName = placemark?.addressDictionary?["City"] as! String?
+                                
+                                
+                                self.currentUser = user
+                                // TODO: Check for group when a change occur
+                                
+                                if self.freshLoad {
+                                    self.freshLoad = false
+                                    self.group.leave()
+                                } else {
+                                    self.profileController.captionLabel.text = user.caption
+                                    self.profileController.nameLabel.text = user.name
+                                    self.profileController.view.layoutIfNeeded()
+                                }
+                            })
+                        } else {
+                            self.currentUser = user
+                            // TODO: Check for group when a change occur
+                            
+                            if self.freshLoad {
+                                self.freshLoad = false
+                                self.group.leave()
+                            } else {
+                                self.profileController.captionLabel.text = user.caption
+                                self.profileController.nameLabel.text = user.name
+                                self.profileController.view.layoutIfNeeded()
+                            }
+                        }
+                        
+                    })
+                
+                    
                     
                 }
                 
@@ -155,8 +212,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             print(logoutError)
         }
         
-        let landingController = LandingController()
-        present(landingController, animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     func checkNotificationsIds(){

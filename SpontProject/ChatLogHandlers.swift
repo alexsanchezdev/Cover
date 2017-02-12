@@ -158,6 +158,8 @@ extension ChatLogController {
             return
         }
         
+        
+        
         if !firstTime {
             let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
             ref.removeObserver(withHandle: observerHandle)

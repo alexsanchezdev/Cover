@@ -20,26 +20,17 @@ extension LandingController {
     }
     
     func showRegister(){
-        print("Login button pressed!")
+        print("Register button pressed!")
         
         let registerController = UINavigationController(rootViewController: RegisterController())
         present(registerController, animated: true, completion: nil)
     }
     
     func checkIfUserIsLoggedIn(){
-        if FIRAuth.auth()?.currentUser?.uid == nil {
-            handleLogout()
-        } else {
+        if FIRAuth.auth()?.currentUser?.uid != nil {
+            print("Is this other one called?")
             let navigationController = UINavigationController(rootViewController: MainController())
             present(navigationController, animated: true, completion: nil)
         }
     }
-    func handleLogout(){
-        do {
-            try FIRAuth.auth()?.signOut()
-        } catch let logoutError {
-            print(logoutError)
-        }
-    }
-
 }

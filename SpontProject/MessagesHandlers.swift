@@ -80,6 +80,15 @@ extension MessagesController {
                 message.read = dict["read"] as! Bool?
                 
                 if let chatPartnerId = message.chatPartnerId() {
+                    if message.to == FIRAuth.auth()?.currentUser?.uid {
+                        if message.read == false {
+                            if !self.showingView {
+                                self.tabBarController?.tabBar.subviews[1].isHidden = false
+                            }
+                        } else {
+                            self.tabBarController?.tabBar.subviews[1].isHidden = true
+                        }
+                    }
                     self.messagesDictionary[chatPartnerId] = message
                 }
                 
@@ -128,12 +137,17 @@ extension MessagesController {
         
         guard let chatPartnerId = message.chatPartnerId() else { return }
         
-        let ref = FIRDatabase.database().reference().child("users").child(chatPartnerId)
+        openExistingChat(partnerId: chatPartnerId)
+        
+    }
+    
+    func openExistingChat(partnerId: String){
+        let ref = FIRDatabase.database().reference().child("users").child(partnerId)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             if let dict = snapshot.value as? [String: AnyObject]{
                 let user = User()
                 
-                user.id = chatPartnerId
+                user.id = partnerId
                 user.name = dict["name"] as? String
                 user.username = dict["username"] as? String
                 user.profileImageURL = dict["profileImg"] as? String
@@ -141,6 +155,5 @@ extension MessagesController {
                 self.showChatControllerFor(user)
             }
         }, withCancel: nil)
-        
     }
 }

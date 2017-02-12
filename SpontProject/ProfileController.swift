@@ -46,20 +46,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        
-        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        //autoSizeDescription()ç
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         profileScrollView.resizeContentSize()
-        print(profileScrollView.contentSize)
-        
     }
     
     
@@ -119,7 +108,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightLight)
         label.textColor = UIColor.white
         label.textAlignment = .left
-        label.text = "Torre del Mar"
         return label
     }()
     
@@ -273,6 +261,10 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         for (index, element) in activitiesArray.enumerated() {
             activities[element] = verifiedArray[index]
             print(activities)
+        }
+        
+        if let city = userToShow.cityName {
+            locationLabel.text = city
         }
         
         let sortedDict = activities.sorted(by: { $0.0 < $1.0 })

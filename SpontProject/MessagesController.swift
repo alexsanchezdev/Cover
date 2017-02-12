@@ -23,6 +23,7 @@ class MessagesController: UITableViewController {
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     var timer: Timer?
+    var showingView: Bool = false
     
     let cellId = "cellId"
     
@@ -36,15 +37,24 @@ class MessagesController: UITableViewController {
         
         tableView.register(DateUserCell.self, forCellReuseIdentifier: cellId)
         tableView.tableFooterView = UIView()
-        //tabBarController?.tabBar.items?[0].badgeValue = ""
         
         tableView.allowsMultipleSelectionDuringEditing = true
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        showingView = false
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        showingView = true
         self.tableView.reloadData()
-        self.tabBarController?.tabBar.items?[0].badgeValue = nil
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.tabBarController?.tabBar.subviews[1].isHidden = true
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

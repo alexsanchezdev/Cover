@@ -29,6 +29,7 @@ extension ProfileController {
     
     func presentEditProfile(){
         let editProfile = EditProfileController()
+        editProfile.userToEdit = userToShow
         let navigationController = UINavigationController(rootViewController: editProfile)
         present(navigationController, animated: true, completion: nil)
     }
@@ -52,13 +53,14 @@ extension ProfileController {
         }
         
         print("Succesfully logged out!")
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        self.presentingViewController?.dismiss(animated: true, completion: nil)
+        
     }
     
     func sendMessage(){
         
         print("Send message called")
-        self.tabBarController?.selectedIndex = 0
+        self.tabBarController?.selectedIndex = 1
         let user = userToShow
         MessagesController.sharedInstance.showChatControllerFor(user)
         

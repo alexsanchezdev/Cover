@@ -182,6 +182,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     }
     
     var handle: UInt = 0
+    var forLast: UInt = 0
     
     func updateReadStatus(){
         
@@ -210,9 +211,12 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
         
         if let toUser = user?.id {
-            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
             ref.removeObserver(withHandle: handle)
+            ref.removeObserver(withHandle: observerHandle)
         }
+        
+        
     }
     
 }
