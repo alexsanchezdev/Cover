@@ -44,12 +44,19 @@ extension ChatLogController {
                 recipientMessagesRef.updateChildValues([messageId: 1])
             }
             
-            FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .childAdded, with: { (snapshot) in
-                self.notificationIds.append(snapshot.key)
+            FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dict = snapshot.value as? [String: AnyObject] {
+                    for key in dict.keys {
+                        self.notificationIds.append(key)
+                    }
+                }
+                
         
                 FIRDatabase.database().reference().child("users").child(fromUser).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dict = snapshot.value as? [String: AnyObject]{
                         let sender = dict["name"]
+                        print(self.notificationIds)
                         OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser], "ios_badgeType": "Increase", "ios_badgeCount": 1])
                         self.notificationIds.removeAll()
                     }

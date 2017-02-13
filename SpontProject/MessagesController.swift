@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import AVFoundation
 
 class MessagesController: UITableViewController {
     
@@ -24,6 +25,7 @@ class MessagesController: UITableViewController {
     var messagesDictionary = [String: Message]()
     var timer: Timer?
     var showingView: Bool = false
+    let systemSound: SystemSoundID = 1307
     
     let cellId = "cellId"
     
@@ -39,6 +41,7 @@ class MessagesController: UITableViewController {
         tableView.tableFooterView = UIView()
         
         tableView.allowsMultipleSelectionDuringEditing = true
+        self.tabBarController?.tabBar.subviews[1].isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -46,10 +49,15 @@ class MessagesController: UITableViewController {
         showingView = false
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tableView.reloadData()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        //self.tableView.reloadData()
         showingView = true
-        self.tableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {

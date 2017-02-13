@@ -67,17 +67,6 @@ extension ProfileController {
     }
     
     func updateCurrentLocation(){
-        let geoFireRef = FIRDatabase.database().reference().child("locations")
-        let geoFire = GeoFire(firebaseRef: geoFireRef)
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
-        
-        if let uid = FIRAuth.auth()?.currentUser?.uid {
-            geoFire?.setLocation(locationManager.location, forKey: uid)
-            locationManager.stopUpdatingLocation()
-        }
         
     }
     

@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import OneSignal
 import MapKit
+import AudioToolbox
 
 class MainController: UITabBarController, CLLocationManagerDelegate {
     
@@ -42,12 +43,6 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         newMessageIndicator.heightAnchor.constraint(equalToConstant: 4).isActive = true
         newMessageIndicator.isHidden = true
         
-        
-        
-        
-        
-        listenForMessages()
-        OneSignal.promptLocation()
         
         fetchUserData()
         
@@ -146,7 +141,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                                 }
                                 
                                 let placemark = placemarks?[0]
-                                user.cityName = placemark?.addressDictionary?["City"] as! String?
+                                user.cityName = placemark?.locality as String?
+                                user.streetName = placemark?.thoroughfare as String?
                                 
                                 
                                 self.currentUser = user
@@ -189,6 +185,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         group.notify(queue: DispatchQueue.main) {
             print("Done loading")
             self.navigationController?.isNavigationBarHidden = true
+            self.listenForMessages()
+            OneSignal.promptLocation()
             self.setupTabBar()
             
         }

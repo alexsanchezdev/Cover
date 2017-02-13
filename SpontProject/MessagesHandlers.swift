@@ -63,6 +63,10 @@ extension MessagesController {
                 return (m1.timestamp?.intValue)! > (m2.timestamp?.intValue)!
             })
             
+            if self.tabBarController?.tabBar.subviews[1].isHidden == false {
+                AudioServicesPlayAlertSound(self.systemSound)
+            }
+            
             self.tableView.reloadData()
             
         }
@@ -80,16 +84,21 @@ extension MessagesController {
                 message.read = dict["read"] as! Bool?
                 
                 if let chatPartnerId = message.chatPartnerId() {
-                    if message.to == FIRAuth.auth()?.currentUser?.uid {
-                        if message.read == false {
-                            if !self.showingView {
-                                self.tabBarController?.tabBar.subviews[1].isHidden = false
-                            }
-                        } else {
-                            self.tabBarController?.tabBar.subviews[1].isHidden = true
-                        }
-                    }
                     self.messagesDictionary[chatPartnerId] = message
+                }
+                
+                print(message.read)
+                
+                if message.to == FIRAuth.auth()?.currentUser?.uid {
+                    if message.read == false {
+                        if !self.showingView {
+                            print("Show is called")
+                            self.tabBarController?.tabBar.subviews[1].isHidden = false
+                        }
+                    } else {
+                        print("Hidden is called")
+                        self.tabBarController?.tabBar.subviews[1].isHidden = true
+                    }
                 }
                 
                 self.timer?.invalidate()
@@ -112,6 +121,10 @@ extension MessagesController {
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if message.read == false && message.from != uid {
                 print("Called not readed")
+                if showingView == true {
+                    //AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                    AudioServicesPlayAlertSound(self.systemSound)
+                }
                 cell.newMessageIndicator.isHidden = false
             } else {
                 print("Called readed")

@@ -18,6 +18,7 @@ class User: NSObject {
     var profileImageURL: String?
     var distance: Double?
     var cityName: String?
+    var streetName: String?
     var tags: [String]?
     var verified: [Int]?
     var activities: [String: Int]?

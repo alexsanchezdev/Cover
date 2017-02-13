@@ -13,6 +13,7 @@
 		6B2011D21E1534590050E66F /* NewMessageHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2011D11E1534590050E66F /* NewMessageHandlers.swift */; };
 		6B21986B1E1306A000A19C1C /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B21986A1E1306A000A19C1C /* Activity.swift */; };
 		6B2550F41E11B33100DFB4F6 /* RegisterHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2550F31E11B33100DFB4F6 /* RegisterHandlers.swift */; };
+		6B30E5211E51496300A5218E /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B30E5201E51496300A5218E /* LocationController.swift */; };
 		6B3205161E0943FE00286430 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205151E0943FE00286430 /* LoginController.swift */; };
 		6B3205181E094D3F00286430 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205171E094D3F00286430 /* MessagesController.swift */; };
 		6B32051A1E096DB700286430 /* LandingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205191E096DB700286430 /* LandingController.swift */; };
@@ -70,6 +71,7 @@
 		6B2011D11E1534590050E66F /* NewMessageHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageHandlers.swift; sourceTree = "<group>"; };
 		6B21986A1E1306A000A19C1C /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 		6B2550F31E11B33100DFB4F6 /* RegisterHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterHandlers.swift; sourceTree = "<group>"; };
+		6B30E5201E51496300A5218E /* LocationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
 		6B3205151E0943FE00286430 /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		6B3205171E094D3F00286430 /* MessagesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		6B3205191E096DB700286430 /* LandingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingController.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				6B1EF2631E0D7B9D00F7DDD3 /* ResultsController.swift */,
 				6B6D840F1E0B4BC000681B38 /* ProfileController.swift */,
 				6B5BA17A1E4DF7EC00555F5C /* EditProfileController.swift */,
+				6B30E5201E51496300A5218E /* LocationController.swift */,
 				6B2011D41E1535200050E66F /* Messages */,
 				6BAFD3CC1E11EB160026D42B /* Login/Register */,
 			);
@@ -548,6 +551,7 @@
 				6B3205201E0982E700286430 /* LogoCell.swift in Sources */,
 				6B2550F41E11B33100DFB4F6 /* RegisterHandlers.swift in Sources */,
 				6BF8CAAF1E2017B5001C36D0 /* Message.swift in Sources */,
+				6B30E5211E51496300A5218E /* LocationController.swift in Sources */,
 				6BD5E70C1DFF10EA007D02DF /* LoginHandlers.swift in Sources */,
 				6BF8CAAD1E200096001C36D0 /* ChatLogHandlers.swift in Sources */,
 				6BEA057C1E11819D00C36E2D /* Filters.swift in Sources */,

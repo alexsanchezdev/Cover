@@ -82,7 +82,6 @@ class EditProfileController: UIViewController {
     let captionTextView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.text = "Esto es una prueba para ver que tal se muestra. esjoiejriojse m ioueyfs weiuohfsjd ywuiehfs uyewhf usdy whiod oseh skuwi qiuyer ajhdfbnk ajhsdifwer"
         tv.isScrollEnabled = false
         tv.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular)
         tv.textContainerInset = UIEdgeInsets(top: 14, left: -6, bottom: 14, right: 8)
@@ -107,10 +106,19 @@ class EditProfileController: UIViewController {
         return view
     }()
     
-    let locationLabel: UILabel = {
+    lazy var locationLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLocationController)))
         return label
+    }()
+    
+    let separatorLocation: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1)
+        return view
     }()
     
     let activitiesLabel: UILabel = {
@@ -173,34 +181,34 @@ class EditProfileController: UIViewController {
         personalInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
         
         view.addSubview(nameTextField)
-        nameTextField.topAnchor.constraint(equalTo: personalInformation.topAnchor).isActive = true
+        nameTextField.topAnchor.constraint(equalTo: personalInformation.topAnchor, constant: 1).isActive = true
         nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         nameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         nameTextField.text = userToEdit.name
         
         view.addSubview(separatorName)
-        separatorName.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: -1).isActive = true
+        separatorName.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
         separatorName.leftAnchor.constraint(equalTo: nameTextField.leftAnchor).isActive = true
         separatorName.rightAnchor.constraint(equalTo: nameTextField.rightAnchor).isActive = true
         separatorName.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
         view.addSubview(usernameTextField)
-        usernameTextField.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
-        usernameTextField.leftAnchor.constraint(equalTo: nameTextField.leftAnchor).isActive = true
+        usernameTextField.topAnchor.constraint(equalTo: separatorName.bottomAnchor).isActive = true
+        usernameTextField.leftAnchor.constraint(equalTo: separatorName.leftAnchor).isActive = true
         usernameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         usernameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         usernameTextField.text = userToEdit.username
         
         view.addSubview(separatorUsername)
-        separatorUsername.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: -1).isActive = true
+        separatorUsername.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
         separatorUsername.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor).isActive = true
         separatorUsername.rightAnchor.constraint(equalTo: usernameTextField.rightAnchor).isActive = true
         separatorUsername.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         view.addSubview(captionTextView)
-        captionTextView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
-        captionTextView.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor).isActive = true
+        captionTextView.topAnchor.constraint(equalTo: separatorUsername.bottomAnchor).isActive = true
+        captionTextView.leftAnchor.constraint(equalTo: separatorUsername.leftAnchor).isActive = true
         captionTextView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         personalInformation.bottomAnchor.constraint(equalTo: captionTextView.bottomAnchor, constant: 1).isActive = true
         captionTextView.text = userToEdit.caption
@@ -215,17 +223,23 @@ class EditProfileController: UIViewController {
         searchInformation.topAnchor.constraint(equalTo: searchTermsLabel.bottomAnchor, constant: 8).isActive = true
         searchInformation.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         searchInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
-        searchInformation.heightAnchor.constraint(equalToConstant: 97).isActive = true
+        searchInformation.heightAnchor.constraint(equalToConstant: 98).isActive = true
         
         view.addSubview(locationLabel)
         locationLabel.topAnchor.constraint(equalTo: searchInformation.topAnchor).isActive = true
         locationLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         locationLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        locationLabel.text = userToEdit.cityName
+        locationLabel.text = userToEdit.streetName! + ", " + userToEdit.cityName!
+        
+        view.addSubview(separatorLocation)
+        separatorLocation.topAnchor.constraint(equalTo: locationLabel.bottomAnchor).isActive = true
+        separatorLocation.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
+        separatorLocation.rightAnchor.constraint(equalTo: locationLabel.rightAnchor).isActive = true
+        separatorLocation.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         view.addSubview(activitiesLabel)
-        activitiesLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor).isActive = true
+        activitiesLabel.topAnchor.constraint(equalTo: separatorLocation.bottomAnchor).isActive = true
         activitiesLabel.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         activitiesLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
@@ -233,6 +247,11 @@ class EditProfileController: UIViewController {
     
     func handleCancel(){
         dismiss(animated: true, completion: nil)
+    }
+    
+    func handleLocationController(){
+        let locationController = LocationController()
+        navigationController?.pushViewController(locationController, animated: true)
     }
 
     
