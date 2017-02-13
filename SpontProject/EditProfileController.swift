@@ -23,7 +23,7 @@ class EditProfileController: UIViewController {
     let profilePicture: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "oscar")
+        imageView.image = UIImage(named: "user")
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 48
@@ -57,12 +57,26 @@ class EditProfileController: UIViewController {
         return tf
     }()
     
+    let separatorName: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1)
+        return view
+    }()
+    
     let usernameTextField: UITextField = {
         let tf = UITextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.text = "alxsnchez"
         tf.clearButtonMode = .whileEditing
         return tf
+    }()
+    
+    let separatorUsername: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1)
+        return view
     }()
     
     let captionTextView: UITextView = {
@@ -118,13 +132,11 @@ class EditProfileController: UIViewController {
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         
         setupViews()
-        setupTextFieldsBorders()
         // Do any additional setup after loading the view.
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setupTextFieldsBorders()
         profileScrollView.resizeContentSize()
     }
     
@@ -160,13 +172,18 @@ class EditProfileController: UIViewController {
         personalInformation.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         personalInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
         
-        
         view.addSubview(nameTextField)
         nameTextField.topAnchor.constraint(equalTo: personalInformation.topAnchor).isActive = true
         nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         nameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         nameTextField.text = userToEdit.name
+        
+        view.addSubview(separatorName)
+        separatorName.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: -1).isActive = true
+        separatorName.leftAnchor.constraint(equalTo: nameTextField.leftAnchor).isActive = true
+        separatorName.rightAnchor.constraint(equalTo: nameTextField.rightAnchor).isActive = true
+        separatorName.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
         view.addSubview(usernameTextField)
         usernameTextField.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
@@ -174,6 +191,12 @@ class EditProfileController: UIViewController {
         usernameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         usernameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         usernameTextField.text = userToEdit.username
+        
+        view.addSubview(separatorUsername)
+        separatorUsername.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: -1).isActive = true
+        separatorUsername.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor).isActive = true
+        separatorUsername.rightAnchor.constraint(equalTo: usernameTextField.rightAnchor).isActive = true
+        separatorUsername.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         view.addSubview(captionTextView)
         captionTextView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
@@ -206,33 +229,6 @@ class EditProfileController: UIViewController {
         activitiesLabel.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         activitiesLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
-    }
-    
-    func setupTextFieldsBorders(){
-        let borderBottomName = CALayer()
-        let borderWidthName = CGFloat(2.0)
-        borderBottomName.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
-        borderBottomName.frame = CGRect(x: 0, y: nameTextField.frame.height - 1.0, width: nameTextField.frame.width , height: nameTextField.frame.height - 1.0)
-        borderBottomName.borderWidth = borderWidthName
-        nameTextField.layer.addSublayer(borderBottomName)
-        nameTextField.layer.masksToBounds = true
-        
-        let borderBottomusername = CALayer()
-        let borderWidthusername = CGFloat(2.0)
-        borderBottomusername.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
-        borderBottomusername.frame = CGRect(x: 0, y: usernameTextField.frame.height - 1.0, width: usernameTextField.frame.width , height: usernameTextField.frame.height - 1.0)
-        borderBottomusername.borderWidth = borderWidthusername
-        usernameTextField.layer.addSublayer(borderBottomusername)
-        usernameTextField.layer.masksToBounds = true
-        
-        let borderBottomLocation = CALayer()
-        let borderWidthLocation = CGFloat(2.0)
-        borderBottomLocation.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
-        borderBottomLocation.frame = CGRect(x: 0, y: locationLabel.frame.height - 1.0, width: locationLabel.frame.width , height: locationLabel.frame.height - 1.0)
-        borderBottomLocation.borderWidth = borderWidthLocation
-        locationLabel.layer.addSublayer(borderBottomLocation)
-        locationLabel.layer.masksToBounds = true
-        
     }
     
     func handleCancel(){
