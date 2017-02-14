@@ -10,6 +10,9 @@ import UIKit
 import Firebase
 
 class LocationController: UIViewController, MKMapViewDelegate {
+    
+    var editProfileController = EditProfileController()
+    var userToChangeLocation = User()
 
     let warningLabel: UILabel = {
         let label = UILabel()
@@ -31,8 +34,8 @@ class LocationController: UIViewController, MKMapViewDelegate {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Actualizar ubicación", for: .normal)
-        button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 1), for: .normal)
-        button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25), for: .highlighted)
+        button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
+        button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
         button.backgroundColor = UIColor.white
         button.addTarget(self, action: #selector(updateLocation), for: .touchUpInside)
@@ -109,27 +112,50 @@ class LocationController: UIViewController, MKMapViewDelegate {
     }
     
     func updateLocation(){
-        let geoFireRef = FIRDatabase.database().reference().child("locations")
-        let geoFire = GeoFire(firebaseRef: geoFireRef)
+        
+        
+        
+        guard let location = Filters.sharedInstance.locationManager.location else { return }
+        userToChangeLocation.userLocation = location
         
         let loading = UIAlertController(title: nil, message: "Actualizando ubicación...", preferredStyle: .alert)
-        let done = UIAlertController(title: nil, message: "Actualizada", preferredStyle: .alert)
+        let done = UIAlertController(title: nil, message: "Ubicación actualizada", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        done.addAction(ok)
+        
+        let geoFireRef = FIRDatabase.database().reference().child("locations")
+        let geoFire = GeoFire(firebaseRef: geoFireRef)
         
         loading.view.tintColor = UIColor.black
         present(loading, animated: true, completion: {
             if let uid = FIRAuth.auth()?.currentUser?.uid {
-                geoFire?.setLocation(Filters.sharedInstance.locationManager.location, forKey: uid)
-                self.dismiss(animated: true, completion: {
-                    self.present(done, animated: true, completion: {
-                        Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.dismissDone), userInfo: nil, repeats: false)
-                    })
+                geoFire?.setLocation(location, forKey: uid)
+                let geoCoder = CLGeocoder()
+                geoCoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) in
+                    if error != nil {
+                        print(error!)
+                    }
+                    
+                    let placemark = placemarks?[0]
+                    self.userToChangeLocation.cityName = placemark?.locality 
+                    self.userToChangeLocation.streetName = placemark?.thoroughfare as String?
+                    self.editProfileController.locationLabel.text = self.userToChangeLocation.cityName! + ", " + self.userToChangeLocation.streetName!
+                    if let uid = FIRAuth.auth()?.currentUser?.uid{
+                        let ref = FIRDatabase.database().reference().child("users").child(uid)
+                        ref.updateChildValues(["city": self.userToChangeLocation.cityName!, "street": self.userToChangeLocation.streetName!], withCompletionBlock: { (error, ref) in
+                            if error != nil {
+                                print(error!)
+                            } else {
+                                self.dismiss(animated: true, completion: {
+                                    self.present(done, animated: true, completion: nil)
+                                })
+                            }
+                        })
+                    }
                 })
-                
             }
         })
-    }
-    
-    func dismissDone(){
-        self.dismiss(animated: true, completion: nil)
+        
+        
     }
 }

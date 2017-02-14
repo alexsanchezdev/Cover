@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		409B6DCC042287F0C9BCCE7E /* Pods_SpontProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 196C27F9B22B7400DE98CF24 /* Pods_SpontProject.framework */; };
+		6B172D141E52B17F001CBCC8 /* activities.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6B172D131E52B17F001CBCC8 /* activities.txt */; };
 		6B1CDBB21E0BE4C900A9B79F /* CenterFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CDBB11E0BE4C900A9B79F /* CenterFlowLayout.m */; };
 		6B1EF2641E0D7B9D00F7DDD3 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1EF2631E0D7B9D00F7DDD3 /* ResultsController.swift */; };
 		6B2011D21E1534590050E66F /* NewMessageHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2011D11E1534590050E66F /* NewMessageHandlers.swift */; };
@@ -19,7 +20,6 @@
 		6B32051A1E096DB700286430 /* LandingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3205191E096DB700286430 /* LandingController.swift */; };
 		6B32051C1E09740000286430 /* SearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B32051B1E09740000286430 /* SearchController.swift */; };
 		6B3205201E0982E700286430 /* LogoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B32051F1E0982E700286430 /* LogoCell.swift */; };
-		6B3205261E09978500286430 /* activities.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6B3205251E09978500286430 /* activities.txt */; };
 		6B3A526F1E169FAD00ACDC47 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3A526E1E169FAD00ACDC47 /* ChatLogController.swift */; };
 		6B3AD6FA1E0BD4DD004F1484 /* TagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3AD6F91E0BD4DD004F1484 /* TagCell.swift */; };
 		6B3AD6FC1E0BD9B3004F1484 /* TagFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3AD6FB1E0BD9B3004F1484 /* TagFlowLayout.swift */; };
@@ -60,11 +60,13 @@
 		6BF8CAAF1E2017B5001C36D0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF8CAAE1E2017B5001C36D0 /* Message.swift */; };
 		6BF8CAB11E203697001C36D0 /* MessageUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF8CAB01E203697001C36D0 /* MessageUserCell.swift */; };
 		6BF8CAB31E205226001C36D0 /* DateUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF8CAB21E205226001C36D0 /* DateUserCell.swift */; };
+		6BFBE4A41E525F5A00A8348D /* ActivitiesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFBE4A31E525F5A00A8348D /* ActivitiesController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		196C27F9B22B7400DE98CF24 /* Pods_SpontProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpontProject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		294B7C94EA38EA7086043EBF /* Pods-SpontProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpontProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SpontProject/Pods-SpontProject.debug.xcconfig"; sourceTree = "<group>"; };
+		6B172D131E52B17F001CBCC8 /* activities.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = activities.txt; sourceTree = "<group>"; };
 		6B1CDBB11E0BE4C900A9B79F /* CenterFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CenterFlowLayout.m; sourceTree = "<group>"; };
 		6B1CDBB31E0BE50400A9B79F /* CenterFlowLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CenterFlowLayout.h; sourceTree = "<group>"; };
 		6B1EF2631E0D7B9D00F7DDD3 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
@@ -77,7 +79,6 @@
 		6B3205191E096DB700286430 /* LandingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingController.swift; sourceTree = "<group>"; };
 		6B32051B1E09740000286430 /* SearchController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchController.swift; sourceTree = "<group>"; };
 		6B32051F1E0982E700286430 /* LogoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoCell.swift; sourceTree = "<group>"; };
-		6B3205251E09978500286430 /* activities.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = activities.txt; sourceTree = "<group>"; };
 		6B3A526E1E169FAD00ACDC47 /* ChatLogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		6B3AD6F91E0BD4DD004F1484 /* TagCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagCell.swift; sourceTree = "<group>"; };
 		6B3AD6FB1E0BD9B3004F1484 /* TagFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagFlowLayout.swift; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		6BF8CAAE1E2017B5001C36D0 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		6BF8CAB01E203697001C36D0 /* MessageUserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageUserCell.swift; sourceTree = "<group>"; };
 		6BF8CAB21E205226001C36D0 /* DateUserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUserCell.swift; sourceTree = "<group>"; };
+		6BFBE4A31E525F5A00A8348D /* ActivitiesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivitiesController.swift; sourceTree = "<group>"; };
 		D0C7230E19409AAFEF51FAAD /* Pods-SpontProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpontProject.release.xcconfig"; path = "Pods/Target Support Files/Pods-SpontProject/Pods-SpontProject.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -264,10 +266,10 @@
 		6BE399C51DFEE3C000C6F0DC /* Cover */ = {
 			isa = PBXGroup;
 			children = (
+				6B172D131E52B17F001CBCC8 /* activities.txt */,
 				6B6FC0AC1E02D840000BB705 /* RegisterControllerTemp.swift */,
 				6B6FC0AE1E02DA23000BB705 /* UIRegisterViewTemp.swift */,
 				6BEA05631E114DB300C36E2D /* GeoFire */,
-				6B3205251E09978500286430 /* activities.txt */,
 				6BB64F451E02AB0100C26E53 /* SpontProject.entitlements */,
 				6BE399C61DFEE3C000C6F0DC /* AppDelegate.swift */,
 				6B75E02C1E002293008AE308 /* Helpers */,
@@ -354,6 +356,7 @@
 				6B6D840F1E0B4BC000681B38 /* ProfileController.swift */,
 				6B5BA17A1E4DF7EC00555F5C /* EditProfileController.swift */,
 				6B30E5201E51496300A5218E /* LocationController.swift */,
+				6BFBE4A31E525F5A00A8348D /* ActivitiesController.swift */,
 				6B2011D41E1535200050E66F /* Messages */,
 				6BAFD3CC1E11EB160026D42B /* Login/Register */,
 			);
@@ -454,10 +457,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B172D141E52B17F001CBCC8 /* activities.txt in Resources */,
 				6B5DFB9B1E0DF74300D1EEA4 /* Localizable.strings in Resources */,
 				6BE399D11DFEE3C000C6F0DC /* LaunchScreen.storyboard in Resources */,
 				6BE211CA1E4D443C00CD861E /* GoogleService-Info.plist in Resources */,
-				6B3205261E09978500286430 /* activities.txt in Resources */,
 				6BE399CE1DFEE3C000C6F0DC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -577,6 +580,7 @@
 				6BF8CAB11E203697001C36D0 /* MessageUserCell.swift in Sources */,
 				6BE399C71DFEE3C000C6F0DC /* AppDelegate.swift in Sources */,
 				6B7FE5471E12CD78000A036C /* NewMessageController.swift in Sources */,
+				6BFBE4A41E525F5A00A8348D /* ActivitiesController.swift in Sources */,
 				6BD5E7081DFEE859007D02DF /* ProfileHandlers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

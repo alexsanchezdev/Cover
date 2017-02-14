@@ -87,8 +87,6 @@ extension MessagesController {
                     self.messagesDictionary[chatPartnerId] = message
                 }
                 
-                print(message.read)
-                
                 if message.to == FIRAuth.auth()?.currentUser?.uid {
                     if message.read == false {
                         if !self.showingView {

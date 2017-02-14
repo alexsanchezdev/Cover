@@ -19,6 +19,7 @@ class User: NSObject {
     var distance: Double?
     var cityName: String?
     var streetName: String?
+    var userLocation: CLLocation?
     var tags: [String]?
     var verified: [Int]?
     var activities: [String: Int]?

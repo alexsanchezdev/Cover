@@ -100,11 +100,11 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         group.enter()
         if let uid = FIRAuth.auth()?.currentUser?.uid{
             let ref = FIRDatabase.database().reference().child("users").child(uid)
-            ref.observe(.value, with: { (snapshot) in
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
                 print("Fetch user called")
                 let user = User()
             
-                user.id = snapshot.key
+                user.id = uid
                 
                 print(snapshot)
                 if let dict = snapshot.value as? [String: AnyObject] {

@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarAppearance.isTranslucent = false
         
         let tabBarAppearance = UITabBar.appearance()
-        tabBarAppearance.tintColor = UIColor.rgb(r: 255, g: 40, b: 81, a: 1)
+        tabBarAppearance.tintColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
         tabBarAppearance.barTintColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         tabBarAppearance.isTranslucent = false
         

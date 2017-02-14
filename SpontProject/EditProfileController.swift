@@ -34,8 +34,8 @@ class EditProfileController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Cambiar foto de perfil", for: .normal)
-        button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 1), for: .normal)
-        button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25), for: .highlighted)
+        button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
+        button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
         return button
     }()
@@ -121,11 +121,24 @@ class EditProfileController: UIViewController {
         return view
     }()
     
-    let activitiesLabel: UILabel = {
+    lazy var activitiesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Actividades"
-        label.backgroundColor = UIColor.white
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
+        return label
+    }()
+    
+    let activitiesNumber: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = UIColor.rgb(r: 255, g: 45, b: 80, a: 1)
+        label.layer.cornerRadius = 14
+        label.layer.masksToBounds = true
+        label.textColor = UIColor.white
+        label.text = "0"
+        label.textAlignment = .center
         return label
     }()
     
@@ -243,6 +256,15 @@ class EditProfileController: UIViewController {
         activitiesLabel.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         activitiesLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        activitiesLabel.addSubview(activitiesNumber)
+        activitiesNumber.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -36).isActive = true
+        activitiesNumber.centerYAnchor.constraint(equalTo: activitiesLabel.centerYAnchor).isActive = true
+        activitiesNumber.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        activitiesNumber.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        if let activities = userToEdit.activities {
+            activitiesNumber.text = "\(activities.count)"
+        }
     }
     
     func handleCancel(){
@@ -251,7 +273,16 @@ class EditProfileController: UIViewController {
     
     func handleLocationController(){
         let locationController = LocationController()
+        locationController.editProfileController = self
+        locationController.userToChangeLocation = userToEdit
         navigationController?.pushViewController(locationController, animated: true)
+    }
+    
+    func handleActivitiesController(){
+        let activitiesController = ActivitiesController()
+        activitiesController.editProfileController = self
+        activitiesController.userToChangeActivities = userToEdit
+        navigationController?.pushViewController(activitiesController, animated: true)
     }
 
     

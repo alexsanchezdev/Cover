@@ -228,6 +228,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
     
     func loadUserInfo(){
         
+        listenForChangesInProfile()
+        
         if let profile = userToShow.profileImageURL {
             profilePicture.loadImageUsingCacheWithURLString(profile)
         }
@@ -269,6 +271,21 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         
         let sortedDict = activities.sorted(by: { $0.0 < $1.0 })
         print(sortedDict)
+        
+    }
+    
+    func listenForChangesInProfile(){
+        print("listen called with uid" + userToShow.id!)
+        if let uid = userToShow.id {
+            let ref = FIRDatabase.database().reference().child("users").child(uid)
+            ref.observe(.childChanged, with: { (snapshot) in
+                if snapshot.key == "city" {
+                    self.locationLabel.text = snapshot.value as! String?
+                }
+                
+                self.view.layoutIfNeeded()
+            }, withCancel: nil)
+        }
         
     }
     
