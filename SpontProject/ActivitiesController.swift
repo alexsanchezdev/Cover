@@ -146,55 +146,56 @@ class ActivitiesController: UITableViewController {
                 }
             }
             
-            self.editProfileController.activitiesNumber.text = "\(self.newUserActivities.count)"
-            self.editProfileController.userToEdit.activities = addValues
-            
-            
-            
-            
-            // TODO: Check if activity is verified before update values
-            //
-            //
-            //
-            //
-            
             let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
-            userRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
+            userRef.observeSingleEvent(of: .value, with: { (snapshot) in
                 
-                if error != nil {
-                    print(error!)
-                }
-
-                for delete in deleteValues {
-                    userRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                if let dict = snapshot.value as? [String: Int] {
+                    for (activity, verify) in dict {
+                        if addValues[activity] != verify {
+                            addValues[activity] = verify
+                        }
+                    }
+                    
+                    userRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
+                        
                         if error != nil {
                             print(error!)
                         }
-                    })
-                }
-                
-                let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
-                activitiesRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
-                    if error != nil {
-                        print(error!)
-                    }
-                    
-                    for delete in deleteValues {
-                        activitiesRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                        
+                        for delete in deleteValues {
+                            userRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                                if error != nil {
+                                    print(error!)
+                                }
+                            })
+                        }
+                        
+                        let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
+                        activitiesRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
                             if error != nil {
                                 print(error!)
                             }
+                            
+                            for delete in deleteValues {
+                                activitiesRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                                    if error != nil {
+                                        print(error!)
+                                    }
+                                    
+                                    self.editProfileController.activitiesNumber.text = "\(self.newUserActivities.count)"
+                                    self.editProfileController.userToEdit.activities = addValues
+                                })
+                            }
+                            
+                            self.dismiss(animated: true, completion: {
+                                self.present(done, animated: true, completion: nil)
+                            })
                         })
-                    }
-                    
-                    self.dismiss(animated: true, completion: {
-                        self.present(done, animated: true, completion: nil)
                     })
-                })
-            })
+                    
+                }
+            }, withCancel: nil)
             
-            
-
         }
     }
 

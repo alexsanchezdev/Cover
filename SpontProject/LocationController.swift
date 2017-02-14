@@ -139,7 +139,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
                     let placemark = placemarks?[0]
                     self.userToChangeLocation.cityName = placemark?.locality 
                     self.userToChangeLocation.streetName = placemark?.thoroughfare as String?
-                    self.editProfileController.locationLabel.text = self.userToChangeLocation.cityName! + ", " + self.userToChangeLocation.streetName!
+                    self.editProfileController.locationLabel.text = self.userToChangeLocation.streetName! + ", " + self.userToChangeLocation.cityName!
                     if let uid = FIRAuth.auth()?.currentUser?.uid{
                         let ref = FIRDatabase.database().reference().child("users").child(uid)
                         ref.updateChildValues(["city": self.userToChangeLocation.cityName!, "street": self.userToChangeLocation.streetName!], withCompletionBlock: { (error, ref) in

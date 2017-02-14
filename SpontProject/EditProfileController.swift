@@ -156,6 +156,11 @@ class EditProfileController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        profileScrollView.resizeContentSize()
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         profileScrollView.resizeContentSize()
@@ -163,17 +168,17 @@ class EditProfileController: UIViewController {
     
     func setupViews(){
         
-//        view.addSubview(profileScrollView)
-//        profileScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-//        profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//        profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-//        profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//        profileScrollView.showsVerticalScrollIndicator = false
-//        profileScrollView.showsHorizontalScrollIndicator = false
+        view.addSubview(profileScrollView)
+        profileScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        profileScrollView.showsVerticalScrollIndicator = false
+        profileScrollView.showsHorizontalScrollIndicator = false
     
-        view.addSubview(profilePicture)
+        profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: profileScrollView.topAnchor, constant: 20).isActive = true
         profilePicture.widthAnchor.constraint(equalToConstant: 96).isActive = true
         profilePicture.heightAnchor.constraint(equalToConstant: 96).isActive = true
         
@@ -182,76 +187,76 @@ class EditProfileController: UIViewController {
         }
         
         
-        view.addSubview(changeProfilePicture)
+        profileScrollView.addSubview(changeProfilePicture)
         changeProfilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         changeProfilePicture.topAnchor.constraint(equalTo: profilePicture.bottomAnchor).isActive = true
         changeProfilePicture.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         changeProfilePicture.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
-        view.addSubview(personalInformation)
+        profileScrollView.addSubview(personalInformation)
         personalInformation.topAnchor.constraint(equalTo: changeProfilePicture.bottomAnchor).isActive = true
         personalInformation.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         personalInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
         
-        view.addSubview(nameTextField)
+        profileScrollView.addSubview(nameTextField)
         nameTextField.topAnchor.constraint(equalTo: personalInformation.topAnchor, constant: 1).isActive = true
         nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         nameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         nameTextField.text = userToEdit.name
         
-        view.addSubview(separatorName)
+        profileScrollView.addSubview(separatorName)
         separatorName.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
         separatorName.leftAnchor.constraint(equalTo: nameTextField.leftAnchor).isActive = true
         separatorName.rightAnchor.constraint(equalTo: nameTextField.rightAnchor).isActive = true
         separatorName.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
-        view.addSubview(usernameTextField)
+        profileScrollView.addSubview(usernameTextField)
         usernameTextField.topAnchor.constraint(equalTo: separatorName.bottomAnchor).isActive = true
         usernameTextField.leftAnchor.constraint(equalTo: separatorName.leftAnchor).isActive = true
         usernameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         usernameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         usernameTextField.text = userToEdit.username
         
-        view.addSubview(separatorUsername)
+        profileScrollView.addSubview(separatorUsername)
         separatorUsername.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
         separatorUsername.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor).isActive = true
         separatorUsername.rightAnchor.constraint(equalTo: usernameTextField.rightAnchor).isActive = true
         separatorUsername.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
-        view.addSubview(captionTextView)
+        profileScrollView.addSubview(captionTextView)
         captionTextView.topAnchor.constraint(equalTo: separatorUsername.bottomAnchor).isActive = true
         captionTextView.leftAnchor.constraint(equalTo: separatorUsername.leftAnchor).isActive = true
         captionTextView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         personalInformation.bottomAnchor.constraint(equalTo: captionTextView.bottomAnchor, constant: 1).isActive = true
         captionTextView.text = userToEdit.caption
         
-        view.addSubview(searchTermsLabel)
+        profileScrollView.addSubview(searchTermsLabel)
         searchTermsLabel.topAnchor.constraint(equalTo: personalInformation.bottomAnchor, constant: 24).isActive = true
         searchTermsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         searchTermsLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         searchTermsLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
-        view.addSubview(searchInformation)
+        profileScrollView.addSubview(searchInformation)
         searchInformation.topAnchor.constraint(equalTo: searchTermsLabel.bottomAnchor, constant: 8).isActive = true
         searchInformation.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         searchInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
         searchInformation.heightAnchor.constraint(equalToConstant: 98).isActive = true
         
-        view.addSubview(locationLabel)
+        profileScrollView.addSubview(locationLabel)
         locationLabel.topAnchor.constraint(equalTo: searchInformation.topAnchor).isActive = true
         locationLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         locationLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
         locationLabel.text = userToEdit.streetName! + ", " + userToEdit.cityName!
         
-        view.addSubview(separatorLocation)
+        profileScrollView.addSubview(separatorLocation)
         separatorLocation.topAnchor.constraint(equalTo: locationLabel.bottomAnchor).isActive = true
         separatorLocation.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
         separatorLocation.rightAnchor.constraint(equalTo: locationLabel.rightAnchor).isActive = true
         separatorLocation.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
-        view.addSubview(activitiesLabel)
+        profileScrollView.addSubview(activitiesLabel)
         activitiesLabel.topAnchor.constraint(equalTo: separatorLocation.bottomAnchor).isActive = true
         activitiesLabel.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true

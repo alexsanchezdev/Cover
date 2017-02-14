@@ -48,6 +48,13 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            if userToShow.id == uid {
+                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+            } else {
+                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight + 20, right: 0)
+            }
+        }
         profileScrollView.resizeContentSize()
     }
     
@@ -61,6 +68,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
     var verifiedArray = [Int]()
     var userToShow = User()
     var selfProfile = false
+    let buttonHeight: CGFloat = 52
     
     var sizingCell: TagCell = TagCell()
     
@@ -153,7 +161,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
     // MARK: - Methods
     func setupViews(){
         
-        let buttonHeight: CGFloat = 52
+        
         
         view.addSubview(profileScrollView)
         profileScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -163,7 +171,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         
         profileScrollView.showsVerticalScrollIndicator = false
         profileScrollView.showsHorizontalScrollIndicator = false
-        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight + 20, right: 0)
         
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -175,10 +182,12 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         
         
         let gradientHeight: CGFloat = 150
+        gradientLayer.shouldRasterize = true
         gradientLayer.frame = CGRect(x: 0, y: view.bounds.width - gradientHeight, width: view.bounds.width, height: gradientHeight)
         gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         profilePicture.layer.addSublayer(gradientLayer)
         origin = gradientLayer.frame.origin.y
+        
         
         profilePicture.addSubview(locationLabel)
         locationLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant:20).isActive = true
