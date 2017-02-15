@@ -172,12 +172,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(ActivityCell.self, forCellWithReuseIdentifier: "cell")
-        collection.backgroundColor = UIColor.clear
+        collection.backgroundColor = UIColor.white
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.isUserInteractionEnabled = false
         collection.delegate = self
-        collection.contentInset = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
+        collection.contentInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         collection.dataSource = self
+        collection.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
+        collection.layer.borderWidth = 1
         return collection
     }()
     
@@ -229,8 +231,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         profileScrollView.addSubview(activitiesCollectionView)
         activitiesCollectionView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
-        activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: -1).isActive = true
+        activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 1).isActive = true
         activitiesCollectionView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         
 //        view.addSubview(descriptionLabel)
@@ -320,12 +322,23 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 100
+        return 14
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ActivityCell
-        cell.nameTextLabel.text = "BORN TO MOVE"
+        cell.nameTextLabel.text = "BODYCOMBAT"
+        
+        if indexPath.row == 1 {
+            cell.nameTextLabel.text = "BODYPUMP"
+            cell.logoImageView.image = UIImage(named: "not-verified")
+        }
+        
+        if indexPath.row == 2 {
+            cell.nameTextLabel.text = "BODYJAM"
+            cell.logoImageView.image = UIImage(named: "verified")
+        }
+        
         
         return cell
     }
