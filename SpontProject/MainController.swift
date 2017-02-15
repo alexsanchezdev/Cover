@@ -114,7 +114,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                     user.username = dict["username"] as! String?
                     user.activities = dict["activities"] as! [String: Int]?
                     user.email = dict["email"] as! String?
-                    user.phone = dict["phone"] as! String?
+                    //user.phone = dict["phone"] as! String?
                 
                     if let activities = user.activities {
                         for (key, value) in activities {

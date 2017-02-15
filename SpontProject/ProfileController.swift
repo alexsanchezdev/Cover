@@ -167,14 +167,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     
     lazy var activitiesCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 4
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 4
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collection.register(ActivityCell.self, forCellWithReuseIdentifier: "cell")
         collection.backgroundColor = UIColor.clear
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.isUserInteractionEnabled = false
-        collection.backgroundColor = UIColor.yellow
         collection.delegate = self
         collection.contentInset = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
         collection.dataSource = self
@@ -324,15 +324,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.backgroundColor = UIColor.red
-        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ActivityCell
+        cell.nameTextLabel.text = "BORN TO MOVE"
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = CGSize(width: view.frame.width / 2 - 22, height: 24)
+        let size = CGSize(width: view.frame.width / 2 - 24, height: 24)
         
         return size
     }
