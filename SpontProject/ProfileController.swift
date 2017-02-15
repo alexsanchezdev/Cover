@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollViewDelegate {
+class ProfileController: UIViewController, CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     struct Section {
         var name: String!
@@ -31,12 +31,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         loadUserInfo()
         setupViews()
         
+        
 //        informationTable.delegate = self
 //        informationTable.dataSource = self
 //        informationTable.tableFooterView = UIView()
 //        informationTable.allowsSelection = false
         
         profileScrollView.delegate = self
+        
         
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if userToShow.id == uid {
@@ -45,6 +47,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         }
         
     }
+    
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -86,6 +90,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         scroll.backgroundColor = UIColor.white
         scroll.isScrollEnabled = true
         scroll.bounces = true
+        scroll.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         return scroll
     }()
     
@@ -96,6 +101,17 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.image = UIImage(named: "user")
+        
+        return iv
+    }()
+    
+    let overlay: UIImageView = {
+        let screenSize = UIScreen.main.bounds
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.image = UIImage(named: "overlay")
         
         return iv
     }()
@@ -149,14 +165,21 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
     }()
 
     
-    let informationTable: UITableView = {
-        let table = UITableView()
-        table.translatesAutoresizingMaskIntoConstraints = false
-        return table
+    lazy var activitiesCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 4
+        
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collection.backgroundColor = UIColor.clear
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.isUserInteractionEnabled = false
+        collection.backgroundColor = UIColor.yellow
+        collection.delegate = self
+        collection.contentInset = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
+        collection.dataSource = self
+        return collection
     }()
-    
-    let gradientLayer = CAGradientLayer()
-    var origin: CGFloat = 0
     
     // MARK: - Methods
     func setupViews(){
@@ -179,23 +202,21 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         profilePicture.widthAnchor.constraint(equalTo: profileScrollView.widthAnchor).isActive = true
         profileHeightConstraint = profilePicture.heightAnchor.constraint(equalTo: profileScrollView.widthAnchor)
         profileHeightConstraint.isActive = true
+    
         
+        profilePicture.addSubview(overlay)
+        overlay.bottomAnchor.constraint(equalTo: profilePicture.bottomAnchor).isActive = true
+        overlay.rightAnchor.constraint(equalTo: profilePicture.rightAnchor).isActive = true
+        overlay.leftAnchor.constraint(equalTo: profilePicture.leftAnchor).isActive = true
+        overlay.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
-        let gradientHeight: CGFloat = 150
-        gradientLayer.shouldRasterize = true
-        gradientLayer.frame = CGRect(x: 0, y: view.bounds.width - gradientHeight, width: view.bounds.width, height: gradientHeight)
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        profilePicture.layer.addSublayer(gradientLayer)
-        origin = gradientLayer.frame.origin.y
-        
-        
-        profilePicture.addSubview(locationLabel)
+        overlay.addSubview(locationLabel)
         locationLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant:20).isActive = true
         locationLabel.bottomAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: -20).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         locationLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        profilePicture.addSubview(nameLabel)
+        overlay.addSubview(nameLabel)
         nameLabel.leftAnchor.constraint(equalTo: profilePicture.leftAnchor, constant: 20).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: locationLabel.topAnchor).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -205,6 +226,12 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         captionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         captionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
         captionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        
+        profileScrollView.addSubview(activitiesCollectionView)
+        activitiesCollectionView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        activitiesCollectionView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         
 //        view.addSubview(descriptionLabel)
 //        descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -226,12 +253,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
         sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         sendMessageButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         sendMessageButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
-        
-        sendMessageButton.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: sendMessageButton.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: sendMessageButton.centerYAnchor).isActive = true
-        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
     }
     
@@ -296,6 +317,24 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UIScrollVi
             }, withCancel: nil)
         }
         
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 100
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.backgroundColor = UIColor.red
+        
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let size = CGSize(width: view.frame.width / 2 - 22, height: 24)
+        
+        return size
     }
     
 //    func autoSizeDescription(){

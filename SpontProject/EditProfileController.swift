@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EditProfileController: UIViewController {
+class EditProfileController: UIViewController, UIScrollViewDelegate {
     
     lazy var profileScrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -17,6 +17,9 @@ class EditProfileController: UIViewController {
         scroll.isScrollEnabled = true
         scroll.bounces = true
         scroll.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
+        scroll.showsVerticalScrollIndicator = false
+        scroll.showsHorizontalScrollIndicator = false
+        scroll.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         return scroll
     }()
     
@@ -49,10 +52,18 @@ class EditProfileController: UIViewController {
         return view
     }()
     
-    let nameTextField: UITextField = {
-        let tf = UITextField()
+    let nameImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "name_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
+    let nameTextField: EditProfileTextField = {
+        let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.text = "Alex Sanchez"
+
         tf.clearButtonMode = .whileEditing
         return tf
     }()
@@ -64,11 +75,19 @@ class EditProfileController: UIViewController {
         return view
     }()
     
-    let usernameTextField: UITextField = {
-        let tf = UITextField()
+    let usernameImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "username_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
+    let usernameTextField: EditProfileTextField = {
+        let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.text = "alxsnchez"
         tf.clearButtonMode = .whileEditing
+        tf.autocapitalizationType = .none
         return tf
     }()
     
@@ -79,11 +98,19 @@ class EditProfileController: UIViewController {
         return view
     }()
     
+    let captionImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "caption_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
     let captionTextView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.isScrollEnabled = false
-        tv.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular)
+        tv.font = UIFont.systemFont(ofSize: 17, weight: UIFontWeightRegular)
         tv.textContainerInset = UIEdgeInsets(top: 14, left: -6, bottom: 14, right: 8)
         return tv
     }()
@@ -106,6 +133,14 @@ class EditProfileController: UIViewController {
         return view
     }()
     
+    let locationImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "location_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
     lazy var locationLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -119,6 +154,14 @@ class EditProfileController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1)
         return view
+    }()
+    
+    let activitiesImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "activities_edit_icon")
+        iv.contentMode = .center
+        return iv
     }()
     
     lazy var activitiesLabel: UILabel = {
@@ -142,6 +185,63 @@ class EditProfileController: UIViewController {
         return label
     }()
     
+    let privateInfoLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "INFORMACIÓN PRIVADA"
+        label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
+        label.textColor = UIColor.lightGray
+        return label
+    }()
+    
+    let privateInformation: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.white
+        view.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
+        view.layer.borderWidth = 1
+        return view
+    }()
+    
+    let emailImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "email_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
+    lazy var emailLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
+        return label
+    }()
+    
+    let separatorEmail: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1)
+        return view
+    }()
+    
+    let phoneImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "phone_edit_icon")
+        iv.contentMode = .center
+        return iv
+    }()
+    
+    lazy var phoneLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
+        return label
+    }()
+    
     var userToEdit = User()
 
     override func viewDidLoad() {
@@ -151,6 +251,8 @@ class EditProfileController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: nil)
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
+        
+        profileScrollView.delegate = self
         
         setupViews()
         // Do any additional setup after loading the view.
@@ -173,8 +275,6 @@ class EditProfileController: UIViewController {
         profileScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         profileScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        profileScrollView.showsVerticalScrollIndicator = false
-        profileScrollView.showsHorizontalScrollIndicator = false
     
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -186,11 +286,9 @@ class EditProfileController: UIViewController {
             profilePicture.loadImageUsingCacheWithURLString(profile)
         }
         
-        
         profileScrollView.addSubview(changeProfilePicture)
         changeProfilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         changeProfilePicture.topAnchor.constraint(equalTo: profilePicture.bottomAnchor).isActive = true
-        changeProfilePicture.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         changeProfilePicture.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         profileScrollView.addSubview(personalInformation)
@@ -200,10 +298,16 @@ class EditProfileController: UIViewController {
         
         profileScrollView.addSubview(nameTextField)
         nameTextField.topAnchor.constraint(equalTo: personalInformation.topAnchor, constant: 1).isActive = true
-        nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
+        nameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 60).isActive = true
         nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         nameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         nameTextField.text = userToEdit.name
+        
+        profileScrollView.addSubview(nameImageView)
+        nameImageView.centerYAnchor.constraint(equalTo: nameTextField.centerYAnchor).isActive = true
+        nameImageView.rightAnchor.constraint(equalTo: nameTextField.leftAnchor, constant: -16).isActive = true
+        nameImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        nameImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
         
         profileScrollView.addSubview(separatorName)
         separatorName.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
@@ -218,6 +322,12 @@ class EditProfileController: UIViewController {
         usernameTextField.heightAnchor.constraint(equalToConstant: 48).isActive = true
         usernameTextField.text = userToEdit.username
         
+        profileScrollView.addSubview(usernameImageView)
+        usernameImageView.centerYAnchor.constraint(equalTo: usernameTextField.centerYAnchor).isActive = true
+        usernameImageView.rightAnchor.constraint(equalTo: usernameTextField.leftAnchor, constant: -16).isActive = true
+        usernameImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        usernameImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        
         profileScrollView.addSubview(separatorUsername)
         separatorUsername.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor).isActive = true
         separatorUsername.leftAnchor.constraint(equalTo: usernameTextField.leftAnchor).isActive = true
@@ -230,6 +340,12 @@ class EditProfileController: UIViewController {
         captionTextView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         personalInformation.bottomAnchor.constraint(equalTo: captionTextView.bottomAnchor, constant: 1).isActive = true
         captionTextView.text = userToEdit.caption
+        
+        profileScrollView.addSubview(captionImageView)
+        captionImageView.centerYAnchor.constraint(equalTo: captionTextView.centerYAnchor).isActive = true
+        captionImageView.rightAnchor.constraint(equalTo: captionTextView.leftAnchor, constant: -16).isActive = true
+        captionImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        captionImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
         
         profileScrollView.addSubview(searchTermsLabel)
         searchTermsLabel.topAnchor.constraint(equalTo: personalInformation.bottomAnchor, constant: 24).isActive = true
@@ -250,6 +366,12 @@ class EditProfileController: UIViewController {
         locationLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
         locationLabel.text = userToEdit.streetName! + ", " + userToEdit.cityName!
         
+        profileScrollView.addSubview(locationImageView)
+        locationImageView.centerYAnchor.constraint(equalTo: locationLabel.centerYAnchor).isActive = true
+        locationImageView.rightAnchor.constraint(equalTo: locationLabel.leftAnchor, constant: -16).isActive = true
+        locationImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        locationImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        
         profileScrollView.addSubview(separatorLocation)
         separatorLocation.topAnchor.constraint(equalTo: locationLabel.bottomAnchor).isActive = true
         separatorLocation.leftAnchor.constraint(equalTo: locationLabel.leftAnchor).isActive = true
@@ -262,6 +384,12 @@ class EditProfileController: UIViewController {
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         activitiesLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
         
+        profileScrollView.addSubview(activitiesImageView)
+        activitiesImageView.centerYAnchor.constraint(equalTo: activitiesLabel.centerYAnchor).isActive = true
+        activitiesImageView.rightAnchor.constraint(equalTo: activitiesLabel.leftAnchor, constant: -16).isActive = true
+        activitiesImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        activitiesImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        
         activitiesLabel.addSubview(activitiesNumber)
         activitiesNumber.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -36).isActive = true
         activitiesNumber.centerYAnchor.constraint(equalTo: activitiesLabel.centerYAnchor).isActive = true
@@ -270,6 +398,55 @@ class EditProfileController: UIViewController {
         if let activities = userToEdit.activities {
             activitiesNumber.text = "\(activities.count)"
         }
+        
+        profileScrollView.addSubview(privateInfoLabel)
+        privateInfoLabel.topAnchor.constraint(equalTo: searchInformation.bottomAnchor, constant: 24).isActive = true
+        privateInfoLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
+        privateInfoLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        privateInfoLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        profileScrollView.addSubview(privateInformation)
+        privateInformation.topAnchor.constraint(equalTo: privateInfoLabel.bottomAnchor, constant: 8).isActive = true
+        privateInformation.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        privateInformation.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 2).isActive = true
+        privateInformation.heightAnchor.constraint(equalToConstant: 98).isActive = true
+        
+        profileScrollView.addSubview(emailLabel)
+        emailLabel.topAnchor.constraint(equalTo: privateInformation.topAnchor).isActive = true
+        emailLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 60).isActive = true
+        emailLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        emailLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        emailLabel.text = userToEdit.email!
+        
+        profileScrollView.addSubview(emailImageView)
+        emailImageView.centerYAnchor.constraint(equalTo: emailLabel.centerYAnchor).isActive = true
+        emailImageView.rightAnchor.constraint(equalTo: emailLabel.leftAnchor, constant: -16).isActive = true
+        emailImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        emailImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        
+        profileScrollView.addSubview(separatorEmail)
+        separatorEmail.topAnchor.constraint(equalTo: emailLabel.bottomAnchor).isActive = true
+        separatorEmail.leftAnchor.constraint(equalTo: emailLabel.leftAnchor).isActive = true
+        separatorEmail.rightAnchor.constraint(equalTo: emailLabel.rightAnchor).isActive = true
+        separatorEmail.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        profileScrollView.addSubview(phoneLabel)
+        phoneLabel.topAnchor.constraint(equalTo: separatorEmail.bottomAnchor).isActive = true
+        phoneLabel.leftAnchor.constraint(equalTo: emailLabel.leftAnchor).isActive = true
+        phoneLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        phoneLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        phoneLabel.text = userToEdit.phone!
+        
+        profileScrollView.addSubview(phoneImageView)
+        phoneImageView.centerYAnchor.constraint(equalTo: phoneLabel.centerYAnchor).isActive = true
+        phoneImageView.rightAnchor.constraint(equalTo: phoneLabel.leftAnchor, constant: -16).isActive = true
+        phoneImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        phoneImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        
+    }
+    
+    func dismissKeyboard(){
+        self.view.endEditing(true)
     }
     
     func handleCancel(){

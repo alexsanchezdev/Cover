@@ -113,6 +113,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                     user.caption = dict["caption"] as! String?
                     user.username = dict["username"] as! String?
                     user.activities = dict["activities"] as! [String: Int]?
+                    user.email = dict["email"] as! String?
+                    user.phone = dict["phone"] as! String?
                 
                     if let activities = user.activities {
                         for (key, value) in activities {
@@ -122,7 +124,6 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                         
                         user.tags = self.tempTags
                         user.verified = self.tempVerified
-                        print(user.caption?.characters.count)
                     }
                     
                     let geoRef = FIRDatabase.database().reference().child("locations")
@@ -130,14 +131,14 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                     
                     geoFire?.getLocationForKey(uid, withCallback: { (location, error) in
                         if error != nil {
-                            print(error)
+                            print(error!)
                         }
                         
                         if location != nil {
                             let geoCoder = CLGeocoder()
                             geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
                                 if error != nil {
-                                    print(error)
+                                    print(error!)
                                 }
                                 
                                 let placemark = placemarks?[0]
