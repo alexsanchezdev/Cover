@@ -138,6 +138,8 @@ class ActivitiesController: UITableViewController {
             var addValues = [String: Int]()
             var deleteValues = [String]()
             
+            print("Activities array: \(self.activitiesArray)")
+            print("New user activities: \(self.newUserActivities)")
             for activity in self.activitiesArray {
                 if self.newUserActivities.contains(activity) {
                     addValues[activity] = 0
@@ -155,45 +157,46 @@ class ActivitiesController: UITableViewController {
                             addValues[activity] = verify
                         }
                     }
+                }
+                
+                userRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
                     
-                    userRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
-                        
+                    if error != nil {
+                        print(error!)
+                    }
+                    
+                    for delete in deleteValues {
+                        userRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                            if error != nil {
+                                print(error!)
+                            }
+                        })
+                    }
+                    
+                    let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
+                    activitiesRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
                         if error != nil {
                             print(error!)
                         }
                         
                         for delete in deleteValues {
-                            userRef.child(delete).removeValue(completionBlock: { (error, ref) in
+                            activitiesRef.child(delete).removeValue(completionBlock: { (error, ref) in
                                 if error != nil {
                                     print(error!)
                                 }
+                                
+                                self.editProfileController.activitiesNumber.text = "\(self.newUserActivities.count)"
+                                self.editProfileController.userToEdit.activities = addValues
                             })
                         }
                         
-                        let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
-                        activitiesRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
-                            if error != nil {
-                                print(error!)
-                            }
-                            
-                            for delete in deleteValues {
-                                activitiesRef.child(delete).removeValue(completionBlock: { (error, ref) in
-                                    if error != nil {
-                                        print(error!)
-                                    }
-                                    
-                                    self.editProfileController.activitiesNumber.text = "\(self.newUserActivities.count)"
-                                    self.editProfileController.userToEdit.activities = addValues
-                                })
-                            }
-                            
-                            self.dismiss(animated: true, completion: {
-                                self.present(done, animated: true, completion: nil)
-                            })
+                        self.dismiss(animated: true, completion: {
+                            self.present(done, animated: true, completion: nil)
                         })
                     })
-                    
-                }
+                })
+                
+                
             }, withCancel: nil)
             
         }

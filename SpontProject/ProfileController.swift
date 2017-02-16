@@ -28,6 +28,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
             }
         }
         
+        listenForChangesInProfile()
+        
     }
     
     
@@ -41,13 +43,12 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                 profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight, right: 0)
             }
         }
+        
         collectionHeight.constant = activitiesCollectionView.contentSize.height + 40
         profileScrollView.resizeContentSize()
         profileScrollView.contentSize.height = profileScrollView.contentSize.height - 20
+        
     }
-    
-    
-
     
     // MARK: - Variables
     var viewHeight: CGFloat = 0.0
@@ -58,14 +59,10 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     var selfProfile = false
     let buttonHeight: CGFloat = 52
     var sortedDict = [(key: String, value: Int)]()
-    
-    var sizingCell: TagCell = TagCell()
-    
+
     var messagesController: MessagesController?
 
     var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint, collectionHeight: NSLayoutConstraint!
-//    var activitiesTagCloudHeight: NSLayoutConstraint!
-//    var moreInfoHeight: NSLayoutConstraint!
     let locationManager = CLLocationManager()
     var activities = [String: Int]()
     
@@ -231,8 +228,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     
     func loadUserInfo(){
         
-        listenForChangesInProfile()
-        
+
         if let profile = userToShow.profileImageURL {
             profilePicture.loadImageUsingCacheWithURLString(profile)
         }
@@ -282,12 +278,23 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                 }
                 
                 if snapshot.key == "activities" {
-                    
+                    self.activities = snapshot.value as! [String : Int]
+                    self.sortedDict = self.activities.sorted(by: { $0.0 < $1.0 })
+                    print(self.sortedDict)
                 }
                 
-                self.view.layoutIfNeeded()
+                DispatchQueue.main.async(execute: {
+                    self.activitiesCollectionView.reloadData()
+                    self.viewDidLayoutSubviews()
+                })
+                
             }, withCancel: nil)
         }
+        
+        
+        
+        
+        
         
     }
     
@@ -302,6 +309,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         if sortedDict[indexPath.row].value == 1 {
             cell.nameTextLabel.textColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
             cell.nameTextLabel.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightBold)
+        } else {
+            cell.nameTextLabel.textColor = UIColor.black
+            cell.nameTextLabel.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
         }
         
         return cell
@@ -311,6 +321,10 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         let size = CGSize(width: view.frame.width / 2 - 24, height: 24)
         
         return size
+    }
+    
+    func reloadView(){
+    
     }
 
 }
