@@ -116,8 +116,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
         
         
         guard let location = Filters.sharedInstance.locationManager.location else { return }
-        userToChangeLocation.userLocation = location
-        
+    
         let loading = UIAlertController(title: nil, message: "Actualizando ubicación...", preferredStyle: .alert)
         let done = UIAlertController(title: nil, message: "Ubicación actualizada", preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
@@ -137,12 +136,11 @@ class LocationController: UIViewController, MKMapViewDelegate {
                     }
                     
                     let placemark = placemarks?[0]
-                    self.userToChangeLocation.cityName = placemark?.locality 
-                    self.userToChangeLocation.streetName = placemark?.thoroughfare as String?
-                    self.editProfileController.locationLabel.text = self.userToChangeLocation.streetName! + ", " + self.userToChangeLocation.cityName!
+                    self.userToChangeLocation.city = placemark?.locality as String?
+                    self.editProfileController.locationLabel.text = self.userToChangeLocation.city!
                     if let uid = FIRAuth.auth()?.currentUser?.uid{
                         let ref = FIRDatabase.database().reference().child("users").child(uid)
-                        ref.updateChildValues(["city": self.userToChangeLocation.cityName!, "street": self.userToChangeLocation.streetName!], withCompletionBlock: { (error, ref) in
+                        ref.updateChildValues(["city": self.userToChangeLocation.city!], withCompletionBlock: { (error, ref) in
                             if error != nil {
                                 print(error!)
                             } else {

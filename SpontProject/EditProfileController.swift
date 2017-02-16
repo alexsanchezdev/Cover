@@ -30,6 +30,8 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 48
+        imageView.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
+        imageView.layer.borderWidth = 1
         return imageView
     }()
     
@@ -364,7 +366,7 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
         locationLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         locationLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        locationLabel.text = userToEdit.streetName! + ", " + userToEdit.cityName!
+        locationLabel.text = userToEdit.city
         
         profileScrollView.addSubview(locationImageView)
         locationImageView.centerYAnchor.constraint(equalTo: locationLabel.centerYAnchor).isActive = true

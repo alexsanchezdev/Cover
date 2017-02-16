@@ -150,17 +150,17 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
                             
                             geoFire?.getLocationForKey(user.id, withCallback: { (location, error) in
                                 if error != nil {
-                                    print(error)
+                                    print(error!)
                                 }
                                 
                                 let geoCoder = CLGeocoder()
                                 geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
                                     if error != nil {
-                                        print(error)
+                                        print(error!)
                                     }
                                     
                                     let placemark = placemarks?[0]
-                                    user.cityName = placemark?.addressDictionary?["City"] as! String?
+                                    user.city = placemark?.addressDictionary?["City"] as! String?
                                     
                                 })
                             })

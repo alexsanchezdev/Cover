@@ -115,7 +115,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                     user.activities = dict["activities"] as! [String: Int]?
                     user.email = dict["email"] as! String?
                     user.phone = dict["phone"] as! String?
-                
+                    user.city =  dict["city"] as! String?
+                    
                     if let activities = user.activities {
                         for (key, value) in activities {
                             self.tempTags.append(key)
@@ -126,60 +127,21 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                         user.verified = self.tempVerified
                     }
                     
-                    let geoRef = FIRDatabase.database().reference().child("locations")
-                    let geoFire = GeoFire(firebaseRef: geoRef)
+                    self.currentUser = user
+                    // TODO: Check for group when a change occur
                     
-                    geoFire?.getLocationForKey(uid, withCallback: { (location, error) in
-                        if error != nil {
-                            print(error!)
-                        }
-                        
-                        if location != nil {
-                            let geoCoder = CLGeocoder()
-                            geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
-                                if error != nil {
-                                    print(error!)
-                                }
-                                
-                                let placemark = placemarks?[0]
-                                user.cityName = placemark?.locality as String?
-                                user.streetName = placemark?.thoroughfare as String?
-                                
-                                
-                                self.currentUser = user
-                                // TODO: Check for group when a change occur
-                                
-                                if self.freshLoad {
-                                    self.freshLoad = false
-                                    self.group.leave()
-                                } else {
-                                    self.profileController.captionLabel.text = user.caption
-                                    self.profileController.nameLabel.text = user.name
-                                    self.profileController.view.layoutIfNeeded()
-                                }
-                            })
-                        } else {
-                            self.currentUser = user
-                            // TODO: Check for group when a change occur
-                            
-                            if self.freshLoad {
-                                self.freshLoad = false
-                                self.group.leave()
-                            } else {
-                                self.profileController.captionLabel.text = user.caption
-                                self.profileController.nameLabel.text = user.name
-                                self.profileController.view.layoutIfNeeded()
-                            }
-                        }
-                        
-                    })
-                
-                    
+                    if self.freshLoad {
+                        self.freshLoad = false
+                        self.group.leave()
+                    } else {
+                        self.profileController.captionLabel.text = user.caption
+                        self.profileController.nameLabel.text = user.name
+                        self.profileController.view.layoutIfNeeded()
+                    }
                     
                 }
                 
             }, withCancel: nil)
-            
             
         }
         

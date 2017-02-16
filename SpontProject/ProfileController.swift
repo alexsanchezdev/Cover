@@ -10,32 +10,14 @@ import UIKit
 import Firebase
 
 class ProfileController: UIViewController, CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
-    
-    struct Section {
-        var name: String!
-        var items: [String]!
-        var collapsed: Bool!
-        
-        init(name: String, items: [String], collapsed: Bool = true) {
-            self.name = name
-            self.items = items
-            self.collapsed = collapsed
-        }
-    }
-    
-    var sections = [Section]()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadUserInfo()
         setupViews()
-        
-        
-//        informationTable.delegate = self
-//        informationTable.dataSource = self
-//        informationTable.tableFooterView = UIView()
-//        informationTable.allowsSelection = false
+
         
         profileScrollView.delegate = self
         
@@ -54,12 +36,14 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         super.viewDidLayoutSubviews()
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if userToShow.id == uid {
-                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
-                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight + 20, right: 0)
+                profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight, right: 0)
             }
         }
+        collectionHeight.constant = activitiesCollectionView.contentSize.height + 40
         profileScrollView.resizeContentSize()
+        profileScrollView.contentSize.height = profileScrollView.contentSize.height - 20
     }
     
     
@@ -73,12 +57,13 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     var userToShow = User()
     var selfProfile = false
     let buttonHeight: CGFloat = 52
+    var sortedDict = [(key: String, value: Int)]()
     
     var sizingCell: TagCell = TagCell()
     
     var messagesController: MessagesController?
 
-    var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint: NSLayoutConstraint!
+    var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint, collectionHeight: NSLayoutConstraint!
 //    var activitiesTagCloudHeight: NSLayoutConstraint!
 //    var moreInfoHeight: NSLayoutConstraint!
     let locationManager = CLLocationManager()
@@ -176,7 +161,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.isUserInteractionEnabled = false
         collection.delegate = self
-        collection.contentInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        collection.contentInset = UIEdgeInsets(top: 20, left: 21, bottom: 0, right: 21)
         collection.dataSource = self
         collection.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
         collection.layer.borderWidth = 1
@@ -233,23 +218,9 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         activitiesCollectionView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
         activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: -1).isActive = true
         activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 1).isActive = true
-        activitiesCollectionView.heightAnchor.constraint(equalToConstant: 400).isActive = true
-        
-//        view.addSubview(descriptionLabel)
-//        descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        descriptionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor).isActive = true
-//        descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
-//        descriptionLabel.heightAnchor.constraint(equalToConstant: 67).isActive = true
-        
-//        descriptionHeightConstraint.isActive = true
-//        descriptionTopConstraint.isActive = true
-        
-//        profileScrollView.addSubview(informationTable)
-//        informationTable.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor).isActive = true
-//        informationTable.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//        informationTable.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-//        informationTable.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//        
+        collectionHeight = activitiesCollectionView.heightAnchor.constraint(equalToConstant: 0)
+        collectionHeight.isActive = true
+ 
         view.addSubview(sendMessageButton)
         sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         sendMessageButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -271,7 +242,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         }
         
         if let tags = userToShow.tags {
-            activitiesArray = tags.sorted()
+            activitiesArray = tags
         }
         
         if let verified = userToShow.verified {
@@ -288,21 +259,16 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
             sendMessageButton.setTitle(NSLocalizedString("SendMessage", comment: "Send message in profile view"), for: .normal)
         }
         
-        sections = [
-            Section(name: "ACTIVIDADES", items: activitiesArray, collapsed: false)
-        ]
-        
         for (index, element) in activitiesArray.enumerated() {
             activities[element] = verifiedArray[index]
             print(activities)
         }
         
-        if let city = userToShow.cityName {
+        if let city = userToShow.city {
             locationLabel.text = city
         }
         
-        let sortedDict = activities.sorted(by: { $0.0 < $1.0 })
-        print(sortedDict)
+        sortedDict = activities.sorted(by: { $0.0 < $1.0 })
         
     }
     
@@ -315,6 +281,10 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                     self.locationLabel.text = snapshot.value as! String?
                 }
                 
+                if snapshot.key == "activities" {
+                    
+                }
+                
                 self.view.layoutIfNeeded()
             }, withCancel: nil)
         }
@@ -322,23 +292,17 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 14
+        return sortedDict.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ActivityCell
-        cell.nameTextLabel.text = "BODYCOMBAT"
+        cell.nameTextLabel.text = sortedDict[indexPath.row].key
         
-        if indexPath.row == 1 {
-            cell.nameTextLabel.text = "BODYPUMP"
-            cell.logoImageView.image = UIImage(named: "not-verified")
+        if sortedDict[indexPath.row].value == 1 {
+            cell.nameTextLabel.textColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
+            cell.nameTextLabel.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightBold)
         }
-        
-        if indexPath.row == 2 {
-            cell.nameTextLabel.text = "BODYJAM"
-            cell.logoImageView.image = UIImage(named: "verified")
-        }
-        
         
         return cell
     }
@@ -348,18 +312,5 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         return size
     }
-    
-//    func autoSizeDescription(){
-//        
-//        if (descriptionLabel.requiredHeight() > 0){
-//            
-//            print(descriptionLabel.requiredHeight())
-//            let topAndBottomConstant: CGFloat = 40
-//            descriptionHeightConstraint.constant = descriptionLabel.requiredHeight() + topAndBottomConstant
-//            profileScrollView.resizeContentSize()
-//            
-//        }
-//        
-//    }
 
 }

@@ -13,19 +13,17 @@ class ActivityCell: UICollectionViewCell {
     let nameTextLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
-        label.minimumScaleFactor = 0.5
-        label.adjustsFontSizeToFitWidth = true
+        label.font = UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular)
         return label
     }()
     
-    let logoImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.image = UIImage(named: "not-verified")
-        iv.contentMode = .scaleAspectFit
-        return iv
-    }()
+//    let logoImageView: UIImageView = {
+//        let iv = UIImageView()
+//        iv.translatesAutoresizingMaskIntoConstraints = false
+//        iv.image = UIImage(named: "not-verified")
+//        iv.contentMode = .scaleAspectFit
+//        return iv
+//    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,14 +33,14 @@ class ActivityCell: UICollectionViewCell {
     
     func setupViews(){
         
-        addSubview(logoImageView)
-        logoImageView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-        logoImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        logoImageView.widthAnchor.constraint(equalTo: heightAnchor).isActive = true
-        logoImageView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+//        addSubview(logoImageView)
+//        logoImageView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+//        logoImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+//        logoImageView.widthAnchor.constraint(equalTo: heightAnchor).isActive = true
+//        logoImageView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
         
         addSubview(nameTextLabel)
-        nameTextLabel.leftAnchor.constraint(equalTo: logoImageView.rightAnchor, constant: 4).isActive = true
+        nameTextLabel.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         nameTextLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         nameTextLabel.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         nameTextLabel.heightAnchor.constraint(equalTo: heightAnchor).isActive = true

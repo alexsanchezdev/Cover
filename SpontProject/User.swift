@@ -17,9 +17,7 @@ class User: NSObject {
     var phone: String?
     var profileImageURL: String?
     var distance: Double?
-    var cityName: String?
-    var streetName: String?
-    var userLocation: CLLocation?
+    var city: String?
     var tags: [String]?
     var verified: [Int]?
     var activities: [String: Int]?
