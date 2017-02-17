@@ -29,7 +29,7 @@ extension ProfileController {
     
     func presentEditProfile(){
         let editProfile = EditProfileController()
-        editProfile.userToEdit = userToShow
+        editProfile.userToEdit = self.userToShow
         let navigationController = UINavigationController(rootViewController: editProfile)
         present(navigationController, animated: true, completion: nil)
     }

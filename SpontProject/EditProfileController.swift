@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import Firebase
 
-class EditProfileController: UIViewController, UIScrollViewDelegate {
+class EditProfileController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
+    
+    var userToEdit = User()
     
     lazy var profileScrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -65,7 +68,6 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
     let nameTextField: EditProfileTextField = {
         let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
-
         tf.clearButtonMode = .whileEditing
         return tf
     }()
@@ -243,8 +245,6 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
         return label
     }()
-    
-    var userToEdit = User()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -254,19 +254,20 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: nil)
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         
-        profileScrollView.delegate = self
-        
+        setupDelegates()
         setupViews()
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        profileScrollView.resizeContentSize()
-    }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        profileScrollView.resizeContentSize()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         profileScrollView.resizeContentSize()
     }
     
@@ -465,10 +466,11 @@ class EditProfileController: UIViewController, UIScrollViewDelegate {
     func handleActivitiesController(){
         let activitiesController = ActivitiesController()
         activitiesController.editProfileController = self
-        activitiesController.userToChangeActivities = userToEdit
         navigationController?.pushViewController(activitiesController, animated: true)
     }
 
     
-
+    func setupDelegates() {
+        
+    }
 }

@@ -16,7 +16,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         super.viewDidLoad()
         
         loadUserInfo()
-        setupViews()
 
         
         profileScrollView.delegate = self
@@ -25,34 +24,34 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if userToShow.id == uid {
                 navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more_icon"), style: .plain, target: self, action: #selector(handleOptions))
-            }
-        }
-        
-        listenForChangesInProfile()
-        
-    }
-    
-    
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let uid = FIRAuth.auth()?.currentUser?.uid {
-            if userToShow.id == uid {
                 profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonHeight, right: 0)
             }
         }
         
-        collectionHeight.constant = activitiesCollectionView.contentSize.height + 40
-        profileScrollView.resizeContentSize()
-        profileScrollView.contentSize.height = profileScrollView.contentSize.height - 20
+        setupViews()
+    
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+        //profileScrollView.resizeContentSize()
+        self.viewDidLayoutSubviews()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        profileScrollView.resizeContentSize()
+        
+        //collectionHeight.constant = activitiesCollectionView.contentSize.height + 40
+        //profileScrollView.resizeContentSize()
+        //profileScrollView.contentSize.height = profileScrollView.contentSize.height - 20
+    
     }
     
     // MARK: - Variables
-    var viewHeight: CGFloat = 0.0
-    var viewWidth: CGFloat = 0.0
     var activitiesArray = [String]()
     var verifiedArray = [Int]()
     var userToShow = User()
@@ -147,12 +146,12 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     }()
 
     
-    lazy var activitiesCollectionView: UICollectionView = {
+    lazy var activitiesCollectionView: IntrinsicSizeCollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing = 4
         
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collection = IntrinsicSizeCollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(ActivityCell.self, forCellWithReuseIdentifier: "cell")
         collection.backgroundColor = UIColor.white
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -168,7 +167,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     // MARK: - Methods
     func setupViews(){
         
-        
+        listenForChangesInProfile()
         
         view.addSubview(profileScrollView)
         profileScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -215,8 +214,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         activitiesCollectionView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
         activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: -1).isActive = true
         activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 1).isActive = true
-        collectionHeight = activitiesCollectionView.heightAnchor.constraint(equalToConstant: 0)
-        collectionHeight.isActive = true
+        //collectionHeight = activitiesCollectionView.heightAnchor.constraint(equalToConstant: 0)
+        //collectionHeight.isActive = true
  
         view.addSubview(sendMessageButton)
         sendMessageButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -279,22 +278,30 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                 
                 if snapshot.key == "activities" {
                     self.activities = snapshot.value as! [String : Int]
+                    self.userToShow.activities = self.activities
                     self.sortedDict = self.activities.sorted(by: { $0.0 < $1.0 })
-                    print(self.sortedDict)
                 }
                 
-                DispatchQueue.main.async(execute: {
-                    self.activitiesCollectionView.reloadData()
-                    self.viewDidLayoutSubviews()
-                })
+                if snapshot.key == "name" {
+                    self.nameLabel.text = snapshot.value as! String?
+                    self.userToShow.name = self.nameLabel.text
+                }
+                
+                if snapshot.key == "caption" {
+                    self.captionLabel.text = snapshot.value as! String?
+                    self.userToShow.caption = self.captionLabel.text
+                }
+                
+                if snapshot.key == "username" {
+                    self.navigationItem.title = snapshot.value as! String?
+                    self.userToShow.username = self.navigationItem.title
+                }
+                
+                self.activitiesCollectionView.reloadData()
+                self.view.layoutIfNeeded()
                 
             }, withCancel: nil)
         }
-        
-        
-        
-        
-        
         
     }
     
@@ -321,10 +328,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         let size = CGSize(width: view.frame.width / 2 - 24, height: 24)
         
         return size
-    }
-    
-    func reloadView(){
-    
     }
 
 }
