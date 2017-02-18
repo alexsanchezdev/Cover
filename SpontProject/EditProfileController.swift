@@ -80,6 +80,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
         tf.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
+        tf.placeholder = "Nombre completo"
         return tf
     }()
     
@@ -104,7 +105,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         tf.clearButtonMode = .whileEditing
         tf.autocapitalizationType = .none
         tf.addTarget(self, action: #selector(usernameChanged), for: .editingChanged)
-        tf.addTarget(self, action: #selector(getPreviousUsername), for: .editingDidBegin)
+        tf.placeholder = "Usuario"
         return tf
     }()
     
@@ -264,15 +265,26 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
 
         navigationItem.title = "Editar perfil"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateDatabase))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Listo", style: .plain, target: self, action: #selector(updateDatabase))
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         
         captionTextView.delegate = self
+        previousUsername = self.userToEdit.username
         setupViews()
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+    }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -385,6 +397,8 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
             if let street = userToEdit.street {
                 locationLabel.text = street + ", " + city
             }
+        } else {
+            locationLabel.text = "Sin localización"
         }
         
         profileScrollView.addSubview(locationImageView)
@@ -493,10 +507,6 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         nameDidChange = true
     }
     
-    func getPreviousUsername() {
-        previousUsername = self.usernameTextField.text
-    }
-    
     func usernameChanged(){
         usernameDidChange = true
     }
@@ -507,19 +517,23 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     
     func updateDatabase(){
         
-        // TODO: Disable upload button until finished
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
+        
+        let updateButton = UIBarButtonItem(title: "Listo", style: .plain, target: self, action: #selector(updateDatabase))
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        // Show spinner and disable button until upload finish
         navigationItem.rightBarButtonItem = nil
         let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
         spinner.startAnimating()
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)
         
         let group = DispatchGroup()
-        
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
-    
         let usersRef = FIRDatabase.database().reference().child("users").child(uid)
         let usernamesRef = FIRDatabase.database().reference().child("usernames")
         let usernameUserRef = FIRDatabase.database().reference().child("usernames-user")
+        
+        
         
         if profileDidChange {
             group.enter()
@@ -541,51 +555,75 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         }
         
         if nameDidChange {
+            let nameAlert = UIAlertController(title: nil, message: "El nombre es un campo obligatorio.", preferredStyle: .alert)
+            nameAlert.addAction(ok)
             group.enter()
             if let name = self.nameTextField.text {
                 if name != "" {
                     usersRef.updateChildValues(["name": name])
                     group.leave()
                 } else {
-                    //TODO: Show that name is empty
-                    print("Check name field!")
+                    present(nameAlert, animated: true, completion: {
+                        self.navigationItem.rightBarButtonItem = updateButton
+                    })
                     return
                 }
             } else {
-                // TODO: Show that name is nil
+                present(nameAlert, animated: true, completion: {
+                    self.navigationItem.rightBarButtonItem = updateButton
+                })
             }
         }
         
         if usernameDidChange {
+            let itsAlreadyTakenAlert = UIAlertController(title: nil, message: "Este nombre de usuario ya está registrado", preferredStyle: .alert)
+            itsAlreadyTakenAlert.addAction(ok)
+            
+            let notValidAlert = UIAlertController(title: "Usuario no válido", message: "Debe tener una longitud de entre 4 y 18 caracteres alfanuméricos", preferredStyle: .alert)
+            notValidAlert.addAction(ok)
             group.enter()
             if let username = self.usernameTextField.text {
                 
-                // TODO: Show popup to notice is the same username
-                if username == previousUsername {
+                let decapitalized = username.lowercased()
+                
+                if decapitalized == previousUsername {
+                    group.leave()
+                    self.navigationItem.rightBarButtonItem = updateButton
                     return
                 } else {
                     usernamesRef.observeSingleEvent(of: .value, with: { (snapshot) in
                         if let dict = snapshot.value as? [String: AnyObject] {
                             
-                            if dict.keys.contains(username) {
-                                // TODO: Show popup to notice username is already taken
-                                print("Print username in use")
+                            if dict.keys.contains(decapitalized) {
+                                self.present(itsAlreadyTakenAlert, animated: true, completion: {
+                                    self.navigationItem.rightBarButtonItem = updateButton
+                                })
+                                
                                 return
                             } else {
-                                usersRef.updateChildValues(["username": username])
-                                usernamesRef.updateChildValues([username: 1])
-                                usernameUserRef.updateChildValues([username: uid])
-                                
-                                if let previous = self.previousUsername {
-                                    usernamesRef.child(previous).removeValue()
-                                    usernameUserRef.child(previous).removeValue()
+                                if self.isValidInput(decapitalized) {
+                                    
+                                    usersRef.updateChildValues(["username": decapitalized])
+                                    usernamesRef.updateChildValues([decapitalized: 1])
+                                    usernameUserRef.updateChildValues([decapitalized: uid])
+                                    
+                                    if let previous = self.previousUsername {
+                                        usernamesRef.child(previous).removeValue()
+                                        usernameUserRef.child(previous).removeValue()
+                                        group.leave()
+                                    }
+                                    
+                                } else {
+                                    self.present(notValidAlert, animated: true, completion: {
+                                        self.navigationItem.rightBarButtonItem = updateButton
+                                    })
+                                    return
                                 }
+                                
                             }
-                            
                             
                         }
                         
-                        group.leave()
                     }, withCancel: nil)
                 }
                
@@ -650,5 +688,21 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         optionMenu.addAction(cancel)
         
         present(optionMenu, animated: true, completion: nil)
+    }
+    
+    func keyboardWillShow(notification: NSNotification){
+        let userInfo = notification.userInfo!
+        let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+    }
+    
+    func keyboardWillHide(){
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    }
+    
+    func isValidInput(_ Input:String) -> Bool {
+        let RegEx = "\\A\\w{4,18}\\z"
+        let Test = NSPredicate(format:"SELF MATCHES %@", RegEx)
+        return Test.evaluate(with: Input)
     }
 }

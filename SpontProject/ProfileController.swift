@@ -260,6 +260,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         if let city = userToShow.city {
             locationLabel.text = city
+        } else {
+            locationLabel.text = "Sin localización"
         }
         
         sortedDict = activities.sorted(by: { $0.0 < $1.0 })
@@ -321,6 +323,11 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                     self.sortedDict.removeAll()
                 }
                 
+                if snapshot.key == "city" {
+                    self.userToShow.city = nil
+                    self.locationLabel.text = "Sin localización"
+                }
+                
                 self.activitiesCollectionView.reloadData()
                 self.view.layoutIfNeeded()
             }, withCancel: nil)
@@ -332,6 +339,15 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                     self.activities = snapshot.value as! [String: Int]
                     self.userToShow.activities = self.activities
                     self.sortedDict = self.activities.sorted(by: {$0.0 < $1.0})
+                }
+                
+                if snapshot.key == "city" {
+                    self.locationLabel.text = snapshot.value as! String?
+                    self.userToShow.city = self.locationLabel.text
+                }
+                
+                if snapshot.key == "street" {
+                    self.userToShow.street = snapshot.value as! String?
                 }
                 
                 self.activitiesCollectionView.reloadData()

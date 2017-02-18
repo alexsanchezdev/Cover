@@ -19,7 +19,9 @@ class LocationController: UIViewController, MKMapViewDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Nunca publicaremos tu dirección. Sólo usaremos estos datos para mostrarte en los resultados de búsqueda."
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
         return label
     }()
     
@@ -79,13 +81,9 @@ class LocationController: UIViewController, MKMapViewDelegate {
     }
     
     func setupViews(){
-        view.addSubview(warningLabel)
-        warningLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16).isActive = true
-        warningLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
-        warningLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16).isActive = true
         
         view.addSubview(mapView)
-        mapView.topAnchor.constraint(equalTo: warningLabel.bottomAnchor, constant: 16).isActive = true
+        mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         mapView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         mapView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 9/16).isActive = true
@@ -107,6 +105,11 @@ class LocationController: UIViewController, MKMapViewDelegate {
         bottomSeparatorView.leftAnchor.constraint(equalTo: updateLocationButton.leftAnchor).isActive = true
         bottomSeparatorView.rightAnchor.constraint(equalTo: updateLocationButton.rightAnchor).isActive = true
         bottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        view.addSubview(warningLabel)
+        warningLabel.topAnchor.constraint(equalTo: bottomSeparatorView.bottomAnchor, constant: 16).isActive = true
+        warningLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        warningLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
         
     }

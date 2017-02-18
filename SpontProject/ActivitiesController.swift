@@ -90,6 +90,8 @@ class ActivitiesController: UITableViewController {
             UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut, animations: {
                 self.view.layoutIfNeeded()
             }, completion: nil)
+        } else if activitiesDictionary[activitiesData[indexPath.row]] == 1 {
+            showWarning()
         }
         
         print(activitiesDictionary)
@@ -133,6 +135,7 @@ class ActivitiesController: UITableViewController {
         
         present(loading, animated: true) {
             let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
+            self.group.enter()
             userRef.updateChildValues(self.activitiesDictionary) { (error, ref) in
                 if error != nil {
                     print(error!)
@@ -140,103 +143,27 @@ class ActivitiesController: UITableViewController {
                 
                 for value in valuesToRemove {
                     userRef.child(value).removeValue()
-                    self.dismiss(animated: true, completion: {
-                        self.present(done, animated: true, completion: nil)
-                    })
                 }
+                
+                self.group.leave()
             }
         }
+        
+        group.notify(queue: DispatchQueue.main) {
+            self.dismiss(animated: true, completion: {
+                self.present(done, animated: true, completion: nil)
+            })
+        }
+    }
+    
+    func showWarning(){
+        let warning = UIAlertController(title: "Actividad verificada", message: "Las actividades verificadas no pueden ser eliminadas.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        warning.addAction(ok)
+        
+        present(warning, animated: true, completion: nil)
     }
 }
 
-//    func showWarning(_ indexPath: IndexPath){
-//        let warning = UIAlertController(title: "Estás a punto de borrar una actividad verificada", message: "Esta acción es irreversible y no tendremos forma de restablecer su estado una vez la elimines. ¿Continuar?", preferredStyle: .alert)
-//        let ok = UIAlertAction(title: "Continuar", style: .destructive, handler: { alert in
-//            self.tableView.deselectRow(at: indexPath, animated: false)
-//            self.newUserActivities = self.newUserActivities.filter{$0 != self.activitiesArray[indexPath.row]}
-//        })
-//        let cancel = UIAlertAction(title: "Cancelar", style: .cancel, handler: { alert in
-//            self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-//        })
-//        warning.addAction(ok)
-//        warning.addAction(cancel)
-//        
-//        present(warning, animated: true, completion: nil)
-//    }
-//    
-//    func updateUserActivities(){
-//        
-//        guard let uid = userToChangeActivities.id else { return }
-//        
-//        let loading = UIAlertController(title: nil, message: "Actualizando actividades...", preferredStyle: .alert)
-//        let done = UIAlertController(title: nil, message: "Actividades actualizadas", preferredStyle: .alert)
-//        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
-//        done.addAction(ok)
-//        
-//        present(loading, animated: true) { 
-//            var addValues = [String: Int]()
-//            var deleteValues = [String]()
-//            
-//            print("Activities array: \(self.activitiesArray)")
-//            print("New user activities: \(self.newUserActivities)")
-//            for activity in self.activitiesArray {
-//                if self.newUserActivities.contains(activity) {
-//                    addValues[activity] = 0
-//                } else {
-//                    deleteValues.append(activity)
-//                }
-//            }
-//            
-//            let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
-//            userRef.observeSingleEvent(of: .value, with: { (snapshot) in
-//                
-//                if let dict = snapshot.value as? [String: Int] {
-//                    for (activity, verify) in dict {
-//                        if addValues[activity] != verify {
-//                            addValues[activity] = verify
-//                        }
-//                    }
-//                }
-//                
-//                userRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
-//                    
-//                    if error != nil {
-//                        print(error!)
-//                    }
-//                    
-//                    for delete in deleteValues {
-//                        userRef.child(delete).removeValue(completionBlock: { (error, ref) in
-//                            if error != nil {
-//                                print(error!)
-//                            }
-//                        })
-//                    }
-//                    
-//                    let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
-//                    activitiesRef.updateChildValues(addValues, withCompletionBlock: { (error, ref) in
-//                        if error != nil {
-//                            print(error!)
-//                        }
-//                        
-//                        for delete in deleteValues {
-//                            activitiesRef.child(delete).removeValue(completionBlock: { (error, ref) in
-//                                if error != nil {
-//                                    print(error!)
-//                                }
-//                                
-//                                self.editProfileController.activitiesNumber.text = "\(self.newUserActivities.count)"
-//                                self.editProfileController.userToEdit.activities = addValues
-//                            })
-//                        }
-//                        
-//                        self.dismiss(animated: true, completion: {
-//                            self.present(done, animated: true, completion: nil)
-//                        })
-//                    })
-//                })
-//                
-//                
-//            }, withCancel: nil)
-//            
-//        }
-//    }
+
+
