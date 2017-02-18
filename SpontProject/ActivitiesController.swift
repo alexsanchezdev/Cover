@@ -21,6 +21,7 @@ class ActivitiesController: UITableViewController {
     //var dict = ["BODYCOMBAT": 0, "BODYJAM": 0]
     var selected = [Bool]()
     var activitiesDictionary = [String: Int]()
+    let group = DispatchGroup()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,28 +119,36 @@ class ActivitiesController: UITableViewController {
         guard let uid = userToEdit.id else { return }
         self.editProfileController.activitiesNumber.text = "\(self.activitiesDictionary.count)"
         
+        let loading = UIAlertController(title: nil, message: "Actualizando actividades...", preferredStyle: .alert)
+        let done = UIAlertController(title: nil, message: "Actividades actualizadas", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        done.addAction(ok)
+        
         var valuesToRemove = [String]()
         for key in activitiesData {
             if activitiesDictionary[key] == nil {
                 valuesToRemove.append(key)
             }
         }
-        print(valuesToRemove)
         
-        let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
-        userRef.updateChildValues(activitiesDictionary) { (error, ref) in
-            if error != nil {
-                print(error!)
-            }
-            
-            for value in valuesToRemove {
-                userRef.child(value).removeValue()
+        present(loading, animated: true) {
+            let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
+            userRef.updateChildValues(self.activitiesDictionary) { (error, ref) in
+                if error != nil {
+                    print(error!)
+                }
                 
+                for value in valuesToRemove {
+                    userRef.child(value).removeValue()
+                    self.dismiss(animated: true, completion: {
+                        self.present(done, animated: true, completion: nil)
+                    })
+                }
             }
         }
     }
 }
-    
+
 //    func showWarning(_ indexPath: IndexPath){
 //        let warning = UIAlertController(title: "Estás a punto de borrar una actividad verificada", message: "Esta acción es irreversible y no tendremos forma de restablecer su estado una vez la elimines. ¿Continuar?", preferredStyle: .alert)
 //        let ok = UIAlertAction(title: "Continuar", style: .destructive, handler: { alert in
