@@ -113,7 +113,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
     
     func updateLocation(){
         
-        
+        let group = DispatchGroup()
         
         guard let location = Filters.sharedInstance.locationManager.location else { return }
     
@@ -127,6 +127,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
         
         loading.view.tintColor = UIColor.black
         present(loading, animated: true, completion: {
+            group.enter()
             if let uid = FIRAuth.auth()?.currentUser?.uid {
                 geoFire?.setLocation(location, forKey: uid)
                 let geoCoder = CLGeocoder()
@@ -136,19 +137,60 @@ class LocationController: UIViewController, MKMapViewDelegate {
                     }
                     
                     let placemark = placemarks?[0]
-                    self.userToChangeLocation.city = placemark?.locality as String?
-                    self.editProfileController.locationLabel.text = self.userToChangeLocation.city!
-                    if let uid = FIRAuth.auth()?.currentUser?.uid{
+                    
+                    if let city = placemark?.locality {
+                        self.userToChangeLocation.city = city
+                        self.editProfileController.locationLabel.text = self.userToChangeLocation.city
+                        print(city)
+                        
+                        if let street = placemark?.thoroughfare {
+                            self.userToChangeLocation.street = street
+                            self.editProfileController.locationLabel.text = street + ", " + city
+                            print(street)
+                        } else {
+                            self.userToChangeLocation.street = nil
+                        }
+                        
+                        
+                        group.leave()
+                    } else {
+                        self.userToChangeLocation.city = nil
+                    }
+                    
+                    group.notify(queue: DispatchQueue.main) {
+                        
                         let ref = FIRDatabase.database().reference().child("users").child(uid)
-                        ref.updateChildValues(["city": self.userToChangeLocation.city!], withCompletionBlock: { (error, ref) in
-                            if error != nil {
-                                print(error!)
-                            } else {
-                                self.dismiss(animated: true, completion: {
-                                    self.present(done, animated: true, completion: nil)
+                        
+                        if let city = self.userToChangeLocation.city {
+                            if let street = self.userToChangeLocation.street {
+                                ref.updateChildValues(["city": city, "street": street], withCompletionBlock: { (error, ref) in
+                                    if error != nil {
+                                        print(error!)
+                                    } else {
+                                        self.dismiss(animated: true, completion: {
+                                            self.present(done, animated: true, completion: nil)
+                                        })
+                                    }
+                                    
                                 })
                             }
-                        })
+                            
+                            ref.updateChildValues(["city": city], withCompletionBlock: { (error, ref) in
+                                if error != nil {
+                                    print(error!)
+                                } else {
+                                    if self.userToChangeLocation.street == nil {
+                                        ref.child("street").removeValue()
+                                    }
+
+                                    self.dismiss(animated: true, completion: {
+                                        self.present(done, animated: true, completion: nil)
+                                    })
+                                }
+                                
+                            })
+                            
+                        }
                     }
                 })
             }

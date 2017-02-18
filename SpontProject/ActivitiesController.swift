@@ -12,29 +12,32 @@ import Firebase
 class ActivitiesController: UITableViewController {
     
     var editProfileController = EditProfileController()
+    var userToEdit = User()
     var activitiesData = [String]()
     var activitiesArray = [String]()
-    var verifiedArray = [Int]()
-    var sortedDict = [(key: String, value: Int)]()
+    var newUserActivities = [String]()
+    
+    //var sortedDict = [(key: String, value: Int)]()
+    //var dict = ["BODYCOMBAT": 0, "BODYJAM": 0]
+    var selected = [Bool]()
+    var activitiesDictionary = [String: Int]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadListOfActivities()
         
-        //navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateUserActivities))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateUserActivities))
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(LogoCell.self, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()
-        
-        if let activities = editProfileController.userToEdit.activities {
-            sortedDict = activities.sorted(by: { $0.0 < $1.0 })
+        if let activities = userToEdit.activities {
+            let sortedDict = activities.sorted(by: { $0.0 < $1.0 })
+            
             for (key, value) in sortedDict {
-                activitiesArray.append(key)
-                verifiedArray.append(value)
+                activitiesDictionary[key] = value
             }
         }
-        
         
     }
     
@@ -48,21 +51,52 @@ class ActivitiesController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! LogoCell
+        cell.nameTextLabel.text = activitiesData[indexPath.row]
         
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "cell")
         
-        cell.separatorInset = UIEdgeInsets.zero
-        cell.textLabel?.text =  activitiesData[indexPath.row]
-        print(activitiesData[indexPath.row])
-        
-        if activitiesArray.contains(activitiesData[indexPath.row]) {
-            cell.backgroundColor = UIColor.red
+        if activitiesDictionary[activitiesData[indexPath.row]] == nil {
+            
+            cell.leftPadding?.constant = -50
+        } else if activitiesDictionary[activitiesData[indexPath.row]] == 0 {
+            cell.leftPadding?.constant = 0
+        } else if activitiesDictionary[activitiesData[indexPath.row]] == 1 {
+            cell.leftPadding?.constant = 0
         }
-
+        
+        
         
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let cell = tableView.cellForRow(at: indexPath) as! LogoCell
+        
+        if activitiesDictionary[activitiesData[indexPath.row]] == 0 {
+            activitiesDictionary.removeValue(forKey: activitiesData[indexPath.row])
+            cell.leftPadding?.constant = -50
+
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.view.layoutIfNeeded()
+                
+            }, completion: nil)
+            
+        } else if activitiesDictionary[activitiesData[indexPath.row]] == nil {
+            activitiesDictionary[activitiesData[indexPath.row]] = 0
+            cell.leftPadding?.constant = 0
+            
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseInOut, animations: {
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+        
+        print(activitiesDictionary)
+    }
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
+    }
     
     func loadListOfActivities() {
         let pathToFile = Bundle.main.path(forResource: "activities", ofType: "txt")
@@ -77,6 +111,31 @@ class ActivitiesController: UITableViewController {
                 print(err)
             }
             
+        }
+    }
+    
+    func updateUserActivities(){
+        guard let uid = userToEdit.id else { return }
+        self.editProfileController.activitiesNumber.text = "\(self.activitiesDictionary.count)"
+        
+        var valuesToRemove = [String]()
+        for key in activitiesData {
+            if activitiesDictionary[key] == nil {
+                valuesToRemove.append(key)
+            }
+        }
+        print(valuesToRemove)
+        
+        let userRef = FIRDatabase.database().reference().child("users").child(uid).child("activities")
+        userRef.updateChildValues(activitiesDictionary) { (error, ref) in
+            if error != nil {
+                print(error!)
+            }
+            
+            for value in valuesToRemove {
+                userRef.child(value).removeValue()
+                
+            }
         }
     }
 }

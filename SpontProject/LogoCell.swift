@@ -10,20 +10,23 @@ import UIKit
 
 class LogoCell: UITableViewCell {
     
-//    let logoImageView: UIImageView = {
-//        let iv = UIImageView()
-//        iv.translatesAutoresizingMaskIntoConstraints = false
-//        //iv.backgroundColor = UIColor.rgb(r: 255, g: 0, b: 50, a: 1)
-//        iv.contentMode = UIViewContentMode.right
-//        return iv
-//    }()
+    let logoImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        //iv.backgroundColor = UIColor.rgb(r: 255, g: 0, b: 50, a: 1)
+        iv.contentMode = .scaleAspectFill
+        iv.image = UIImage(named: "check")
+        return iv
+    }()
     
     let nameTextLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
+        label.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium)
         return label
     }()
+    
+    var leftPadding: NSLayoutConstraint?
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,17 +39,21 @@ class LogoCell: UITableViewCell {
     
     func setupViews(){
         
+        addSubview(logoImageView)
+        leftPadding = logoImageView.leftAnchor.constraint(equalTo: leftAnchor, constant: -50)
+        logoImageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        logoImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        logoImageView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        leftPadding?.isActive = true
+        
+        
         addSubview(nameTextLabel)
-        nameTextLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 20).isActive = true
+        nameTextLabel.leftAnchor.constraint(equalTo: logoImageView.rightAnchor, constant: 20).isActive = true
         nameTextLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        nameTextLabel.widthAnchor.constraint(equalTo: widthAnchor, constant: -20).isActive = true
+        nameTextLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
         nameTextLabel.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
-//        
-//        addSubview(logoImageView)
-//        logoImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
-//        logoImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-//        logoImageView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-//        logoImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -190,7 +190,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         print("Update read is called")
         if let toUser = user?.id {
-            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 100)
             handle = ref.observe(.childAdded, with: { (snapshot) in
                 let messageId = snapshot.key
                 let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)

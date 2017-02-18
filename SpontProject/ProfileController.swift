@@ -245,7 +245,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         }
         
         if let caption = userToShow.caption {
-            print(caption)
+            
             captionLabel.text = caption
         }
         if userToShow.id == FIRAuth.auth()?.currentUser?.uid {
@@ -256,7 +256,6 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         for (index, element) in activitiesArray.enumerated() {
             activities[element] = verifiedArray[index]
-            print(activities)
         }
         
         if let city = userToShow.city {
@@ -274,6 +273,11 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
             ref.observe(.childChanged, with: { (snapshot) in
                 if snapshot.key == "city" {
                     self.locationLabel.text = snapshot.value as! String?
+                    self.userToShow.city = self.locationLabel.text
+                }
+                
+                if snapshot.key == "street" {
+                    self.userToShow.street = snapshot.value as! String?
                 }
                 
                 if snapshot.key == "activities" {
@@ -297,9 +301,41 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                     self.userToShow.username = self.navigationItem.title
                 }
                 
+                if snapshot.key == "profileImg" {
+                    self.profilePicture.loadImageUsingCacheWithURLString(snapshot.value as! String)
+                    self.userToShow.profileImageURL = snapshot.value as! String?
+                }
+                
                 self.activitiesCollectionView.reloadData()
                 self.view.layoutIfNeeded()
                 
+            }, withCancel: nil)
+            
+            ref.observe(.childRemoved, with: { (snapshot) in
+                if snapshot.key == "street" {
+                    self.userToShow.street = nil
+                }
+                
+                if snapshot.key == "activities" {
+                    self.userToShow.activities = nil
+                    self.sortedDict.removeAll()
+                }
+                
+                self.activitiesCollectionView.reloadData()
+                self.view.layoutIfNeeded()
+            }, withCancel: nil)
+            
+            ref.observe(.childAdded, with: { (snapshot) in
+                print(snapshot)
+                
+                if snapshot.key == "activities" {
+                    self.activities = snapshot.value as! [String: Int]
+                    self.userToShow.activities = self.activities
+                    self.sortedDict = self.activities.sorted(by: {$0.0 < $1.0})
+                }
+                
+                self.activitiesCollectionView.reloadData()
+                self.view.layoutIfNeeded()
             }, withCancel: nil)
         }
         

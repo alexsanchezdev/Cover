@@ -9,9 +9,16 @@
 import UIKit
 import Firebase
 
-class EditProfileController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
+class EditProfileController: UIViewController, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    
     
     var userToEdit = User()
+    var nameDidChange = false
+    var usernameDidChange = false
+    var previousUsername: String?
+    var captionDidChange = false
+    var profileDidChange = false
     
     lazy var profileScrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -26,15 +33,17 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
         return scroll
     }()
     
-    let profilePicture: UIImageView = {
+    lazy var profilePicture: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "user")
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
+        imageView.isUserInteractionEnabled = true
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 48
         imageView.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
         imageView.layer.borderWidth = 1
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImage)))
         return imageView
     }()
     
@@ -45,6 +54,7 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
+        button.addTarget(self, action: #selector(handleSelectProfileImage), for: .touchUpInside)
         return button
     }()
     
@@ -69,6 +79,7 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
         let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
+        tf.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
         return tf
     }()
     
@@ -92,6 +103,8 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
         tf.autocapitalizationType = .none
+        tf.addTarget(self, action: #selector(usernameChanged), for: .editingChanged)
+        tf.addTarget(self, action: #selector(getPreviousUsername), for: .editingDidBegin)
         return tf
     }()
     
@@ -251,10 +264,10 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
 
         navigationItem.title = "Editar perfil"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: nil)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateDatabase))
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         
-        setupDelegates()
+        captionTextView.delegate = self
         setupViews()
         // Do any additional setup after loading the view.
     }
@@ -367,7 +380,12 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
         locationLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 64).isActive = true
         locationLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        locationLabel.text = userToEdit.city
+        if let city = userToEdit.city {
+            locationLabel.text = city
+            if let street = userToEdit.street {
+                locationLabel.text = street + ", " + city
+            }
+        }
         
         profileScrollView.addSubview(locationImageView)
         locationImageView.centerYAnchor.constraint(equalTo: locationLabel.centerYAnchor).isActive = true
@@ -465,12 +483,172 @@ class EditProfileController: UIViewController, UIScrollViewDelegate, UITextField
     
     func handleActivitiesController(){
         let activitiesController = ActivitiesController()
+        activitiesController.userToEdit = self.userToEdit
         activitiesController.editProfileController = self
         navigationController?.pushViewController(activitiesController, animated: true)
     }
 
     
-    func setupDelegates() {
+    func nameChanged() {
+        nameDidChange = true
+    }
+    
+    func getPreviousUsername() {
+        previousUsername = self.usernameTextField.text
+    }
+    
+    func usernameChanged(){
+        usernameDidChange = true
+    }
+    
+    func captionChanged() {
+        captionDidChange = true
+    }
+    
+    func updateDatabase(){
         
+        // TODO: Disable upload button until finished
+        navigationItem.rightBarButtonItem = nil
+        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+        spinner.startAnimating()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)
+        
+        let group = DispatchGroup()
+        
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
+    
+        let usersRef = FIRDatabase.database().reference().child("users").child(uid)
+        let usernamesRef = FIRDatabase.database().reference().child("usernames")
+        let usernameUserRef = FIRDatabase.database().reference().child("usernames-user")
+        
+        if profileDidChange {
+            group.enter()
+            let imageName = NSUUID().uuidString
+            let storageRef = FIRStorage.storage().reference().child("profile-images").child("\(imageName).jpeg")
+            if let uploadData = UIImageJPEGRepresentation(self.profilePicture.image!, 0.1) {
+                storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
+                    if error != nil {
+                        print (error!)
+                        return
+                    }
+                    
+                    if let profileImageURL = metadata?.downloadURL()?.absoluteString {
+                        usersRef.updateChildValues(["profileImg": profileImageURL])
+                        group.leave()
+                    }
+                })
+            }
+        }
+        
+        if nameDidChange {
+            group.enter()
+            if let name = self.nameTextField.text {
+                if name != "" {
+                    usersRef.updateChildValues(["name": name])
+                    group.leave()
+                } else {
+                    //TODO: Show that name is empty
+                    print("Check name field!")
+                    return
+                }
+            } else {
+                // TODO: Show that name is nil
+            }
+        }
+        
+        if usernameDidChange {
+            group.enter()
+            if let username = self.usernameTextField.text {
+                
+                // TODO: Show popup to notice is the same username
+                if username == previousUsername {
+                    return
+                } else {
+                    usernamesRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                        if let dict = snapshot.value as? [String: AnyObject] {
+                            
+                            if dict.keys.contains(username) {
+                                // TODO: Show popup to notice username is already taken
+                                print("Print username in use")
+                                return
+                            } else {
+                                usersRef.updateChildValues(["username": username])
+                                usernamesRef.updateChildValues([username: 1])
+                                usernameUserRef.updateChildValues([username: uid])
+                                
+                                if let previous = self.previousUsername {
+                                    usernamesRef.child(previous).removeValue()
+                                    usernameUserRef.child(previous).removeValue()
+                                }
+                            }
+                            
+                            
+                        }
+                        
+                        group.leave()
+                    }, withCancel: nil)
+                }
+               
+
+            }
+        }
+        
+        if captionDidChange {
+            group.enter()
+            if let caption = captionTextView.text {
+                usersRef.updateChildValues(["caption": caption])
+                group.leave()
+            }
+            
+        }
+        
+        group.notify(queue: DispatchQueue.main) { 
+            self.dismiss(animated: true, completion: nil)
+        }
+        
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        captionDidChange = true
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        var selectedImageFromPicker: UIImage?
+        
+        if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
+            selectedImageFromPicker = editedImage
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+            selectedImageFromPicker = originalImage
+        }
+        
+        if let selectedImage = selectedImageFromPicker {
+            profilePicture.image = selectedImage
+            profileDidChange = true
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func handleSelectProfileImage() {
+        let picker = UIImagePickerController()
+        picker.allowsEditing = true
+        picker.delegate = self
+        
+        
+        let optionMenu = UIAlertController(title: "Cambiar foto de perfil", message: nil, preferredStyle: .actionSheet)
+        let photoLibrary = UIAlertAction(title: "Elegir de la fototeca", style: .default, handler: { (action) in
+            picker.sourceType = .photoLibrary
+            self.present(picker, animated: true, completion: nil)
+        })
+        let takePhoto = UIAlertAction(title: "Hacer foto", style: .default, handler: { (action) in
+            picker.sourceType = .camera
+            self.present(picker, animated: true, completion: nil)
+        })
+        let cancel = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        
+        optionMenu.addAction(takePhoto)
+        optionMenu.addAction(photoLibrary)
+        optionMenu.addAction(cancel)
+        
+        present(optionMenu, animated: true, completion: nil)
     }
 }
