@@ -16,7 +16,7 @@ extension LoginController {
         let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
         
         bottomLoginConstraint.constant = -keyboardHeight
-        centerTextfieldConstraint.constant = -(keyboardHeight/2 - 20)
+        centerTextfieldConstraint.constant = -(keyboardHeight/2)
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: nil)

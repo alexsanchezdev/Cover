@@ -11,8 +11,6 @@ import Firebase
 
 class EditProfileController: UIViewController, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    
-    
     var userToEdit = User()
     var nameDidChange = false
     var usernameDidChange = false

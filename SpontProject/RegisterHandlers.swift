@@ -36,14 +36,7 @@ extension RegisterController {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        let point: CGPoint = CGPoint(x: 0, y: textField.frame.origin.y - 128)
-        print(view.center.y)
-        
-        if point.y > 0 {
-            registerScrollView.setContentOffset(point, animated: true)
-        } else {
-            registerScrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-        }
+        profileScrollView.setContentOffset(CGPoint(x: 0, y: textField.frame.origin.y - 128), animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -61,7 +54,7 @@ extension RegisterController {
         }
         
         if let selectedImage = selectedImageFromPicker {
-            profileImage.image = selectedImage
+            profilePicture.image = selectedImage
         }
         dismiss(animated: true, completion: nil)
     }
@@ -81,98 +74,98 @@ extension RegisterController {
             return
         }
         
-        guard let password = passwordTextField.text, password.characters.count > 4 else {
-            print("Contraseña muy corta")
-            return
-        }
+//        guard let password = passwordTextField.text, password.characters.count > 4 else {
+//            print("Contraseña muy corta")
+//            return
+//        }
         
         guard let name = nameTextField.text, !name.isEmpty else {
             print("Name nil")
             return
         }
         
-        guard let email = emailTextField.text, isValidEmail(email) else {
-            print("Email error")
-            return
-        }
+//        guard let email = emailTextField.text, isValidEmail(email) else {
+//            print("Email error")
+//            return
+//        }
         
-        guard let phone = phoneTextField.text, phone.characters.count == 9 else {
-            print("Phone error")
-            return
-        }
+//        guard let phone = phoneTextField.text, phone.characters.count == 9 else {
+//            print("Phone error")
+//            return
+//        }
         
         let ref = FIRDatabase.database().reference().child("usernames")
-        ref.queryOrderedByKey().queryEqual(toValue: username).observeSingleEvent(of: .value, with: { (snapshot) in
-            if snapshot.value is NSNull {
-                print("Username available")
-                
-                FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
-                    if error != nil {
-                        print("Is this called?")
-                        print(error!)
-                        return
-                    }
-                    
-                    print("Or is this??")
-                    
-                    guard let uid = user?.uid else {
-                        return
-                    }
-                    
-                    let imageName = NSUUID().uuidString
-                    let storageRef = FIRStorage.storage().reference().child("profile-images").child("\(imageName).jpeg")
-                    if let uploadData = UIImageJPEGRepresentation(self.profileImage.image!, 0.1) {
-                        storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
-                            if error != nil {
-                                print (error!)
-                                return
-                            }
-                            
-                            if let profileImageURL = metadata?.downloadURL()?.absoluteString {
-                                let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username]
-                                self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
-                            }
-                        })
-                    }
-                })
-                
-            } else {
-                print("Username already used")
-                
-            }
-        }, withCancel: nil)
-    }
-    
-    func registerUserIntoDatabaseWithUID(_ uid: String, username: String, values: [String: AnyObject]) {
-        let ref = FIRDatabase.database().reference()
-        let usersReference = ref.child("users").child(uid)
-        let usernameReference = ref.child("usernames")
-        let usernameUsersReference = ref.child("usernames-user")
-        
-        
-        usersReference.updateChildValues(values) { (error, ref) in
-            if error != nil {
-                print(error!)
-                return
-            }
-            
-            usernameReference.updateChildValues([username: 1], withCompletionBlock: { (error, ref) in
-                if error != nil {
-                    print(error!)
-                    return
-                }
-                
-                usernameUsersReference.updateChildValues([username: uid], withCompletionBlock: { (error, ref) in
-                    if error != nil {
-                        print(error!)
-                        return
-                    }
-                    
-                    self.dissmissLoginController()
-                    print("Saved user successfully into Firebase!")
-                })
-            })
-        }
+//        ref.queryOrderedByKey().queryEqual(toValue: username).observeSingleEvent(of: .value, with: { (snapshot) in
+//            if snapshot.value is NSNull {
+//                print("Username available")
+//                
+//                FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
+//                    if error != nil {
+//                        print("Is this called?")
+//                        print(error!)
+//                        return
+//                    }
+//                    
+//                    print("Or is this??")
+//                    
+//                    guard let uid = user?.uid else {
+//                        return
+//                    }
+//                    
+//                    let imageName = NSUUID().uuidString
+//                    let storageRef = FIRStorage.storage().reference().child("profile-images").child("\(imageName).jpeg")
+//                    if let uploadData = UIImageJPEGRepresentation(self.profileImage.image!, 0.1) {
+//                        storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
+//                            if error != nil {
+//                                print (error!)
+//                                return
+//                            }
+//                            
+//                            if let profileImageURL = metadata?.downloadURL()?.absoluteString {
+//                                let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username]
+//                                self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
+//                            }
+//                        })
+//                    }
+//                })
+//                
+//            } else {
+//                print("Username already used")
+//                
+//            }
+//        }, withCancel: nil)
+//    }
+//    
+//    func registerUserIntoDatabaseWithUID(_ uid: String, username: String, values: [String: AnyObject]) {
+//        let ref = FIRDatabase.database().reference()
+//        let usersReference = ref.child("users").child(uid)
+//        let usernameReference = ref.child("usernames")
+//        let usernameUsersReference = ref.child("usernames-user")
+//        
+//        
+//        usersReference.updateChildValues(values) { (error, ref) in
+//            if error != nil {
+//                print(error!)
+//                return
+//            }
+//            
+//            usernameReference.updateChildValues([username: 1], withCompletionBlock: { (error, ref) in
+//                if error != nil {
+//                    print(error!)
+//                    return
+//                }
+//                
+//                usernameUsersReference.updateChildValues([username: uid], withCompletionBlock: { (error, ref) in
+//                    if error != nil {
+//                        print(error!)
+//                        return
+//                    }
+//                    
+//                    self.dissmissLoginController()
+//                    print("Saved user successfully into Firebase!")
+//                })
+//            })
+//        }
     }
     
     func dissmissLoginController() {

@@ -16,10 +16,8 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         super.viewDidLoad()
         
         loadUserInfo()
-
         
         profileScrollView.delegate = self
-        
         
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if userToShow.id == uid {
@@ -348,6 +346,11 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                 
                 if snapshot.key == "street" {
                     self.userToShow.street = snapshot.value as! String?
+                }
+                
+                if snapshot.key == "caption" {
+                    self.userToShow.caption = snapshot.value as! String?
+                    self.captionLabel.text = self.userToShow.caption
                 }
                 
                 self.activitiesCollectionView.reloadData()
