@@ -85,7 +85,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         return imageView
     }()
     
-    let loginButton: UIButton = {
+    lazy var loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Aceptar y crear cuenta", for: .normal)

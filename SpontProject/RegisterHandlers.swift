@@ -85,7 +85,7 @@ extension RegisterController {
             return
         }
         
-        guard let phone = phoneTextField.text, phone.characters.count == 9 else {
+        guard let phone = phoneTextField.text else {
             print("Phone error")
             return
         }

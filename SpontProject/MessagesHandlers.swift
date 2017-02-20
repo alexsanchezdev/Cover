@@ -108,6 +108,13 @@ extension MessagesController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if messages.count == 0 {
+            self.backgroundImage.isHidden = false
+            self.newMessageLabel.isHidden = false
+        } else {
+            self.backgroundImage.isHidden = true
+            self.newMessageLabel.isHidden = true
+        }
         return messages.count
     }
     

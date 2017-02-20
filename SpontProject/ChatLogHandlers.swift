@@ -15,7 +15,7 @@ extension ChatLogController {
         
         isSend = true
         
-        if self.inputTextField.text == nil || self.inputTextField.text == ""{
+        if self.inputTextView.text == nil || self.inputTextView.text == ""{
             return
         } else {
             
@@ -27,9 +27,9 @@ extension ChatLogController {
             let ref = FIRDatabase.database().reference().child("messages")
             let childRef = ref.childByAutoId()
             let timestamp = Int(Date().timeIntervalSince1970)
-            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": false] as [String : Any]
+            let values = ["text": inputTextView.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": false] as [String : Any]
             
-            self.inputTextField.text = nil
+            self.inputTextView.text = nil
             childRef.updateChildValues(values) { (error, ref) in
                 if error != nil {
                     print(error!)
@@ -104,12 +104,14 @@ extension ChatLogController {
         if message.from == FIRAuth.auth()?.currentUser?.uid {
             // outgoing gray
             cell.bubbleView.backgroundColor = ChatMessageCell.sendColor
+            cell.textView.textColor = UIColor.white
             cell.profileImageView.isHidden = true
             cell.bubbleViewLeftAnchor?.isActive = false
             cell.bubbleViewRightAnchor?.isActive = true
         } else {
             // outgoing white
             cell.bubbleView.backgroundColor = ChatMessageCell.receivedColor
+            cell.textView.textColor = UIColor.black
             cell.profileImageView.isHidden = false
             cell.bubbleViewRightAnchor?.isActive = false
             cell.bubbleViewLeftAnchor?.isActive = true
@@ -251,14 +253,15 @@ extension ChatLogController {
         self.messageCollectionView.isHidden = false
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textfieldDidChange()
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textViewDidChange(textView)
     }
     
-    func textfieldDidChange(){
+    func textViewDidChange(_ textView: UITextView) {
         if messages.count != 0 {
             scrollToBottom(animated: true)
         }
         
     }
+    
 }

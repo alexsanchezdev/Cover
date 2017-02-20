@@ -16,7 +16,7 @@ class ChatMessageCell: UICollectionViewCell {
     
     let textView: UITextView = {
         let tv = UITextView()
-        tv.text = "SAMPLE TEXT FOR NOW"
+
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = UIColor.clear
@@ -32,22 +32,19 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.borderColor = sendColor.cgColor
+        imageView.layer.borderColor = receivedColor.cgColor
         imageView.layer.borderWidth = 1
         return imageView
     }()
     
-    static let sendColor = UIColor.rgb(r: 240, g: 240, b: 240, a: 1)
-    static let receivedColor = UIColor.white
+    static let sendColor = UIColor.rgb(r: 255, g: 45, b: 85, a: 1)
+    static let receivedColor = UIColor.rgb(r: 240, g: 240, b: 240, a: 1)
     
     let bubbleView: UIView = {
         let view = UIView()
-        view.backgroundColor = sendColor
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 8
         view.layer.masksToBounds = true
-        view.layer.borderWidth = 1
-        view.layer.borderColor = sendColor.cgColor
         return view
     }()
     
