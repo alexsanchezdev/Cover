@@ -145,6 +145,20 @@ class ActivitiesController: UITableViewController {
                     userRef.child(value).removeValue()
                 }
                 
+                let activitiesRef = FIRDatabase.database().reference().child("activities").child(uid)
+                self.group.enter()
+                activitiesRef.updateChildValues(self.activitiesDictionary, withCompletionBlock: { (error, ref) in
+                    if error != nil {
+                        print(error!)
+                    }
+                    
+                    for value in valuesToRemove {
+                        activitiesRef.child(value).removeValue()
+                    }
+                    
+                    self.group.leave()
+                })
+                
                 self.group.leave()
             }
         }

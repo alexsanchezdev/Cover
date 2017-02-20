@@ -10,6 +10,9 @@ import UIKit
 
 class LandingController: UIViewController {
     
+    var loginRegisterViewBottom: NSLayoutConstraint?
+    var logoImageViewTop: NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -19,6 +22,7 @@ class LandingController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         checkIfUserIsLoggedIn()
+        animateLayout()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -54,7 +58,7 @@ class LandingController: UIViewController {
     let separatorView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.rgb(r: 199, g: 199, b: 205, a: 1)
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.25)
         return view
     }()
     
@@ -62,7 +66,7 @@ class LandingController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Iniciar sesión", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(showLogin), for: .touchUpInside)
         return button
     }()
@@ -71,7 +75,7 @@ class LandingController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Crear cuenta", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(showRegister), for: .touchUpInside)
         return button
     }()
@@ -86,6 +90,7 @@ class LandingController: UIViewController {
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 24, weight: UIFontWeightLight)
         label.text = "Encuentra profesionales altamente cualificados para tus sustituciones"
+        label.alpha = 0
         return label
     }()
     
@@ -101,16 +106,18 @@ class LandingController: UIViewController {
         // Logo image setup
         backgroundImageView.addSubview(logoImageView)
         logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        logoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 64).isActive = true
+        logoImageViewTop = logoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height / 2 - 27)
         logoImageView.widthAnchor.constraint(equalToConstant: 202).isActive = true
         logoImageView.heightAnchor.constraint(equalToConstant: 54).isActive = true
+        logoImageViewTop?.isActive = true
         
         // Login/register view container setup
         backgroundImageView.addSubview(loginRegisterView)
         loginRegisterView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        loginRegisterView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        loginRegisterViewBottom = loginRegisterView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 56)
         loginRegisterView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         loginRegisterView.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        loginRegisterViewBottom?.isActive = true
         
         // Login/register separator setup
         loginRegisterView.addSubview(separatorView)
@@ -137,8 +144,21 @@ class LandingController: UIViewController {
         backgroundImageView.addSubview(descriptionLabel)
         descriptionLabel.centerXAnchor.constraint(equalTo: backgroundImageView.centerXAnchor).isActive = true
         descriptionLabel.bottomAnchor.constraint(equalTo: loginRegisterView.topAnchor, constant: -36).isActive = true
-        descriptionLabel.widthAnchor.constraint(equalTo: backgroundImageView.widthAnchor, multiplier: 5/6).isActive = true
+        descriptionLabel.widthAnchor.constraint(equalTo: backgroundImageView.widthAnchor, constant: -64).isActive = true
         descriptionLabel.heightAnchor.constraint(equalToConstant: 128).isActive = true
         
+    }
+    
+    func animateLayout(){
+        loginRegisterViewBottom?.constant = 0
+        logoImageViewTop?.constant = 64
+        
+        UIView.animate(withDuration: 0.5, delay: 0.3, options: .curveEaseInOut, animations: { 
+            self.view.layoutIfNeeded()
+        }) { (finished) in
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: { 
+                self.descriptionLabel.alpha = 1
+            }, completion: nil)
+        }
     }
 }

@@ -13,6 +13,8 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     var registerButtonBottomConstraint: NSLayoutConstraint?
     var registerScrollViewBottomConstraint: NSLayoutConstraint?
     var bottomLoginConstraint: NSLayoutConstraint?
+    var directRegister: Bool = false
+    let group = DispatchGroup()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +28,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         phoneTextField.delegate = self
         
         view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
-        navigationItem.title = "Registro"
+        navigationItem.title = "Crear cuenta"
         
         let closeImg = UIImage(named: "close_img")?.withRenderingMode(.alwaysOriginal)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: closeImg, style: .plain, target: self, action: #selector(dismissRegisterController))
@@ -39,6 +41,14 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     }
     
     override func viewDidLayoutSubviews() {
+        
+        var contentRect = CGRect.zero
+        for view in profileScrollView.subviews{
+            contentRect = contentRect.union(view.frame)
+        }
+        
+        profileScrollView.contentSize.width = contentRect.size.width
+        profileScrollView.contentSize.height = contentRect.size.height + 74
         
     }
     
@@ -78,10 +88,10 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Iniciar sesión", for: .normal)
+        button.setTitle("Aceptar y crear cuenta", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
-        //button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
         return button
     }()
     
@@ -241,6 +251,17 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         return tf
     }()
     
+    let privacyLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Al crear tu cuenta, aceptas las Condiciones de uso y la Política de privacidad de Cover."
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        return label
+    }()
+    
     
     func setupViews(){
         
@@ -366,12 +387,17 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         phoneImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
         phoneImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
         
+        profileScrollView.addSubview(privacyLabel)
+        privacyLabel.topAnchor.constraint(equalTo: privateInformation.bottomAnchor, constant: 20).isActive = true
+        privacyLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        privacyLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        
     }
     
     func keyboardWillShow(notification: NSNotification){
         let userInfo = notification.userInfo!
         let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
-        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight + 52, right: 0)
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
         bottomLoginConstraint?.constant = -keyboardHeight
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
@@ -380,7 +406,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     }
     
     func keyboardWillHide(){
-        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 52, right: 0)
+        profileScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         bottomLoginConstraint?.constant = 0
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {

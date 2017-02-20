@@ -32,7 +32,8 @@ extension LoginController {
     
     func showRegisterForm(){
         let registerController = RegisterController()
-        present(registerController, animated: true, completion: nil)
+        registerController.directRegister = false
+        present(UINavigationController(rootViewController: registerController), animated: true, completion: nil)
     }
     
     func handleLogin(){

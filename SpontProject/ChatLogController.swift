@@ -115,7 +115,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cellId")
-        collection.backgroundColor = UIColor.white
+        collection.backgroundColor = UIColor.clear
         collection.alwaysBounceVertical = true
         collection.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -139,7 +139,21 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         return indicator
     }()
     
+    let backgroundImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "chatlog_background")
+        iv.contentMode = .scaleAspectFill
+        return iv
+    }()
+    
     func setupInputsComponents() {
+        
+        view.addSubview(backgroundImageView)
+        backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         
         view.addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

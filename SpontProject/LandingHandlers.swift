@@ -22,8 +22,9 @@ extension LandingController {
     func showRegister(){
         print("Register button pressed!")
         
-        let registerController = UINavigationController(rootViewController: RegisterController())
-        present(registerController, animated: true, completion: nil)
+        let registerController = RegisterController()
+        registerController.directRegister = true
+        present(UINavigationController(rootViewController: registerController), animated: true, completion: nil)
     }
     
     func checkIfUserIsLoggedIn(){

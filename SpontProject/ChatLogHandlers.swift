@@ -247,6 +247,7 @@ extension ChatLogController {
     }
     
     func showCollectionView(){
+        self.activityIndicator.stopAnimating()
         self.messageCollectionView.isHidden = false
     }
     
