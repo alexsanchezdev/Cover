@@ -104,6 +104,7 @@
 		6BB64F411E02969000C26E53 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6BB64F451E02AB0100C26E53 /* SpontProject.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpontProject.entitlements; sourceTree = "<group>"; };
 		6BC919471E5BBAC300D31D01 /* CountriesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountriesController.swift; sourceTree = "<group>"; };
+		6BC919491E5C789F00D31D01 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6BCC11D71E0ECA660075027F /* UserTagCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTagCell.swift; sourceTree = "<group>"; };
 		6BD5E7051DFEE84A007D02DF /* SearchHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchHandlers.swift; sourceTree = "<group>"; };
 		6BD5E7071DFEE859007D02DF /* ProfileHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileHandlers.swift; sourceTree = "<group>"; };
@@ -601,6 +602,7 @@
 			children = (
 				6B5DFB9C1E0DF74300D1EEA4 /* en */,
 				6B5DFB9E1E0DF75800D1EEA4 /* es */,
+				6BC919491E5C789F00D31D01 /* Base */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

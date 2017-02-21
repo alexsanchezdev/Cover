@@ -53,6 +53,17 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
         return search
     }()
     
+    let canSearchLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = NSLocalizedString("CanSearch", comment: "")
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        return label
+    }()
+    
     func setupViews(){
         view.backgroundColor = UIColor.white
         
@@ -67,6 +78,11 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
         usersTableView.topAnchor.constraint(equalTo: usernameSearchBar.bottomAnchor).isActive = true
         usersTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         usersTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        view.addSubview(canSearchLabel)
+        canSearchLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        canSearchLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 20).isActive = true
+        canSearchLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
     }
     
     func keyboardWillShow(notification: NSNotification){

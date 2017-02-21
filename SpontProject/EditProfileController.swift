@@ -264,7 +264,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
 
         navigationItem.title = NSLocalizedString("EditProfile", comment: "")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Listo", style: .plain, target: self, action: #selector(updateDatabase))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(updateDatabase))
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         
         captionTextView.delegate = self

@@ -63,6 +63,7 @@
 
 // NewMessage Controller
     Search... = "Buscar...";
+    CanSearch = "Utiliza la barra de búsqueda para encontrar a usuarios.";
 
 // Landing Controller
     Login = "Iniciar sesión";
