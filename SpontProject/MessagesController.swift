@@ -40,7 +40,7 @@ class MessagesController: UITableViewController {
     let newMessageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Esto está un poco vacío, ¡pero no te preocupes! ¿Qué tal si empiezas una conversación?"
+        label.text = NSLocalizedString("EmptyMessages", comment: "")
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
         label.textColor = UIColor.lightGray
@@ -62,7 +62,7 @@ class MessagesController: UITableViewController {
         newMessageLabel.topAnchor.constraint(equalTo: backgroundImage.bottomAnchor, constant: 36).isActive = true
         newMessageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        navigationItem.title = "Mensajes"
+        navigationItem.title = NSLocalizedString("Messages", comment: "")
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleNewMessage))
         
         tableView.register(DateUserCell.self, forCellReuseIdentifier: cellId)

@@ -19,10 +19,11 @@
     SendMessage = "Send message";
     EditInfo = "Edit information";
     MenuTitle = "Account options";
-    Activities = "ACTIVITIES"
+    Activities = "ACTIVITIES";
     TermsAdvise = "As a way to show you on search results we need your location and activities. What about configure them now?";
     EditProfile = "Edit profile";
     NoLocation = "No location";
+    SignOut = "Sign out";
 
 // EditProfile Controller
     ChangeProfileImage = "Change profile image";
@@ -32,6 +33,69 @@
     ActivitiesEdit = "Activities";
     PrivateInformation = "PRIVATE INFORMATION";
     AddDescription = "Add a description";
+    Done = "Done";
+    NameRequired = "Name is a required field.";
+    UsernameRegistered = "This username is already registered.";
+    UsernameNotValid = "Username not valid";
+    MustContain = "Must contain at least 4 alphanumerics characters.";
+    ChooseFromLibrary = "Choose from library";
+    TakePhoto = "Take photo";
+    Cancel = "Cancel";
+    InvalidOperation = "Invalid operation";
+    CantChangeEmail = "You can't change your email right now.";
+    CantChangePhone = "You can't change your phone right now.";
+
+// Location Controller
+
+    WillNotShareLocation = "Your address will never be publicly share. We'll use this data to show you on the search results";
+    UpdateLocation = "Update location";
+    UpdatingLocation = "Updating location...";
+    LocationUpdated = "Location updated";
+
+// Activities Controller
+    Update = "Update";
+    UpdatingActivities = "Updating activities...";
+    ActivitiesUpdated = "Activities updated";
+    VerifiedActivity = "Verified activity";
+    CantDeleteVerified = "Verified activities can't be deleted.";
+
+// Messages Controller
+    Messages = "Messages";
+    EmptyMessages = "This looks a little bit empty, but don't worry! What about starting a new conversation?";
+
+// NewMessage Controller
+    Search... = "Search...";
+
+// Landing Controller
+    Login = "Sign in";
+    SignUp = "Register";
+    FindProfessionals = "Find professionals nearby in seconds";
+
+// Login Controller
+    TryAgain = "Check information and try again.";
+    EmailAddress = "Email address";
+    Password = "Password";
+    ForgetPassword = "Forget password?";
+    FirstTime = "First time using Cover?\nCreate an account";
+    CantChangePassword = "You can't change your password right now.";
+
+//Register Controller
+    CreateAccount = "Create account";
+    AcceptCreateAccount = "Accept and create account";
+    PhoneNumber = "Phone number";
+    ByCreating = "By creating an account, you accept Terms of use and Privacy policy from Cover";
+    NameNotValid = "Name not valid";
+    UsernameNotValid = "Username not valid";
+    PasswordNotValid = "Password not valid";
+    EmailNotValid = "Email not valid";
+    PhoneNotValid = "Phone not valid";
+
+    NameMessage = "Name is a required field.";
+    UsernameMessage = "Username is a required field.";
+    PasswordMessage = "Password must contain at least 6 alphanumeric characters.";
+    EmailMessage = "The email address you enter is invalid.";
+    PhoneMessage = "Phone is required for register proccess.";
+    UsernameAlready = "Username already registered.";
 
 // Search Controller
 

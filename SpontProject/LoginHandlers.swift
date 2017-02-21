@@ -49,7 +49,7 @@ extension LoginController {
                 print(error!)
                 self.errorMessageView.isHidden = false
                 self.activityIndicator.stopAnimating()
-                self.loginButton.setTitle("Iniciar sesión", for: .normal)
+                self.loginButton.setTitle(NSLocalizedString("Login", comment: ""), for: .normal)
                 return
             }
             
@@ -65,7 +65,7 @@ extension LoginController {
     
     
     func lostPassword(){
-        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido restablecer la contraseña.", preferredStyle: .alert)
+        let warning = UIAlertController(title: NSLocalizedString("InvalidOperation", comment: ""), message: NSLocalizedString("CantChangePassword", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         warning.addAction(ok)
         present(warning, animated: true, completion: nil)

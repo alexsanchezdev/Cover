@@ -41,6 +41,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        navigationItem.title = user?.username
         updateReadStatus()
     }
     
@@ -259,6 +260,8 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
             profileController.navigationItem.title = userToLoad.username
             profileController.userToShow = userToLoad
             profileController.sendMessageButton.isHidden = true
+//            profileController.editProfile.isHidden = true
+//            profileController.needInfoLabel.isHidden = true
             navigationItem.title = nil
             navigationController?.pushViewController(profileController, animated: true)
         }

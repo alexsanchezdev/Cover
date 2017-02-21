@@ -40,6 +40,25 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         self.viewDidLayoutSubviews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let uid = FIRAuth.auth()?.currentUser?.uid {
+            if userToShow.activities == nil && uid == userToShow.id {
+                activitiesCollectionView.isHidden = true
+                activitiesLabel.isHidden = true
+                needInfoLabel.isHidden = false
+                editProfile.isHidden = false
+            } else {
+                activitiesCollectionView.isHidden = false
+                activitiesLabel.isHidden = false
+                needInfoLabel.isHidden = true
+                editProfile.isHidden = true
+            }
+        }
+        
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -49,17 +68,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
             captionLabelConstraint?.constant = 20
         }
         
-        if userToShow.activities == nil {
-            activitiesCollectionView.isHidden = true
-            activitiesLabel.isHidden = true
-            needInfoLabel.isHidden = false
-            editProfile.isHidden = false
-        } else {
-            activitiesCollectionView.isHidden = false
-            activitiesLabel.isHidden = false
-            needInfoLabel.isHidden = true
-            editProfile.isHidden = true
-        }
+        
         
         profileScrollView.resizeContentSize()
         
@@ -209,7 +218,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         button.addTarget(self, action: #selector(presentEditProfile), for: .touchUpInside)
-        button.layer.cornerRadius = 26
+        button.layer.cornerRadius = 24
         button.layer.masksToBounds = true
         return button
     }()

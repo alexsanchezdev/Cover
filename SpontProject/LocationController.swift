@@ -17,7 +17,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
     let warningLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Nunca publicaremos tu dirección. Sólo usaremos estos datos para mostrarte en los resultados de búsqueda."
+        label.text = NSLocalizedString("WillNotShareLocation", comment: "")
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
         label.textColor = UIColor.lightGray
@@ -35,7 +35,7 @@ class LocationController: UIViewController, MKMapViewDelegate {
     lazy var updateLocationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Actualizar ubicación", for: .normal)
+        button.setTitle(NSLocalizedString("UpdateLocation", comment: ""), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
@@ -120,8 +120,8 @@ class LocationController: UIViewController, MKMapViewDelegate {
         
         guard let location = Filters.sharedInstance.locationManager.location else { return }
     
-        let loading = UIAlertController(title: nil, message: "Actualizando ubicación...", preferredStyle: .alert)
-        let done = UIAlertController(title: nil, message: "Ubicación actualizada", preferredStyle: .alert)
+        let loading = UIAlertController(title: nil, message: NSLocalizedString("UpdatingLocation", comment: ""), preferredStyle: .alert)
+        let done = UIAlertController(title: nil, message: NSLocalizedString("LocationUpdated", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         done.addAction(ok)
         

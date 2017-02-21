@@ -28,8 +28,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         phoneTextField.delegate = self
         
         view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
-        navigationItem.title = "Crear cuenta"
-        
+        navigationItem.title = NSLocalizedString("CreateAccount", comment: "")        
         let closeImg = UIImage(named: "close_img")?.withRenderingMode(.alwaysOriginal)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: closeImg, style: .plain, target: self, action: #selector(dismissRegisterController))
         
@@ -88,7 +87,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     lazy var registerButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Aceptar y crear cuenta", for: .normal)
+        button.setTitle(NSLocalizedString("AcceptCreateAccount", comment: "") , for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
@@ -105,7 +104,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     let changeProfilePicture: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Cambiar foto de perfil", for: .normal)
+        button.setTitle(NSLocalizedString("ChangeProfileImage", comment: ""), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
@@ -134,7 +133,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
-        tf.placeholder = "Nombre completo"
+        tf.placeholder = NSLocalizedString("FullName", comment: "")
         tf.autocapitalizationType = .words
         tf.autocorrectionType = .no
         return tf
@@ -161,7 +160,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         tf.clearButtonMode = .whileEditing
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
-        tf.placeholder = "Usuario"
+        tf.placeholder = NSLocalizedString("Username", comment: "")
         return tf
     }()
     
@@ -184,7 +183,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         let tf = EditProfileTextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
-        tf.placeholder = "Contraseña"
+        tf.placeholder = NSLocalizedString("Password", comment: "")
         tf.isSecureTextEntry = true
         return tf
     }()
@@ -192,7 +191,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
     let privateInfoLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "INFORMACIÓN PRIVADA"
+        label.text = NSLocalizedString("PrivateInformation", comment: "")
         label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
         label.textColor = UIColor.lightGray
         return label
@@ -221,7 +220,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         tf.clearButtonMode = .whileEditing
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
-        tf.placeholder = "Correo eletrónico"
+        tf.placeholder = NSLocalizedString("EmailAddress", comment: "")
         return tf
     }()
     
@@ -247,14 +246,14 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.keyboardType = .phonePad
-        tf.placeholder = "Teléfono móvil"
+        tf.placeholder = NSLocalizedString("PhoneNumber", comment: "")
         return tf
     }()
     
     let privacyLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Al crear tu cuenta, aceptas las Condiciones de uso y la Política de privacidad de Cover."
+        label.text = NSLocalizedString("ByCreating", comment: "")
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
         label.textColor = UIColor.lightGray

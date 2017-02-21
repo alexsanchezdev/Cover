@@ -521,7 +521,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         
         guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
         
-        let updateButton = UIBarButtonItem(title: "Listo", style: .plain, target: self, action: #selector(updateDatabase))
+        let updateButton = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(updateDatabase))
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         
         // Show spinner and disable button until upload finish
@@ -557,7 +557,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         }
         
         if nameDidChange {
-            let nameAlert = UIAlertController(title: nil, message: "El nombre es un campo obligatorio.", preferredStyle: .alert)
+            let nameAlert = UIAlertController(title: nil, message: NSLocalizedString("NameRequired", comment: ""), preferredStyle: .alert)
             nameAlert.addAction(ok)
             group.enter()
             if let name = self.nameTextField.text {
@@ -578,10 +578,10 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         }
         
         if usernameDidChange {
-            let itsAlreadyTakenAlert = UIAlertController(title: nil, message: "Este nombre de usuario ya está registrado", preferredStyle: .alert)
+            let itsAlreadyTakenAlert = UIAlertController(title: nil, message: NSLocalizedString("UsernameRegistered", comment: ""), preferredStyle: .alert)
             itsAlreadyTakenAlert.addAction(ok)
             
-            let notValidAlert = UIAlertController(title: "Usuario no válido", message: "Debe tener una longitud de entre 4 y 18 caracteres alfanuméricos", preferredStyle: .alert)
+            let notValidAlert = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("MustContain", comment: ""), preferredStyle: .alert)
             notValidAlert.addAction(ok)
             group.enter()
             if let username = self.usernameTextField.text {
@@ -637,7 +637,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
             group.enter()
             
             if let caption = captionTextView.text {
-                if caption == "Añade una descripción" {
+                if caption == NSLocalizedString("AddDescription", comment: "") {
                     usersRef.child("caption").removeValue()
                     group.leave()
                 } else {
@@ -662,7 +662,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "Añade una descripción"
+            textView.text = NSLocalizedString("AddDescription", comment: "")
             textView.textColor = UIColor.lightGray
         }
     }
@@ -693,16 +693,16 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         picker.delegate = self
         
         
-        let optionMenu = UIAlertController(title: "Cambiar foto de perfil", message: nil, preferredStyle: .actionSheet)
-        let photoLibrary = UIAlertAction(title: "Elegir de la fototeca", style: .default, handler: { (action) in
+        let optionMenu = UIAlertController(title: NSLocalizedString("ChangeProfileImage", comment: ""), message: nil, preferredStyle: .actionSheet)
+        let photoLibrary = UIAlertAction(title: NSLocalizedString("ChooseFromLibrary", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .photoLibrary
             self.present(picker, animated: true, completion: nil)
         })
-        let takePhoto = UIAlertAction(title: "Hacer foto", style: .default, handler: { (action) in
+        let takePhoto = UIAlertAction(title: NSLocalizedString("TakePhoto", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .camera
             self.present(picker, animated: true, completion: nil)
         })
-        let cancel = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
         
         optionMenu.addAction(takePhoto)
         optionMenu.addAction(photoLibrary)
@@ -728,14 +728,14 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     }
     
     func handleShowEmailWarning(){
-        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido cambiar el email de registro.", preferredStyle: .alert)
+        let warning = UIAlertController(title: NSLocalizedString("InvalidOperation", comment: ""), message: NSLocalizedString("CantChangeEmail", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         warning.addAction(ok)
         present(warning, animated: true, completion: nil)
     }
     
     func handleShowPhoneWarning(){
-        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido cambiar el teléfono de registro.", preferredStyle: .alert)
+        let warning = UIAlertController(title: NSLocalizedString("InvalidOperation", comment: ""), message: NSLocalizedString("CantChangePhone", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         warning.addAction(ok)
         present(warning, animated: true, completion: nil)

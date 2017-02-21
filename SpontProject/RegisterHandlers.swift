@@ -17,16 +17,16 @@ extension RegisterController {
         picker.delegate = self
         
         
-        let optionMenu = UIAlertController(title: "Cambiar foto de perfil", message: nil, preferredStyle: .actionSheet)
-        let photoLibrary = UIAlertAction(title: "Elegir de la fototeca", style: .default, handler: { (action) in
+        let optionMenu = UIAlertController(title: NSLocalizedString("ChangeProfileImage", comment: ""), message: nil, preferredStyle: .actionSheet)
+        let photoLibrary = UIAlertAction(title: NSLocalizedString("ChooseFromLibrary", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .photoLibrary
             self.present(picker, animated: true, completion: nil)
         })
-        let takePhoto = UIAlertAction(title: "Hacer foto", style: .default, handler: { (action) in
+        let takePhoto = UIAlertAction(title: NSLocalizedString("TakePhoto", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .camera
             self.present(picker, animated: true, completion: nil)
         })
-        let cancel = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
         
         optionMenu.addAction(takePhoto)
         optionMenu.addAction(photoLibrary)
@@ -66,7 +66,7 @@ extension RegisterController {
     func handleRegister(){
         
         guard let name = nameTextField.text, !name.isEmpty else {
-            let warning = UIAlertController(title: "Nombre no válido", message: "Debes de introducir un nombre para la cuenta.", preferredStyle: .alert)
+            let warning = UIAlertController(title: NSLocalizedString("NameNotValid", comment: ""), message: NSLocalizedString("NameMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
             present(warning, animated: true, completion: nil)
@@ -74,7 +74,7 @@ extension RegisterController {
         }
         
         guard let username = usernameTextField.text, !username.isEmpty else {
-            let warning = UIAlertController(title: "Usuario no válido", message: "Debes de introducir un nombre de usuario.", preferredStyle: .alert)
+            let warning = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("UsernameMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
             present(warning, animated: true, completion: nil)
@@ -82,7 +82,7 @@ extension RegisterController {
         }
         
         guard let password = passwordTextField.text, password.characters.count >= 6 else {
-            let warning = UIAlertController(title: "Contraseña no válida", message: "La contraseña debe tener 6 o más carácteres alfanuméricos.", preferredStyle: .alert)
+            let warning = UIAlertController(title: NSLocalizedString("PasswordNotValid", comment: ""), message: NSLocalizedString("PasswordMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
             present(warning, animated: true, completion: nil)
@@ -90,7 +90,7 @@ extension RegisterController {
         }
         
         guard let email = emailTextField.text, isValidEmail(email) else {
-            let warning = UIAlertController(title: "Email no válido", message: "El correo electrónico introducido no es válido.", preferredStyle: .alert)
+            let warning = UIAlertController(title: NSLocalizedString("EmailNotValid", comment: ""), message: NSLocalizedString("EmailMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
             present(warning, animated: true, completion: nil)
@@ -98,7 +98,7 @@ extension RegisterController {
         }
         
         guard let phone = phoneTextField.text, phone.characters.count == 9 else {
-            let warning = UIAlertController(title: "Teléfono no válido", message: "Es necesario un teléfono de contacto para el registro.", preferredStyle: .alert)
+            let warning = UIAlertController(title: NSLocalizedString("PhoneNotValid", comment: ""), message: NSLocalizedString("PhoneMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
             present(warning, animated: true, completion: nil)
@@ -114,7 +114,7 @@ extension RegisterController {
                 FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
                     if error != nil {
                         self.activityIndicator.stopAnimating()
-                        self.registerButton.setTitle("Iniciar sesión", for: .normal)
+                        self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
                         print(error!)
                         return
                     }
@@ -130,7 +130,7 @@ extension RegisterController {
                             storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
                                 if error != nil {
                                     self.activityIndicator.stopAnimating()
-                                    self.registerButton.setTitle("Iniciar sesión", for: .normal)
+                                    self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
                                     print (error!)
                                     return
                                 }
@@ -144,7 +144,7 @@ extension RegisterController {
                                     request?.commitChanges(completion: { (error) in
                                         if error != nil {
                                             self.activityIndicator.stopAnimating()
-                                            self.registerButton.setTitle("Iniciar sesión", for: .normal)
+                                            self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
                                             print(error!)
                                         }
                                     })
@@ -158,7 +158,11 @@ extension RegisterController {
                 
             } else {
                 self.activityIndicator.stopAnimating()
-                self.registerButton.setTitle("Iniciar sesión", for: .normal)
+                self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
+                let warning = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("UsernameAlready", comment: ""), preferredStyle: .alert)
+                let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+                warning.addAction(ok)
+                self.present(warning, animated: true, completion: nil)
                 print("Username already used")
                 return
             }

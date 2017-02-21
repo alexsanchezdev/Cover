@@ -28,7 +28,7 @@ class ActivitiesController: UITableViewController {
         
         loadListOfActivities()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Actualizar", style: .plain, target: self, action: #selector(updateUserActivities))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Update", comment: ""), style: .plain, target: self, action: #selector(updateUserActivities))
         
         tableView.register(LogoCell.self, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()
@@ -121,8 +121,8 @@ class ActivitiesController: UITableViewController {
         guard let uid = userToEdit.id else { return }
         self.editProfileController.activitiesNumber.text = "\(self.activitiesDictionary.count)"
         
-        let loading = UIAlertController(title: nil, message: "Actualizando actividades...", preferredStyle: .alert)
-        let done = UIAlertController(title: nil, message: "Actividades actualizadas", preferredStyle: .alert)
+        let loading = UIAlertController(title: nil, message: NSLocalizedString("UpdatingActivities", comment: ""), preferredStyle: .alert)
+        let done = UIAlertController(title: nil, message: NSLocalizedString("ActivitiesUpdated", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         done.addAction(ok)
         
@@ -171,7 +171,7 @@ class ActivitiesController: UITableViewController {
     }
     
     func showWarning(){
-        let warning = UIAlertController(title: "Actividad verificada", message: "Las actividades verificadas no pueden ser eliminadas.", preferredStyle: .alert)
+        let warning = UIAlertController(title: NSLocalizedString("VerifiedActivity", comment: ""), message: NSLocalizedString("CantDeleteVerified", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         warning.addAction(ok)
         

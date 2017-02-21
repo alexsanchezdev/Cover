@@ -65,7 +65,7 @@ class LandingController: UIViewController {
     let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Iniciar sesión", for: .normal)
+        button.setTitle(NSLocalizedString("Login", comment: ""), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(showLogin), for: .touchUpInside)
         return button
@@ -74,7 +74,7 @@ class LandingController: UIViewController {
     let registerButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Crear cuenta", for: .normal)
+        button.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(showRegister), for: .touchUpInside)
         return button
@@ -89,7 +89,7 @@ class LandingController: UIViewController {
         label.textColor = UIColor.white
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 24, weight: UIFontWeightLight)
-        label.text = "Encuentra profesionales altamente cualificados para tus sustituciones"
+        label.text = NSLocalizedString("FindProfessionals", comment: "")
         label.alpha = 0
         return label
     }()

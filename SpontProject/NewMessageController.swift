@@ -46,7 +46,7 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
     lazy var usernameSearchBar: UISearchBar = {
         let search = UISearchBar()
         search.translatesAutoresizingMaskIntoConstraints = false
-        search.placeholder = "Buscar..."
+        search.placeholder = NSLocalizedString("Search...", comment: "")
         search.autocapitalizationType = .none
         search.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
         search.searchBarStyle = .minimal

@@ -15,10 +15,10 @@ extension ProfileController {
     func handleOptions(){
         let optionsMenu = UIAlertController()
         //let optionsMenu = UIAlertController(title: NSLocalizedString("MenuTitle", comment: "This is the message that will be shown on top of the alert controller"), message: nil, preferredStyle: .actionSheet)
-        let editProfile = UIAlertAction(title: "Editar perfil", style: .default, handler: {(action) in self.presentEditProfile()})
-        let logoutAccount = UIAlertAction(title: "Cerrar sesión", style: .destructive, handler: {(action) in
+        let editProfile = UIAlertAction(title: NSLocalizedString("EditProfile", comment: ""), style: .default, handler: {(action) in self.presentEditProfile()})
+        let logoutAccount = UIAlertAction(title: NSLocalizedString("SignOut", comment: ""), style: .destructive, handler: {(action) in
             self.handleLogout()})
-        let cancelOptions = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        let cancelOptions = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
         
         optionsMenu.addAction(editProfile)
         optionsMenu.addAction(logoutAccount)

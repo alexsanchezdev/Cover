@@ -44,7 +44,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
     let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Iniciar sesión", for: .normal)
+        button.setTitle(NSLocalizedString("Login", comment: ""), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
         button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
         button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
@@ -77,7 +77,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
     let errorMessageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Revisa la información e inténtalo de nuevo"
+        label.text = NSLocalizedString("TryAgain", comment: "")
         label.textColor = UIColor.white
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 14)
@@ -94,7 +94,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
         let tf = UITextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.font = UIFont.systemFont(ofSize: 15)
-        tf.attributedPlaceholder = NSMutableAttributedString(string: "Correo electrónico", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)])
+        tf.attributedPlaceholder = NSMutableAttributedString(string: NSLocalizedString("EmailAddress", comment: ""), attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)])
         tf.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
         tf.keyboardAppearance = .dark
         tf.keyboardType = .emailAddress
@@ -110,7 +110,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.font = UIFont.systemFont(ofSize: 15)
         tf.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
-        tf.attributedPlaceholder = NSMutableAttributedString(string: "Contraseña", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)])
+        tf.attributedPlaceholder = NSMutableAttributedString(string: NSLocalizedString("Password", comment: ""), attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)])
         tf.isSecureTextEntry = true
         tf.keyboardAppearance = .dark
         tf.addTarget(self, action: #selector(resetWarning), for: .editingChanged)
@@ -120,7 +120,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
     lazy var forgetPasswordButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("¿La has olvidado?", for: .normal)
+        button.setTitle(NSLocalizedString("ForgetPassword", comment: ""), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25), for: .highlighted)
@@ -132,7 +132,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
     let registerButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("¿Es la primera vez que usas Cover?\nCrear una cuenta", for: .normal)
+        button.setTitle(NSLocalizedString("FirstTime", comment: ""), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25), for: .highlighted)
