@@ -8,12 +8,14 @@
 
 import UIKit
 
-class LoginController: UIViewController {
+class LoginController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         setupViews()
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -115,7 +117,7 @@ class LoginController: UIViewController {
         return tf
     }()
     
-    let forgetPasswordButton: UIButton = {
+    lazy var forgetPasswordButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("¿La has olvidado?", for: .normal)
@@ -123,6 +125,7 @@ class LoginController: UIViewController {
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 254, g: 40, b: 81, a: 0.25), for: .highlighted)
         button.titleLabel?.textAlignment = .right
+        button.addTarget(self, action: #selector(lostPassword), for: .touchUpInside)
         return button
     }()
     

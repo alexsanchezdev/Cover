@@ -17,3 +17,25 @@
     SendMessage = "Enviar mensaje";
     EditInfo = "Editar información";
     MenuTitle = "Opciones de cuenta";
+    Activities = "ACTIVIDADES";
+    TermsAdvise = "Para aparecer en los resultados de búsquedas debes facilitarnos tu ubicación y actividades. ¿Qué tal si los configuramos?";
+    EditProfile = "Editar perfil";
+    NoLocation = "Sin localización";
+
+// EditProfile Controller
+    ChangeProfileImage = "Cambiar foto de perfil";
+    FullName = "Nombre completo";
+    Username = "Usuario";
+    SearchTerms = "TÉRMINOS DE BÚSQUEDA";
+    ActivitiesEdit = "Actividades";
+    PrivateInformation = "INFORMACIÓN PRIVADA";
+    AddDescription = "Añade una descripción";
+
+// Search Controller
+
+    SearchAnActivity = "Busca una actividad...";
+    TopSearch = "Top búsquedas";
+    MostSearched = "Estas son las actividades más solicitadas";
+
+// Results Controller
+    NoInstructorAround = "No hay instructores a tu alrededor para esta actividad";

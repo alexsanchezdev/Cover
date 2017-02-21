@@ -58,6 +58,19 @@ extension LoginController {
         })
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.resignFirstResponder()
+        self.view.layoutIfNeeded()
+    }
+    
+    
+    func lostPassword(){
+        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido restablecer la contraseña.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        warning.addAction(ok)
+        present(warning, animated: true, completion: nil)
+    }
+    
     func handleRegister(){
         let registerController = UINavigationController(rootViewController: RegisterController())
         present(registerController, animated: true, completion: nil)

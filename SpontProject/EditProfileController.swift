@@ -48,7 +48,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     let changeProfilePicture: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Cambiar foto de perfil", for: .normal)
+        button.setTitle(NSLocalizedString("ChangeProfileImage", comment: ""), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 1), for: .normal)
         button.setTitleColor(UIColor.rgb(r: 255, g: 45, b: 85, a: 0.25), for: .highlighted)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightRegular)
@@ -78,7 +78,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.clearButtonMode = .whileEditing
         tf.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
-        tf.placeholder = "Nombre completo"
+        tf.placeholder = NSLocalizedString("FullName", comment: "")
         return tf
     }()
     
@@ -103,7 +103,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         tf.clearButtonMode = .whileEditing
         tf.autocapitalizationType = .none
         tf.addTarget(self, action: #selector(usernameChanged), for: .editingChanged)
-        tf.placeholder = "Usuario"
+        tf.placeholder = NSLocalizedString("Username", comment: "")
         return tf
     }()
     
@@ -128,13 +128,14 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         tv.isScrollEnabled = false
         tv.font = UIFont.systemFont(ofSize: 17, weight: UIFontWeightRegular)
         tv.textContainerInset = UIEdgeInsets(top: 14, left: -6, bottom: 14, right: 8)
+    
         return tv
     }()
     
     let searchTermsLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "TÉRMINOS DE BÚSQUEDA"
+        label.text = NSLocalizedString("SearchTerms", comment: "")
         label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
         label.textColor = UIColor.lightGray
         return label
@@ -183,7 +184,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     lazy var activitiesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Actividades"
+        label.text = NSLocalizedString("ActivitiesEdit", comment: "")
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
         return label
@@ -204,7 +205,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     let privateInfoLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "INFORMACIÓN PRIVADA"
+        label.text = NSLocalizedString("PrivateInformation", comment: "")
         label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
         label.textColor = UIColor.lightGray
         return label
@@ -231,7 +232,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleShowEmailWarning)))
         return label
     }()
     
@@ -254,14 +255,14 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleActivitiesController)))
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleShowPhoneWarning)))
         return label
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = "Editar perfil"
+        navigationItem.title = NSLocalizedString("EditProfile", comment: "")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Listo", style: .plain, target: self, action: #selector(updateDatabase))
         view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
@@ -274,7 +275,10 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if userToEdit.caption == "" || userToEdit.caption == nil {
+            captionTextView.text = NSLocalizedString("AddDescription", comment: "")
+            captionTextView.textColor = UIColor.lightGray
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
@@ -396,7 +400,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
                 locationLabel.text = street + ", " + city
             }
         } else {
-            locationLabel.text = "Sin localización"
+            locationLabel.text = NSLocalizedString("NoLocation", comment: "")
         }
         
         profileScrollView.addSubview(locationImageView)
@@ -631,17 +635,36 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         
         if captionDidChange {
             group.enter()
-            if let caption = captionTextView.text {
-                usersRef.updateChildValues(["caption": caption])
-                group.leave()
-            }
             
+            if let caption = captionTextView.text {
+                if caption == "Añade una descripción" {
+                    usersRef.child("caption").removeValue()
+                    group.leave()
+                } else {
+                    usersRef.updateChildValues(["caption": caption])
+                    group.leave()
+                }
+            }
         }
         
         group.notify(queue: DispatchQueue.main) { 
             self.dismiss(animated: true, completion: nil)
         }
         
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = nil
+            textView.textColor = UIColor.black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Añade una descripción"
+            textView.textColor = UIColor.lightGray
+        }
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -702,5 +725,19 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
         let RegEx = "\\A\\w{4,18}\\z"
         let Test = NSPredicate(format:"SELF MATCHES %@", RegEx)
         return Test.evaluate(with: Input)
+    }
+    
+    func handleShowEmailWarning(){
+        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido cambiar el email de registro.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        warning.addAction(ok)
+        present(warning, animated: true, completion: nil)
+    }
+    
+    func handleShowPhoneWarning(){
+        let warning = UIAlertController(title: "Operación no válida", message: "Actualmente no está permitido cambiar el teléfono de registro.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        warning.addAction(ok)
+        present(warning, animated: true, completion: nil)
     }
 }

@@ -28,7 +28,7 @@ class ActivitiesController: UITableViewController {
         
         loadListOfActivities()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(updateUserActivities))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Actualizar", style: .plain, target: self, action: #selector(updateUserActivities))
         
         tableView.register(LogoCell.self, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()

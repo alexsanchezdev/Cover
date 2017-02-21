@@ -21,7 +21,14 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(true)
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
     
     var users = [User]()
@@ -43,7 +50,6 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
         search.autocapitalizationType = .none
         search.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
         search.searchBarStyle = .minimal
-        search.keyboardAppearance = .dark
         return search
     }()
     
@@ -61,5 +67,16 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
         usersTableView.topAnchor.constraint(equalTo: usernameSearchBar.bottomAnchor).isActive = true
         usersTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         usersTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    func keyboardWillShow(notification: NSNotification){
+        let userInfo = notification.userInfo!
+        let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
+
+        usersTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+    }
+    
+    func keyboardWillHide(notification: NSNotification){
+        usersTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 }

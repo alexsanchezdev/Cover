@@ -11,6 +11,7 @@ import Firebase
 
 class ProfileController: UIViewController, CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
 
+    var captionLabelConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +42,25 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        if captionLabel.text == "" || captionLabel.text == nil {
+            captionLabelConstraint?.constant = 0
+        } else {
+            captionLabelConstraint?.constant = 20
+        }
+        
+        if userToShow.activities == nil {
+            activitiesCollectionView.isHidden = true
+            activitiesLabel.isHidden = true
+            needInfoLabel.isHidden = false
+            editProfile.isHidden = false
+        } else {
+            activitiesCollectionView.isHidden = false
+            activitiesLabel.isHidden = false
+            needInfoLabel.isHidden = true
+            editProfile.isHidden = true
+        }
+        
         profileScrollView.resizeContentSize()
         
         //collectionHeight.constant = activitiesCollectionView.contentSize.height + 40
@@ -126,6 +146,15 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         return label
     }()
     
+    let activitiesLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = NSLocalizedString("Activities", comment: "")
+        label.font = UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
+        label.textColor = UIColor.lightGray
+        return label
+    }()
+    
     lazy var sendMessageButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -160,6 +189,29 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         collection.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
         collection.layer.borderWidth = 1
         return collection
+    }()
+    
+    let needInfoLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = NSLocalizedString("TermsAdvise", comment: "")
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let editProfile: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(NSLocalizedString("EditProfile", comment: ""), for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
+        button.setBackgroundImage(UIImage(named: "button_bg"), for: .normal)
+        button.addTarget(self, action: #selector(presentEditProfile), for: .touchUpInside)
+        button.layer.cornerRadius = 26
+        button.layer.masksToBounds = true
+        return button
     }()
     
     // MARK: - Methods
@@ -205,11 +257,29 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         
         profileScrollView.addSubview(captionLabel)
         captionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        captionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20).isActive = true
+        captionLabelConstraint = captionLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 20)
         captionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        captionLabelConstraint?.isActive = true
+        
+        profileScrollView.addSubview(needInfoLabel)
+        needInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        needInfoLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        needInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        
+        profileScrollView.addSubview(editProfile)
+        editProfile.topAnchor.constraint(equalTo: needInfoLabel.bottomAnchor, constant: 20).isActive = true
+        editProfile.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        editProfile.widthAnchor.constraint(equalToConstant: 192).isActive = true
+        editProfile.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        profileScrollView.addSubview(activitiesLabel)
+        activitiesLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        activitiesLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
+        activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        activitiesLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         profileScrollView.addSubview(activitiesCollectionView)
-        activitiesCollectionView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        activitiesCollectionView.topAnchor.constraint(equalTo: activitiesLabel.bottomAnchor, constant: 8).isActive = true
         activitiesCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: -1).isActive = true
         activitiesCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 1).isActive = true
         //collectionHeight = activitiesCollectionView.heightAnchor.constraint(equalToConstant: 0)
@@ -259,7 +329,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         if let city = userToShow.city {
             locationLabel.text = city
         } else {
-            locationLabel.text = "Sin localización"
+            locationLabel.text = NSLocalizedString("NoLocation", comment: "")
         }
         
         sortedDict = activities.sorted(by: { $0.0 < $1.0 })
@@ -323,7 +393,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                 
                 if snapshot.key == "city" {
                     self.userToShow.city = nil
-                    self.locationLabel.text = "Sin localización"
+                    self.locationLabel.text = NSLocalizedString("NoLocation", comment: "")
                 }
                 
                 self.activitiesCollectionView.reloadData()

@@ -85,7 +85,7 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         return imageView
     }()
     
-    lazy var loginButton: UIButton = {
+    lazy var registerButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Aceptar y crear cuenta", for: .normal)
@@ -272,12 +272,19 @@ class RegisterController: UIViewController, UIImagePickerControllerDelegate, UIN
         profileScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         // Login button setup
-        view.addSubview(loginButton)
-        loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        loginButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        loginButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
-        bottomLoginConstraint = loginButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+        view.addSubview(registerButton)
+        registerButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        registerButton.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        registerButton.heightAnchor.constraint(equalToConstant: 52).isActive = true
+        bottomLoginConstraint = registerButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         bottomLoginConstraint?.isActive = true
+        
+        // Activity indicator setup
+        registerButton.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: registerButton.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: registerButton.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         profileScrollView.addSubview(profilePicture)
         profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

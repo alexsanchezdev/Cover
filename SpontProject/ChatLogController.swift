@@ -25,6 +25,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: self, action: #selector(goBack))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "profile_navbar"), style: .plain, target: self, action: #selector(loadUserProfile))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
@@ -248,6 +249,19 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
             ref.removeObserver(withHandle: observerHandle)
         }
         
+        
+    }
+    
+    func loadUserProfile(){
+        if let userToLoad = user {
+            let profileController = ProfileController()
+            profileController.hidesBottomBarWhenPushed = true
+            profileController.navigationItem.title = userToLoad.username
+            profileController.userToShow = userToLoad
+            profileController.sendMessageButton.isHidden = true
+            navigationItem.title = nil
+            navigationController?.pushViewController(profileController, animated: true)
+        }
         
     }
     

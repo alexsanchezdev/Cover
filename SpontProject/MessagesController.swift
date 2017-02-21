@@ -42,7 +42,7 @@ class MessagesController: UITableViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Esto está un poco vacío, ¡pero no te preocupes! ¿Qué tal si empiezas una conversación?"
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightMedium)
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
         label.textColor = UIColor.lightGray
         label.textAlignment = .center
         return label
@@ -53,7 +53,7 @@ class MessagesController: UITableViewController {
         
         view.addSubview(backgroundImage)
         backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -8).isActive = true
-        backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -72).isActive = true
+        backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -64).isActive = true
         backgroundImage.widthAnchor.constraint(equalToConstant: 242).isActive = true
         backgroundImage.heightAnchor.constraint(equalToConstant: 233).isActive = true
         
