@@ -174,6 +174,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             print(logoutError)
         }
         
+        print("Calle logout")
         self.dismiss(animated: true, completion: nil)
     }
     

@@ -53,7 +53,7 @@ class MessagesController: UITableViewController {
         
         view.addSubview(backgroundImage)
         backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -8).isActive = true
-        backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -64).isActive = true
+        backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -52).isActive = true
         backgroundImage.widthAnchor.constraint(equalToConstant: 242).isActive = true
         backgroundImage.heightAnchor.constraint(equalToConstant: 233).isActive = true
         

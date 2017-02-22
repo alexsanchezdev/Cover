@@ -97,7 +97,7 @@ extension RegisterController {
             return
         }
         
-        guard let phone = phoneTextField.text, phone.characters.count == 9 else {
+        guard let phone = phoneTextField.text else {
             let warning = UIAlertController(title: NSLocalizedString("PhoneNotValid", comment: ""), message: NSLocalizedString("PhoneMessage", comment: ""), preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
             warning.addAction(ok)
@@ -113,8 +113,20 @@ extension RegisterController {
             if snapshot.value is NSNull {
                 FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
                     if error != nil {
+                        if let code = FIRAuthErrorCode(rawValue: error!._code) {
+                            switch code {
+                                case .errorCodeEmailAlreadyInUse:
+                                    let warning = UIAlertController(title: NSLocalizedString("EmailNotValid", comment: ""), message: NSLocalizedString("EmailAlready", comment: ""), preferredStyle: .alert)
+                                    let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+                                    warning.addAction(ok)
+                                    self.present(warning, animated: true, completion: nil)
+                                default:
+                                    print(error!)
+                            }
+                        
+                        }
                         self.activityIndicator.stopAnimating()
-                        self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
+                        self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
                         print(error!)
                         return
                     }
@@ -130,13 +142,13 @@ extension RegisterController {
                             storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
                                 if error != nil {
                                     self.activityIndicator.stopAnimating()
-                                    self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
+                                    self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
                                     print (error!)
                                     return
                                 }
                                 
                                 if let profileImageURL = metadata?.downloadURL()?.absoluteString {
-                                    let values = ["name": name, "email": email, "phone": "+34" + phone, "profileImg": profileImageURL, "username": username.lowercased()]
+                                    let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username.lowercased()]
                                     
                                     let request = user?.profileChangeRequest()
                                     request?.displayName = name
@@ -144,7 +156,7 @@ extension RegisterController {
                                     request?.commitChanges(completion: { (error) in
                                         if error != nil {
                                             self.activityIndicator.stopAnimating()
-                                            self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
+                                            self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
                                             print(error!)
                                         }
                                     })
@@ -158,7 +170,7 @@ extension RegisterController {
                 
             } else {
                 self.activityIndicator.stopAnimating()
-                self.registerButton.setTitle(NSLocalizedString("SignUp", comment: ""), for: .normal)
+                self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
                 let warning = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("UsernameAlready", comment: ""), preferredStyle: .alert)
                 let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
                 warning.addAction(ok)

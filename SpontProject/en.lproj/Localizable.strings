@@ -97,11 +97,12 @@
     EmailMessage = "The email address you enter is invalid.";
     PhoneMessage = "Phone is required for register proccess.";
     UsernameAlready = "Username already registered.";
+    EmailAlready = "Email already registered.";
 
 // Search Controller
 
     SearchAnActivity = "Search an activity...";
-    TopSearch = "Top searches";
+    TopSearch = "Top search";
     MostSearched = "These are the most searched activities";
 
 // Results Controller

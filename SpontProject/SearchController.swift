@@ -22,17 +22,25 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
         
         delegatesSetup()
         loadListOfActivities()
+        
+        print(view.frame.height)
+        if view.frame.height <= 480.0 {
+            topSearchTitle.isHidden = true
+            topSearchDescription.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        Filters.sharedInstance.locationManager.startUpdatingLocation()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        Filters.sharedInstance.locationManager.stopUpdatingLocation()
         NotificationCenter.default.removeObserver(self)
     }
     

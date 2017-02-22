@@ -94,6 +94,7 @@
     EmailMessage = "El correo electrónico introducido no es válido.";
     PhoneMessage = "Es necesario un teléfono de contacto para el registro.";
     UsernameAlready = "Nombre de usuario ya en uso.";
+    EmailAlready = "Correo electrónico ya en uso.";
 
 // Search Controller
 
