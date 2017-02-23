@@ -25,7 +25,6 @@ class MessagesController: UITableViewController {
     var messagesDictionary = [String: Message]()
     var timer: Timer?
     var showingView: Bool = false
-    let systemSound: SystemSoundID = 1307
     
     let cellId = "cellId"
     
