@@ -17,6 +17,7 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
     var tempTags = [String]()
     var tempVerified = [Int]()
     var searchTerm: String?
+    var noInstructor: Timer?
     
     lazy var resultsTableView: UITableView = {
         let table = UITableView()
@@ -24,6 +25,25 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         table.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = UIColor.white
         return table
+    }()
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        return indicator
+    }()
+    
+    let noResultsLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = NSLocalizedString("NoInstructorAround", comment: "")
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        return label
     }()
     
     override func viewDidLoad() {
@@ -40,12 +60,31 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.title = searchTerm
+    }
+    
     func setupViews(){
         view.addSubview(resultsTableView)
         resultsTableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         resultsTableView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         resultsTableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         resultsTableView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
+        view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        
+        view.addSubview(noResultsLabel)
+        noResultsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        noResultsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        noResultsLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
+        noResultsLabel.isHidden = true
+        
+        view.addSubview(noResultsLabel)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -83,26 +122,26 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
         profileController.navigationItem.title = user.username
         profileController.userToShow = user
         tableView.deselectRow(at: indexPath, animated: true)
+        navigationItem.title = nil
         navigationController?.pushViewController(profileController, animated: true)
     }
     
     func retrieveUsersAround(){
         let geoFireRef = FIRDatabase.database().reference().child("locations")
         let geoFire = GeoFire(firebaseRef: geoFireRef)
-    
 
         let center = Filters.sharedInstance.locationManager.location
         let circleQuery = geoFire?.query(at: center, withRadius: 5000.00)
         
+        self.noInstructor = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(handleNoInstructor), userInfo: nil, repeats: false)
+        
         circleQuery?.observe(.keyEntered, with: { (key, location) in
-            
             let activitiesRef = FIRDatabase.database().reference().child("activities").child(key!)
             activitiesRef.observe(.childAdded, with: { (snapshot) in
                 if self.searchTerm == snapshot.key {
-                    
+                    self.noInstructor?.invalidate()
                     let ref = FIRDatabase.database().reference().child("users")
                     ref.queryOrderedByKey().queryEqual(toValue: key).observe(.childAdded, with: { (snapshot) in
-                        
                         let user = User()
                         
                         if snapshot.key == FIRAuth.auth()?.currentUser?.uid {
@@ -142,6 +181,23 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
                                 user.distance = distanceToKms
                             }
                             
+                            geoFire?.getLocationForKey(user.id, withCallback: { (location, error) in
+                                if error != nil {
+                                    print(error!)
+                                }
+                                
+                                let geoCoder = CLGeocoder()
+                                geoCoder.reverseGeocodeLocation(location!, completionHandler: { (placemarks, error) in
+                                    if error != nil {
+                                        print(error!)
+                                    }
+                                    
+                                    let placemark = placemarks?[0]
+                                    user.city = placemark?.addressDictionary?["City"] as! String?
+                                    
+                                })
+                            })
+                            
                             self.usersDictionary[user.username!] = user
                             
                             self.timer?.invalidate()
@@ -165,8 +221,16 @@ class ResultsController: UIViewController, UITableViewDelegate, UITableViewDataS
                 return (Int(m1.distance!)) < (Int(m2.distance!))
                 //return (m1.distance.intValue)! > (m2.distance.intValue)!
             })
+            
+            
+            self.activityIndicator.stopAnimating()
             self.resultsTableView.reloadData()
         }
+    }
+    
+    func handleNoInstructor(){
+        self.activityIndicator.stopAnimating()
+        self.noResultsLabel.isHidden = false
     }
     
 }

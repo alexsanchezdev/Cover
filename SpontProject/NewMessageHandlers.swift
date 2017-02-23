@@ -16,6 +16,7 @@ extension NewMessageController {
             if (searchString as! String).isEmpty {
                 //self.usersTableView.isHidden = true
                 self.users = []
+                self.canSearchLabel.isHidden = false
                 self.usersTableView.reloadData()
                 print("Activated null string")
                 return
@@ -44,6 +45,7 @@ extension NewMessageController {
                         DispatchQueue.main.async {
                             self.users.removeAll()
                             self.users = self.tempUsers
+                            self.canSearchLabel.isHidden = true
                             self.usersTableView.reloadData()
                             //self.usersTableView.isHidden = false
                         }

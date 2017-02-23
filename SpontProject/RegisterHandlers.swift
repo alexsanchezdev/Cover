@@ -17,33 +17,22 @@ extension RegisterController {
         picker.delegate = self
         
         
-        let optionMenu = UIAlertController(title: "Cambiar foto de perfil", message: nil, preferredStyle: .actionSheet)
-        let photoLibrary = UIAlertAction(title: "Elegir de la fototeca", style: .default, handler: { (action) in
+        let optionMenu = UIAlertController(title: NSLocalizedString("ChangeProfileImage", comment: ""), message: nil, preferredStyle: .actionSheet)
+        let photoLibrary = UIAlertAction(title: NSLocalizedString("ChooseFromLibrary", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .photoLibrary
             self.present(picker, animated: true, completion: nil)
         })
-        let takePhoto = UIAlertAction(title: "Hacer foto", style: .default, handler: { (action) in
+        let takePhoto = UIAlertAction(title: NSLocalizedString("TakePhoto", comment: ""), style: .default, handler: { (action) in
             picker.sourceType = .camera
             self.present(picker, animated: true, completion: nil)
         })
-        let cancel = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
         
         optionMenu.addAction(takePhoto)
         optionMenu.addAction(photoLibrary)
         optionMenu.addAction(cancel)
         
         present(optionMenu, animated: true, completion: nil)
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        let point: CGPoint = CGPoint(x: 0, y: textField.frame.origin.y - 128)
-        print(view.center.y)
-        
-        if point.y > 0 {
-            registerScrollView.setContentOffset(point, animated: true)
-        } else {
-            registerScrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-        }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -61,7 +50,7 @@ extension RegisterController {
         }
         
         if let selectedImage = selectedImageFromPicker {
-            profileImage.image = selectedImage
+            profilePicture.image = selectedImage
         }
         dismiss(animated: true, completion: nil)
     }
@@ -76,44 +65,71 @@ extension RegisterController {
     
     func handleRegister(){
         
-        guard let username = usernameTextField.text, !username.isEmpty else {
-            print("Username nil")
-            return
-        }
-        
-        guard let password = passwordTextField.text, password.characters.count > 4 else {
-            print("Contraseña muy corta")
-            return
-        }
-        
         guard let name = nameTextField.text, !name.isEmpty else {
-            print("Name nil")
+            let warning = UIAlertController(title: NSLocalizedString("NameNotValid", comment: ""), message: NSLocalizedString("NameMessage", comment: ""), preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            warning.addAction(ok)
+            present(warning, animated: true, completion: nil)
+            return
+        }
+        
+        guard let username = usernameTextField.text, !username.isEmpty else {
+            let warning = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("UsernameMessage", comment: ""), preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            warning.addAction(ok)
+            present(warning, animated: true, completion: nil)
+            return
+        }
+        
+        guard let password = passwordTextField.text, password.characters.count >= 6 else {
+            let warning = UIAlertController(title: NSLocalizedString("PasswordNotValid", comment: ""), message: NSLocalizedString("PasswordMessage", comment: ""), preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            warning.addAction(ok)
+            present(warning, animated: true, completion: nil)
             return
         }
         
         guard let email = emailTextField.text, isValidEmail(email) else {
-            print("Email error")
+            let warning = UIAlertController(title: NSLocalizedString("EmailNotValid", comment: ""), message: NSLocalizedString("EmailMessage", comment: ""), preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            warning.addAction(ok)
+            present(warning, animated: true, completion: nil)
             return
         }
         
-        guard let phone = phoneTextField.text, phone.characters.count == 9 else {
-            print("Phone error")
+        guard let phone = phoneTextField.text else {
+            let warning = UIAlertController(title: NSLocalizedString("PhoneNotValid", comment: ""), message: NSLocalizedString("PhoneMessage", comment: ""), preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            warning.addAction(ok)
+            present(warning, animated: true, completion: nil)
             return
         }
+        
+        activityIndicator.startAnimating()
+        registerButton.setTitle("", for: .normal)
         
         let ref = FIRDatabase.database().reference().child("usernames")
         ref.queryOrderedByKey().queryEqual(toValue: username).observeSingleEvent(of: .value, with: { (snapshot) in
             if snapshot.value is NSNull {
-                print("Username available")
-                
                 FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
                     if error != nil {
-                        print("Is this called?")
+                        if let code = FIRAuthErrorCode(rawValue: error!._code) {
+                            switch code {
+                                case .errorCodeEmailAlreadyInUse:
+                                    let warning = UIAlertController(title: NSLocalizedString("EmailNotValid", comment: ""), message: NSLocalizedString("EmailAlready", comment: ""), preferredStyle: .alert)
+                                    let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+                                    warning.addAction(ok)
+                                    self.present(warning, animated: true, completion: nil)
+                                default:
+                                    print(error!)
+                            }
+                        
+                        }
+                        self.activityIndicator.stopAnimating()
+                        self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
                         print(error!)
                         return
                     }
-                    
-                    print("Or is this??")
                     
                     guard let uid = user?.uid else {
                         return
@@ -121,26 +137,49 @@ extension RegisterController {
                     
                     let imageName = NSUUID().uuidString
                     let storageRef = FIRStorage.storage().reference().child("profile-images").child("\(imageName).jpeg")
-                    if let uploadData = UIImageJPEGRepresentation(self.profileImage.image!, 0.1) {
-                        storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
-                            if error != nil {
-                                print (error!)
-                                return
-                            }
-                            
-                            if let profileImageURL = metadata?.downloadURL()?.absoluteString {
-                                let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username]
-                                self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
-                            }
-                        })
+                    if let image = self.profilePicture.image {
+                        if let uploadData = UIImageJPEGRepresentation(image, 0.1) {
+                            storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
+                                if error != nil {
+                                    self.activityIndicator.stopAnimating()
+                                    self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
+                                    print (error!)
+                                    return
+                                }
+                                
+                                if let profileImageURL = metadata?.downloadURL()?.absoluteString {
+                                    let values = ["name": name, "email": email, "phone": phone, "profileImg": profileImageURL, "username": username.lowercased()]
+                                    
+                                    let request = user?.profileChangeRequest()
+                                    request?.displayName = name
+                                    request?.photoURL = URL(fileURLWithPath: profileImageURL)
+                                    request?.commitChanges(completion: { (error) in
+                                        if error != nil {
+                                            self.activityIndicator.stopAnimating()
+                                            self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
+                                            print(error!)
+                                        }
+                                    })
+                                    self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
+                                }
+                            })
+                        }
                     }
+                    
                 })
                 
             } else {
+                self.activityIndicator.stopAnimating()
+                self.registerButton.setTitle(NSLocalizedString("AcceptCreateAccount", comment: ""), for: .normal)
+                let warning = UIAlertController(title: NSLocalizedString("UsernameNotValid", comment: ""), message: NSLocalizedString("UsernameAlready", comment: ""), preferredStyle: .alert)
+                let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+                warning.addAction(ok)
+                self.present(warning, animated: true, completion: nil)
                 print("Username already used")
-                
+                return
             }
         }, withCancel: nil)
+        
     }
     
     func registerUserIntoDatabaseWithUID(_ uid: String, username: String, values: [String: AnyObject]) {
@@ -169,14 +208,18 @@ extension RegisterController {
                     }
                     
                     self.dissmissLoginController()
-                    print("Saved user successfully into Firebase!")
                 })
             })
         }
     }
     
     func dissmissLoginController() {
-        self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        if directRegister {
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        }
+        
     }
     
     

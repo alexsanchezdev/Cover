@@ -15,7 +15,7 @@ extension ChatLogController {
         
         isSend = true
         
-        if self.inputTextField.text == nil || self.inputTextField.text == ""{
+        if self.inputTextView.text == nil || self.inputTextView.text == ""{
             return
         } else {
             
@@ -27,9 +27,9 @@ extension ChatLogController {
             let ref = FIRDatabase.database().reference().child("messages")
             let childRef = ref.childByAutoId()
             let timestamp = Int(Date().timeIntervalSince1970)
-            let values = ["text": inputTextField.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": false] as [String : Any]
+            let values = ["text": inputTextView.text!, "to": toUser, "from": fromUser, "timestamp": timestamp, "read": false] as [String : Any]
             
-            self.inputTextField.text = nil
+            self.inputTextView.text = nil
             childRef.updateChildValues(values) { (error, ref) in
                 if error != nil {
                     print(error!)
@@ -44,12 +44,19 @@ extension ChatLogController {
                 recipientMessagesRef.updateChildValues([messageId: 1])
             }
             
-            FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .childAdded, with: { (snapshot) in
-                self.notificationIds.append(snapshot.key)
+            FIRDatabase.database().reference().child("notifications").child(toUser).observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dict = snapshot.value as? [String: AnyObject] {
+                    for key in dict.keys {
+                        self.notificationIds.append(key)
+                    }
+                }
+                
         
                 FIRDatabase.database().reference().child("users").child(fromUser).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let dict = snapshot.value as? [String: AnyObject]{
                         let sender = dict["name"]
+                        print(self.notificationIds)
                         OneSignal.postNotification(["headings": ["en": sender], "contents": ["en": values["text"]], "include_player_ids": self.notificationIds, "data": ["sender": fromUser], "ios_badgeType": "Increase", "ios_badgeCount": 1])
                         self.notificationIds.removeAll()
                     }
@@ -97,12 +104,14 @@ extension ChatLogController {
         if message.from == FIRAuth.auth()?.currentUser?.uid {
             // outgoing gray
             cell.bubbleView.backgroundColor = ChatMessageCell.sendColor
+            cell.textView.textColor = UIColor.white
             cell.profileImageView.isHidden = true
             cell.bubbleViewLeftAnchor?.isActive = false
             cell.bubbleViewRightAnchor?.isActive = true
         } else {
             // outgoing white
             cell.bubbleView.backgroundColor = ChatMessageCell.receivedColor
+            cell.textView.textColor = UIColor.black
             cell.profileImageView.isHidden = false
             cell.bubbleViewRightAnchor?.isActive = false
             cell.bubbleViewLeftAnchor?.isActive = true
@@ -157,6 +166,8 @@ extension ChatLogController {
         guard let uid = FIRAuth.auth()?.currentUser?.uid, let toUser = user?.id else {
             return
         }
+        
+        
         
         if !firstTime {
             let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: forLast)
@@ -238,17 +249,19 @@ extension ChatLogController {
     }
     
     func showCollectionView(){
+        self.activityIndicator.stopAnimating()
         self.messageCollectionView.isHidden = false
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textfieldDidChange()
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textViewDidChange(textView)
     }
     
-    func textfieldDidChange(){
+    func textViewDidChange(_ textView: UITextView) {
         if messages.count != 0 {
             scrollToBottom(animated: true)
         }
         
     }
+    
 }

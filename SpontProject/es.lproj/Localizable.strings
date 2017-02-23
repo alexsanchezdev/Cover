@@ -16,3 +16,91 @@
 
     SendMessage = "Enviar mensaje";
     EditInfo = "Editar información";
+    MenuTitle = "Opciones de cuenta";
+    Activities = "ACTIVIDADES";
+    TermsAdvise = "Para aparecer en los resultados de búsquedas debes facilitarnos tu ubicación y actividades. ¿Qué tal si los configuramos?";
+    EditProfile = "Editar perfil";
+    NoLocation = "Sin localización";
+    SignOut = "Cerrar sesión";
+
+// EditProfile Controller
+    ChangeProfileImage = "Cambiar foto de perfil";
+    FullName = "Nombre completo";
+    Username = "Usuario";
+    SearchTerms = "TÉRMINOS DE BÚSQUEDA";
+    ActivitiesEdit = "Actividades";
+    PrivateInformation = "INFORMACIÓN PRIVADA";
+    AddDescription = "Añade una descripción";
+    Done = "Listo";
+    NameRequired = "El nombre es un campo obligatorio";
+    UsernameRegistered = "Este nombre de usuario ya está registrado.";
+    UsernameNotValid = "Usuario no válido";
+    MustContain = "Debe tener al menos 4 carácteres alfanuméricos.";
+    ChooseFromLibrary = "Elegir de la fototeca";
+    TakePhoto = "Hacer foto";
+    Cancel = "Cancelar";
+    InvalidOperation = "Operación no válida";
+    CantChangeEmail = "Actualmente no está permitido cambiar el email de registro.";
+    CantChangePhone = "Actualmente no está permitido cambiel el teléfono de registro.";
+
+// Location Controller
+    WillNotShareLocation = "Nunca publicaremos tu dirección. Sólo usaremos estos datos para mostrarte en los resultados de búsqueda.";
+    UpdateLocation = "Actualizar ubicación";
+    UpdatingLocation = "Actualizando ubicación...";
+    LocationUpdated = "Ubicación actualizada";
+
+// Activities Controller
+
+    Update = "Actualizar";
+    UpdatingActivities = "Actualizando actividades...";
+    ActivitiesUpdated = "Actividades actualizadas";
+    VerifiedActivity = "Actividad verificada";
+    CantDeleteVerified = "Las actividades verificadas no pueden ser eliminadas.";
+
+// Messages Controller
+    Messages = "Mensajes";
+    EmptyMessages = "Esto está un poco vacío, ¡pero no te preocupes! ¿Qué tal si empiezas una conversación?";
+
+// NewMessage Controller
+    Search... = "Buscar...";
+    CanSearch = "Utiliza la barra de búsqueda para encontrar a usuarios.";
+
+// Landing Controller
+    Login = "Iniciar sesión";
+    SignUp = "Crear cuenta";
+    FindProfessionals = "Encuentra profesionales a tu alrededor en segundos";
+
+// Login Controller
+    TryAgain = "Revisa la información e inténtalo de nuevo";
+    EmailAddress = "Correo electrónico";
+    Password = "Contraseña";
+    ForgetPassword = "¿La has olvidado?";
+    FirstTime = "¿Es la primera vez que usas Cover?\nCrear una cuenta";
+
+// Register Controller
+    CreateAccount = "Crear cuenta";
+    AcceptCreateAccount = "Aceptar y crear cuenta";
+    PhoneNumber = "Teléfono móvil";
+    ByCreating = "Al crear tu cuenta, aceptas las Condiciones de uso y la Política de privacidad de Cover.";
+    NameNotValid = "Nombre no válido";
+    UsernameNotValid = "Usuario no válido";
+    PasswordNotValid = "Contraseña no válida";
+    EmailNotValid = "Email no válido";
+    PhoneNotValid = "Teléfono no válido";
+
+    NameMessage = "Debes de introducir un nombre para la cuenta.";
+    UsernameMessage = "Debes de introducir un nombre de usuario.";
+    PasswordMessage = "La contraseña debe tener 6 o más carácteres alfanuméricos.";
+    EmailMessage = "El correo electrónico introducido no es válido.";
+    PhoneMessage = "Es necesario un teléfono de contacto para el registro.";
+    UsernameAlready = "Nombre de usuario ya en uso.";
+    EmailAlready = "Correo electrónico ya en uso.";
+
+// Search Controller
+
+    SearchAnActivity = "Busca una actividad...";
+    TopSearch = "Top búsquedas";
+    MostSearched = "Estas son las actividades más solicitadas";
+
+// Results Controller
+    NoInstructorAround = "No hay instructores a tu alrededor para esta actividad.";

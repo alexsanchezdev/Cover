@@ -13,11 +13,12 @@ import OneSignal
 extension ProfileController {
     
     func handleOptions(){
-        let optionsMenu = UIAlertController(title: NSLocalizedString("MenuTitle", comment: "This is the message that will be shown on top of the alert controller"), message: nil, preferredStyle: .actionSheet)
-        let editProfile = UIAlertAction(title: "Editar perfil", style: .default, handler: {(action) in self.presentEditProfile()})
-        let logoutAccount = UIAlertAction(title: "Cerrar sesión", style: .destructive, handler: {(action) in
+        let optionsMenu = UIAlertController()
+        //let optionsMenu = UIAlertController(title: NSLocalizedString("MenuTitle", comment: "This is the message that will be shown on top of the alert controller"), message: nil, preferredStyle: .actionSheet)
+        let editProfile = UIAlertAction(title: NSLocalizedString("EditProfile", comment: ""), style: .default, handler: {(action) in self.presentEditProfile()})
+        let logoutAccount = UIAlertAction(title: NSLocalizedString("SignOut", comment: ""), style: .destructive, handler: {(action) in
             self.handleLogout()})
-        let cancelOptions = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        let cancelOptions = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
         
         optionsMenu.addAction(editProfile)
         optionsMenu.addAction(logoutAccount)
@@ -28,7 +29,9 @@ extension ProfileController {
     
     func presentEditProfile(){
         let editProfile = EditProfileController()
-        present(editProfile, animated: true, completion: nil)
+        editProfile.userToEdit = self.userToShow
+        let navigationController = UINavigationController(rootViewController: editProfile)
+        present(navigationController, animated: true, completion: nil)
     }
     
     func handleLogout(){
@@ -50,30 +53,20 @@ extension ProfileController {
         }
         
         print("Succesfully logged out!")
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        self.presentingViewController?.dismiss(animated: true, completion: nil)
+        
     }
     
     func sendMessage(){
         
         print("Send message called")
-        self.tabBarController?.selectedIndex = 0
+        self.tabBarController?.selectedIndex = 1
         let user = userToShow
         MessagesController.sharedInstance.showChatControllerFor(user)
         
     }
     
     func updateCurrentLocation(){
-        let geoFireRef = FIRDatabase.database().reference().child("locations")
-        let geoFire = GeoFire(firebaseRef: geoFireRef)
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
-        
-        if let uid = FIRAuth.auth()?.currentUser?.uid {
-            geoFire?.setLocation(locationManager.location, forKey: uid)
-            locationManager.stopUpdatingLocation()
-        }
         
     }
     

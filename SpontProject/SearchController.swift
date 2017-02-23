@@ -22,17 +22,25 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
         
         delegatesSetup()
         loadListOfActivities()
+        
+        print(view.frame.height)
+        if view.frame.height <= 480.0 {
+            topSearchTitle.isHidden = true
+            topSearchDescription.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        Filters.sharedInstance.locationManager.startUpdatingLocation()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        Filters.sharedInstance.locationManager.stopUpdatingLocation()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -47,7 +55,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
     lazy var searchBar: UISearchBar = {
         let search = UISearchBar()
         search.translatesAutoresizingMaskIntoConstraints = false
-        search.placeholder = "Busca una actividad"
+        search.placeholder = NSLocalizedString("SearchAnActivity", comment: "")
         search.autocapitalizationType = .allCharacters
         search.tintColor = UIColor.rgb(r: 254, g: 40, b: 81, a: 1)
         search.searchBarStyle = .minimal
@@ -86,7 +94,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
     let topSearchTitle: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Top búsquedas"
+        label.text = NSLocalizedString("TopSearch", comment: "")
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
         label.font = UIFont.systemFont(ofSize: 36, weight: UIFontWeightBold)
@@ -99,7 +107,7 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
-        label.text = "Estas son las actividades más solicitadas"
+        label.text = NSLocalizedString("MostSearched", comment: "")
         label.font = UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular)
         label.textColor = UIColor.rgb(r: 74, g: 74, b: 74, a: 1)
         return label

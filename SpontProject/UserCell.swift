@@ -22,6 +22,8 @@ class UserCell: UITableViewCell, UICollectionViewDelegateFlowLayout, UICollectio
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.image = UIImage(named: "user")
         iv.contentMode = .scaleAspectFill
+        iv.layer.borderColor = UIColor.rgb(r: 230, g: 230, b: 230, a: 1).cgColor
+        iv.layer.borderWidth = 1
         iv.layer.masksToBounds = true
         iv.layer.cornerRadius = 32
         return iv

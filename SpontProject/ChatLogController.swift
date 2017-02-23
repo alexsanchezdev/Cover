@@ -9,14 +9,14 @@
 import UIKit
 import Firebase
 
-class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
+class ChatLogController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         messageCollectionView.delegate = self
         messageCollectionView.dataSource = self
-        inputTextField.delegate = self
+        inputTextView.delegate = self
         activityIndicator.startAnimating()
         //navigationItem.backBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: nil, action: nil)
         setupInputsComponents()
@@ -25,6 +25,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_icon"), style: .plain, target: self, action: #selector(goBack))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "profile_navbar"), style: .plain, target: self, action: #selector(loadUserProfile))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
@@ -40,7 +41,13 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        navigationItem.title = user?.username
         updateReadStatus()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -79,7 +86,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     let inputMessageView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.rgb(r: 250, g: 250, b: 250, a: 1)
         return view
     }()
     
@@ -93,12 +100,26 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         return button
     }()
     
-    lazy var inputTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.translatesAutoresizingMaskIntoConstraints = false
-        textfield.placeholder = "Enter message..."
-        textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
-        return textfield
+//    lazy var inputTextField: UITextField = {
+//        let textfield = UITextField()
+//        textfield.translatesAutoresizingMaskIntoConstraints = false
+//        textfield.placeholder = "Enter message..."
+//        textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
+//        return textfield
+//    }()
+    
+    lazy var inputTextView: UITextView = {
+        let textview = UITextView()
+        textview.translatesAutoresizingMaskIntoConstraints = false
+        textview.isScrollEnabled = false
+        textview.font = UIFont.systemFont(ofSize: 17, weight: UIFontWeightRegular)
+        textview.textContainerInset = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+        textview.translatesAutoresizingMaskIntoConstraints = false
+        textview.backgroundColor = UIColor.white
+        textview.layer.borderWidth = 1
+        textview.layer.borderColor = UIColor.rgb(r: 220, g: 220, b: 220, a: 1).cgColor
+        textview.layer.cornerRadius = 16
+        return textview
     }()
     
     let separatorView: UIView = {
@@ -115,7 +136,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cellId")
-        collection.backgroundColor = UIColor.white
+        collection.backgroundColor = UIColor.clear
         collection.alwaysBounceVertical = true
         collection.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -139,7 +160,21 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         return indicator
     }()
     
+    let backgroundImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "chatlog_background")
+        iv.contentMode = .scaleAspectFill
+        return iv
+    }()
+    
     func setupInputsComponents() {
+        
+        view.addSubview(backgroundImageView)
+        backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         
         view.addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -152,7 +187,6 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         bottomTextInputConstraint = inputMessageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomTextInputConstraint?.isActive = true
         inputMessageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        inputMessageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         view.addSubview(messageCollectionView)
         messageCollectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -162,15 +196,15 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         inputMessageView.addSubview(sendButton)
         sendButton.rightAnchor.constraint(equalTo: inputMessageView.rightAnchor, constant: -16).isActive = true
-        sendButton.centerYAnchor.constraint(equalTo: inputMessageView.centerYAnchor).isActive = true
+        sendButton.bottomAnchor.constraint(equalTo: inputMessageView.bottomAnchor, constant: -12).isActive = true
         sendButton.widthAnchor.constraint(equalToConstant: 40).isActive = true
         sendButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
-        inputMessageView.addSubview(inputTextField)
-        inputTextField.leftAnchor.constraint(equalTo: inputMessageView.leftAnchor, constant: 16).isActive = true
-        inputTextField.centerYAnchor.constraint(equalTo: inputMessageView.centerYAnchor).isActive = true
-        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor, constant: -8).isActive = true
-        inputTextField.heightAnchor.constraint(equalTo: inputMessageView.heightAnchor).isActive = true
+        inputMessageView.addSubview(inputTextView)
+        inputTextView.leftAnchor.constraint(equalTo: inputMessageView.leftAnchor, constant: 16).isActive = true
+        inputTextView.bottomAnchor.constraint(equalTo: inputMessageView.bottomAnchor, constant: -6).isActive = true
+        inputTextView.rightAnchor.constraint(equalTo: sendButton.leftAnchor, constant: -16).isActive = true
+        inputMessageView.topAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -6).isActive = true
         
         inputMessageView.addSubview(separatorView)
         separatorView.topAnchor.constraint(equalTo: inputMessageView.topAnchor).isActive = true
@@ -182,6 +216,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
     }
     
     var handle: UInt = 0
+    var forLast: UInt = 0
     
     func updateReadStatus(){
         
@@ -189,7 +224,7 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         
         print("Update read is called")
         if let toUser = user?.id {
-            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 100)
             handle = ref.observe(.childAdded, with: { (snapshot) in
                 let messageId = snapshot.key
                 let messagesRef = FIRDatabase.database().reference().child("messages").child(messageId)
@@ -210,9 +245,27 @@ class ChatLogController: UIViewController, UICollectionViewDataSource, UICollect
         guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
         
         if let toUser = user?.id {
-            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser).queryLimited(toLast: 1)
+            let ref = FIRDatabase.database().reference().child("user-messages").child(uid).child(toUser)
             ref.removeObserver(withHandle: handle)
+            ref.removeObserver(withHandle: observerHandle)
         }
+        
+        
+    }
+    
+    func loadUserProfile(){
+        if let userToLoad = user {
+            let profileController = ProfileController()
+            profileController.hidesBottomBarWhenPushed = true
+            profileController.navigationItem.title = userToLoad.username
+            profileController.userToShow = userToLoad
+            profileController.sendMessageButton.isHidden = true
+//            profileController.editProfile.isHidden = true
+//            profileController.needInfoLabel.isHidden = true
+            navigationItem.title = nil
+            navigationController?.pushViewController(profileController, animated: true)
+        }
+        
     }
     
 }

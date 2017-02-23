@@ -16,7 +16,7 @@ extension LoginController {
         let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
         
         bottomLoginConstraint.constant = -keyboardHeight
-        centerTextfieldConstraint.constant = -(keyboardHeight/2 - 20)
+        centerTextfieldConstraint.constant = -(keyboardHeight/2)
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: nil)
@@ -32,7 +32,8 @@ extension LoginController {
     
     func showRegisterForm(){
         let registerController = RegisterController()
-        present(registerController, animated: true, completion: nil)
+        registerController.directRegister = false
+        present(UINavigationController(rootViewController: registerController), animated: true, completion: nil)
     }
     
     func handleLogin(){
@@ -48,13 +49,26 @@ extension LoginController {
                 print(error!)
                 self.errorMessageView.isHidden = false
                 self.activityIndicator.stopAnimating()
-                self.loginButton.setTitle("Iniciar sesión", for: .normal)
+                self.loginButton.setTitle(NSLocalizedString("Login", comment: ""), for: .normal)
                 return
             }
             
             print("Succesfully logged in!")
             self.dismiss(animated: true, completion: nil)
         })
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.resignFirstResponder()
+        self.view.layoutIfNeeded()
+    }
+    
+    
+    func lostPassword(){
+        let warning = UIAlertController(title: NSLocalizedString("InvalidOperation", comment: ""), message: NSLocalizedString("CantChangePassword", comment: ""), preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        warning.addAction(ok)
+        present(warning, animated: true, completion: nil)
     }
     
     func handleRegister(){

@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import AVFoundation
 
 class MessagesController: UITableViewController {
     
@@ -23,28 +24,71 @@ class MessagesController: UITableViewController {
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     var timer: Timer?
+    var showingView: Bool = false
     
     let cellId = "cellId"
+    
+    let backgroundImage: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "background_character")
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+    
+    let newMessageLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = NSLocalizedString("EmptyMessages", comment: "")
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16, weight: UIFontWeightMedium)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //view.backgroundColor = UIColor.rgb(r: 239, g: 239, b: 244, a: 1)
+        view.addSubview(backgroundImage)
+        backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -8).isActive = true
+        backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -52).isActive = true
+        backgroundImage.widthAnchor.constraint(equalToConstant: 242).isActive = true
+        backgroundImage.heightAnchor.constraint(equalToConstant: 233).isActive = true
         
-        navigationItem.title = "Mensajes"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handleNewMessage))
+        view.addSubview(newMessageLabel)
+        newMessageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        newMessageLabel.topAnchor.constraint(equalTo: backgroundImage.bottomAnchor, constant: 36).isActive = true
+        newMessageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        
+        navigationItem.title = NSLocalizedString("Messages", comment: "")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleNewMessage))
         
         tableView.register(DateUserCell.self, forCellReuseIdentifier: cellId)
         tableView.tableFooterView = UIView()
-        //tabBarController?.tabBar.items?[0].badgeValue = ""
         
         tableView.allowsMultipleSelectionDuringEditing = true
+        self.tabBarController?.tabBar.subviews[1].isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        showingView = false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tableView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.tableView.reloadData()
-        self.tabBarController?.tabBar.items?[0].badgeValue = nil
+        showingView = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.tabBarController?.tabBar.subviews[1].isHidden = true
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

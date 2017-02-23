@@ -63,6 +63,10 @@ extension MessagesController {
                 return (m1.timestamp?.intValue)! > (m2.timestamp?.intValue)!
             })
             
+            if self.tabBarController?.tabBar.subviews[1].isHidden == false {
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+            }
+            
             self.tableView.reloadData()
             
         }
@@ -83,6 +87,18 @@ extension MessagesController {
                     self.messagesDictionary[chatPartnerId] = message
                 }
                 
+                if message.to == FIRAuth.auth()?.currentUser?.uid {
+                    if message.read == false {
+                        if !self.showingView {
+                            print("Show is called")
+                            self.tabBarController?.tabBar.subviews[1].isHidden = false
+                        }
+                    } else {
+                        print("Hidden is called")
+                        self.tabBarController?.tabBar.subviews[1].isHidden = true
+                    }
+                }
+                
                 self.timer?.invalidate()
                 self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                 
@@ -92,6 +108,13 @@ extension MessagesController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if messages.count == 0 {
+            self.backgroundImage.isHidden = false
+            self.newMessageLabel.isHidden = false
+        } else {
+            self.backgroundImage.isHidden = true
+            self.newMessageLabel.isHidden = true
+        }
         return messages.count
     }
     
@@ -103,6 +126,9 @@ extension MessagesController {
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if message.read == false && message.from != uid {
                 print("Called not readed")
+                if showingView == true {
+                    AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                }
                 cell.newMessageIndicator.isHidden = false
             } else {
                 print("Called readed")
@@ -128,12 +154,17 @@ extension MessagesController {
         
         guard let chatPartnerId = message.chatPartnerId() else { return }
         
-        let ref = FIRDatabase.database().reference().child("users").child(chatPartnerId)
+        openExistingChat(partnerId: chatPartnerId)
+        
+    }
+    
+    func openExistingChat(partnerId: String){
+        let ref = FIRDatabase.database().reference().child("users").child(partnerId)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             if let dict = snapshot.value as? [String: AnyObject]{
                 let user = User()
                 
-                user.id = chatPartnerId
+                user.id = partnerId
                 user.name = dict["name"] as? String
                 user.username = dict["username"] as? String
                 user.profileImageURL = dict["profileImg"] as? String
@@ -141,6 +172,5 @@ extension MessagesController {
                 self.showChatControllerFor(user)
             }
         }, withCancel: nil)
-        
     }
 }

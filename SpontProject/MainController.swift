@@ -9,27 +9,51 @@
 import UIKit
 import Firebase
 import OneSignal
+import MapKit
+import AudioToolbox
 
 class MainController: UITabBarController, CLLocationManagerDelegate {
+    
+    public let newMessageIndicator: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.red
+        view.layer.cornerRadius = 2
+        return view
+    }()
     
     // MARK: - Init methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let defaults = UserDefaults.standard
+        
+        defaults.set(true, forKey: "firstLoad")
+        
+        let logo = UIImage(named: "logo_navbar")
+        navigationItem.titleView = UIImageView(image: logo)
+        
+        
+        
         view.backgroundColor = UIColor.white
-        listenForMessages()
-        OneSignal.promptLocation()
+        tabBar.addSubview(newMessageIndicator)
+        newMessageIndicator.centerXAnchor.constraint(equalTo: tabBar.centerXAnchor).isActive = true
+        newMessageIndicator.bottomAnchor.constraint(equalTo: tabBar.bottomAnchor, constant: -3).isActive = true
+        newMessageIndicator.widthAnchor.constraint(equalToConstant: 4).isActive = true
+        newMessageIndicator.heightAnchor.constraint(equalToConstant: 4).isActive = true
+        newMessageIndicator.isHidden = true
+        
         
         fetchUserData()
         
         Filters.sharedInstance.locationManager.delegate = self
         Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         Filters.sharedInstance.locationManager.startUpdatingLocation()
-        
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
     
     // MARK: - Setup methods
     
@@ -65,10 +89,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         //profile.title = NSLocalizedString("Profile", comment: "Profile tab bar title")
         
         // Assing controllers
-        viewControllers = [message, search, profile]
-        
-        
-        self.selectedIndex = 1
+        viewControllers = [search, message, profile]
+        Filters.sharedInstance.locationManager.stopUpdatingLocation()
     }
     
     var freshLoad: Bool = true
@@ -78,13 +100,11 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         group.enter()
         if let uid = FIRAuth.auth()?.currentUser?.uid{
             let ref = FIRDatabase.database().reference().child("users").child(uid)
-            ref.observe(.value, with: { (snapshot) in
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
                 print("Fetch user called")
                 let user = User()
-                
-                
-                
-                user.id = snapshot.key
+            
+                user.id = uid
                 
                 print(snapshot)
                 if let dict = snapshot.value as? [String: AnyObject] {
@@ -93,7 +113,11 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                     user.caption = dict["caption"] as! String?
                     user.username = dict["username"] as! String?
                     user.activities = dict["activities"] as! [String: Int]?
-                
+                    user.email = dict["email"] as! String?
+                    user.phone = dict["phone"] as! String?
+                    user.city =  dict["city"] as! String?
+                    user.street = dict["street"] as! String?
+                    
                     if let activities = user.activities {
                         for (key, value) in activities {
                             self.tempTags.append(key)
@@ -102,9 +126,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                         
                         user.tags = self.tempTags
                         user.verified = self.tempVerified
-                        print(user.caption?.characters.count)
                     }
-                
+                    
                     self.currentUser = user
                     // TODO: Check for group when a change occur
                     
@@ -121,12 +144,15 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
                 
             }, withCancel: nil)
             
-            
         }
         
         group.notify(queue: DispatchQueue.main) {
             print("Done loading")
+            self.navigationController?.isNavigationBarHidden = true
+            self.listenForMessages()
+            OneSignal.promptLocation()
             self.setupTabBar()
+            
         }
         
     }
@@ -148,8 +174,8 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             print(logoutError)
         }
         
-        let landingController = LandingController()
-        present(landingController, animated: true, completion: nil)
+        print("Calle logout")
+        self.dismiss(animated: true, completion: nil)
     }
     
     func checkNotificationsIds(){
