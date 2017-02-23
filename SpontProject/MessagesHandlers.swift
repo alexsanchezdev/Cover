@@ -64,7 +64,7 @@ extension MessagesController {
             })
             
             if self.tabBarController?.tabBar.subviews[1].isHidden == false {
-                AudioServicesPlayAlertSound(self.systemSound)
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
             }
             
             self.tableView.reloadData()
@@ -127,8 +127,7 @@ extension MessagesController {
             if message.read == false && message.from != uid {
                 print("Called not readed")
                 if showingView == true {
-                    //AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-                    AudioServicesPlayAlertSound(self.systemSound)
+                    AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                 }
                 cell.newMessageIndicator.isHidden = false
             } else {
