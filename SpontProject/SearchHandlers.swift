@@ -38,12 +38,31 @@ extension SearchController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let resultsController = ResultsController()
         if shouldShowSearchResults {
-            resultsController.searchTerm = filteredArray[indexPath.row]
-            resultsController.navigationItem.title = filteredArray[indexPath.row]
+            if CLLocationManager.locationServicesEnabled() {
+                switch(CLLocationManager.authorizationStatus()) {
+                case .notDetermined, .restricted, .denied:
+                    promptOpenSettings()
+                case .authorizedAlways, .authorizedWhenInUse:
+                    resultsController.searchTerm = filteredArray[indexPath.row]
+                    resultsController.navigationItem.title = filteredArray[indexPath.row]
+                }
+            } else {
+                promptLocationServices()
+            }
+            
         }
         else {
-            resultsController.searchTerm = dataArray[indexPath.row]
-            resultsController.navigationItem.title = dataArray[indexPath.row]
+            if CLLocationManager.locationServicesEnabled() {
+                switch(CLLocationManager.authorizationStatus()) {
+                case .notDetermined, .restricted, .denied:
+                    promptOpenSettings()
+                case .authorizedAlways, .authorizedWhenInUse:
+                    resultsController.searchTerm = dataArray[indexPath.row]
+                    resultsController.navigationItem.title = dataArray[indexPath.row]
+                }
+            } else {
+                promptLocationServices()
+            }
         }
         
         navigationController?.pushViewController(resultsController, animated: true)
@@ -105,10 +124,20 @@ extension SearchController {
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let resultsController = ResultsController()
-        resultsController.searchTerm = topSearchArray[indexPath.row]
-        resultsController.navigationItem.title = topSearchArray[indexPath.row]
-        navigationController?.pushViewController(resultsController, animated: true)
+        if CLLocationManager.locationServicesEnabled() {
+            switch(CLLocationManager.authorizationStatus()) {
+            case .notDetermined, .restricted, .denied:
+                promptOpenSettings()
+            case .authorizedAlways, .authorizedWhenInUse:
+                let resultsController = ResultsController()
+                resultsController.searchTerm = topSearchArray[indexPath.row]
+                resultsController.navigationItem.title = topSearchArray[indexPath.row]
+                navigationController?.pushViewController(resultsController, animated: true)
+            }
+        } else {
+            promptLocationServices()
+        }
+        
     }
     
     // MARK: - Filtered list array methods

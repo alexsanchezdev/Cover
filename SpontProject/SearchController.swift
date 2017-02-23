@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import OneSignal
 
 class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
@@ -33,7 +34,17 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        Filters.sharedInstance.locationManager.startUpdatingLocation()
+        if CLLocationManager.locationServicesEnabled() {
+            switch(CLLocationManager.authorizationStatus()) {
+                case .notDetermined, .restricted, .denied:
+                    promptOpenSettings()
+                case .authorizedAlways, .authorizedWhenInUse:
+                    Filters.sharedInstance.locationManager.startUpdatingLocation()
+            }
+        } else {
+            promptLocationServices()
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
@@ -153,6 +164,36 @@ class SearchController: UIViewController, UITableViewDelegate, UITableViewDataSo
         
         
         
+    }
+    
+    func promptOpenSettings(){
+        let alertController = UIAlertController(
+            title: "Localización desactivada",
+            message: "\nPara poder mostrarte resultados cercanos a ti es necesario que tengas activada la localización. \n\nPor favor, abre la configuración de la aplicación y selecciona 'Al usarse'",
+            preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let openAction = UIAlertAction(title: "Abrir configuración", style: .default) { (action) in
+            if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
+                UIApplication.shared.openURL(url as URL)
+            }
+        }
+        alertController.addAction(openAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func promptLocationServices(){
+        let alertController = UIAlertController(
+            title: "Localización desactivada",
+            message: "\nPara poder mostrarte resultados cercanos a ti es necesario que tengas activada la localización. \n\nVe a Ajustes > Privacidad > Localización y actívala.",
+            preferredStyle: .alert)
+        
+        let ok = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(ok)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
 }
