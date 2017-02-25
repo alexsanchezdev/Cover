@@ -21,6 +21,7 @@ extension NewMessageController {
                 self.users = []
                 self.canSearchLabel.isHidden = false
                 self.usersTableView.reloadData()
+                canSearchLabel.text = NSLocalizedString("CanSearch", comment: "")
                 print("Activated null string")
                 return
             } else {
@@ -67,8 +68,9 @@ extension NewMessageController {
                                 }
                                 
                             }, withCancel: nil)
+                        } else {
+                            self.loadUsersResultsWithUids(uids)
                         }
-                        
                     }
                     
                 }, withCancel: nil)
@@ -132,6 +134,13 @@ extension NewMessageController {
     
     func loadUsersResultsWithUids(_ uids: [String]){
         let refUsers = FIRDatabase.database().reference().child("users")
+        print(uids.count)
+        if uids.count == 0 {
+            canSearchLabel.text = NSLocalizedString("NoUsers", comment: "")
+            self.users.removeAll()
+            self.canSearchLabel.isHidden = false
+            self.usersTableView.reloadData()
+        }
         
         for uid in uids {
             refUsers.child(uid).observeSingleEvent(of: .value, with: {(snapshot) in

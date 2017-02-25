@@ -64,8 +64,9 @@
     EmptyMessages = "Esto está un poco vacío, ¡pero no te preocupes! ¿Qué tal si empiezas una conversación?";
 
 // NewMessage Controller
-    Search... = "Buscar...";
+    Search... = "Buscar usuario...";
     CanSearch = "Utiliza la barra de búsqueda para encontrar a usuarios.";
+    NoUsers = "No se encontrarón usuarios.";
 
 // Landing Controller
     Login = "Iniciar sesión";
