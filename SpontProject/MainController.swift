@@ -45,10 +45,9 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         
         
         fetchUserData()
-        
         Filters.sharedInstance.locationManager.delegate = self
         Filters.sharedInstance.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        Filters.sharedInstance.locationManager.startUpdatingLocation()
+        
     }
 
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -90,7 +89,6 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
         
         // Assing controllers
         viewControllers = [search, message, profile]
-        Filters.sharedInstance.locationManager.stopUpdatingLocation()
     }
     
     var freshLoad: Bool = true
