@@ -563,6 +563,7 @@ class EditProfileController: UIViewController, UITextViewDelegate, UIImagePicker
             if let name = self.nameTextField.text {
                 if name != "" {
                     usersRef.updateChildValues(["name": name])
+                    FIRDatabase.database().reference().child("names-user").updateChildValues([uid: name.lowercased()])
                     group.leave()
                 } else {
                     present(nameAlert, animated: true, completion: {

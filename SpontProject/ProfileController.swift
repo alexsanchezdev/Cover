@@ -46,13 +46,13 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         if let uid = FIRAuth.auth()?.currentUser?.uid {
             if uid == userToShow.id {
                 if userToShow.activities == nil && userToShow.city == nil{
-                    needInfoLabel.text = "As a way to show you on search results we need your location and activities. What about configure them now?"
+                    needInfoLabel.text = NSLocalizedString("TermsAdvise", comment: "")
                     activitiesCollectionView.isHidden = true
                     activitiesLabel.isHidden = true
                     needInfoLabel.isHidden = false
                     editProfile.isHidden = false
                 } else if userToShow.activities == nil && userToShow.city != nil {
-                    needInfoLabel.text = "We still need your activities to show you on search results. Update them now!"
+                    needInfoLabel.text = NSLocalizedString("NoActivitiesAdvise", comment: "")
                     activitiesIfLocation.isActive = true
                     activitiesIfNotLocation.isActive = false
                     activitiesCollectionView.isHidden = true
@@ -60,7 +60,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
                     needInfoLabel.isHidden = false
                     editProfile.isHidden = false
                 } else if userToShow.activities != nil && userToShow.city == nil {
-                    needInfoLabel.text = "We still need your location to show you on search results. Update it now!"
+                    needInfoLabel.text = NSLocalizedString("NoLocationAdvise", comment: "")
                     activitiesIfNotLocation.isActive = true
                     activitiesIfLocation.isActive = false
                     activitiesCollectionView.isHidden = false

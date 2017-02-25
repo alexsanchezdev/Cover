@@ -160,7 +160,7 @@ extension RegisterController {
                                             print(error!)
                                         }
                                     })
-                                    self.registerUserIntoDatabaseWithUID(uid, username: username, values: values as [String: AnyObject])
+                                    self.registerUserIntoDatabaseWithUID(uid, username: username, name: name, values: values as [String: AnyObject])
                                 }
                             })
                         }
@@ -182,11 +182,12 @@ extension RegisterController {
         
     }
     
-    func registerUserIntoDatabaseWithUID(_ uid: String, username: String, values: [String: AnyObject]) {
+    func registerUserIntoDatabaseWithUID(_ uid: String, username: String, name: String, values: [String: AnyObject]) {
         let ref = FIRDatabase.database().reference()
         let usersReference = ref.child("users").child(uid)
         let usernameReference = ref.child("usernames")
         let usernameUsersReference = ref.child("usernames-user")
+        let namesUserReference = ref.child("names-user")
         
         
         usersReference.updateChildValues(values) { (error, ref) in
@@ -207,7 +208,15 @@ extension RegisterController {
                         return
                     }
                     
-                    self.dissmissLoginController()
+                    namesUserReference.updateChildValues([uid: name.lowercased()], withCompletionBlock: { (error, ref) in
+                        if error != nil {
+                            print(error!)
+                            return
+                        }
+                        self.dissmissLoginController()
+                    })
+                    
+                    
                 })
             })
         }

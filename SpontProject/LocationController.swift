@@ -121,9 +121,11 @@ class LocationController: UIViewController, MKMapViewDelegate {
         guard let location = Filters.sharedInstance.locationManager.location else { return }
     
         let loading = UIAlertController(title: nil, message: NSLocalizedString("UpdatingLocation", comment: ""), preferredStyle: .alert)
+        let unable = UIAlertController(title: nil, message: NSLocalizedString("Unable to update location", comment: ""), preferredStyle: .alert)
         let done = UIAlertController(title: nil, message: NSLocalizedString("LocationUpdated", comment: ""), preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
         done.addAction(ok)
+        unable.addAction(ok)
         
         let geoFireRef = FIRDatabase.database().reference().child("locations")
         let geoFire = GeoFire(firebaseRef: geoFireRef)
@@ -158,6 +160,9 @@ class LocationController: UIViewController, MKMapViewDelegate {
                         group.leave()
                     } else {
                         self.userToChangeLocation.city = nil
+                        self.dismiss(animated: true, completion: {
+                            self.present(unable, animated: true, completion: nil)
+                        })
                     }
                     
                     group.notify(queue: DispatchQueue.main) {

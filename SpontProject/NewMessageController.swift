@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate  {
     override func viewDidLoad() {
@@ -23,6 +24,8 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
+        FIRDatabase.database().reference().child("names-user").removeAllObservers()
+        FIRDatabase.database().reference().child("usernames-user").removeAllObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +38,7 @@ class NewMessageController: UIViewController, UITableViewDelegate, UITableViewDa
     var tempUsers = [User]()
     var timer = Timer()
     var messagesController: MessagesController?
+    let group = DispatchGroup()
     
     let usersTableView: UITableView = {
         let tableview = UITableView()

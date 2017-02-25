@@ -19,6 +19,8 @@
     MenuTitle = "Opciones de cuenta";
     Activities = "ACTIVIDADES";
     TermsAdvise = "Para aparecer en los resultados de búsquedas debes facilitarnos tu ubicación y actividades. ¿Qué tal si los configuramos?";
+    NoLocationAdvise = "Aún necesitamos tu localiación para mostrarte en los resultados de búsqueda.";
+    NoActivitiesAdvise = "Aún necesitamos tus actividades para mostrarte en los resultados de búsqueda.";
     EditProfile = "Editar perfil";
     NoLocation = "Sin localización";
     SignOut = "Cerrar sesión";

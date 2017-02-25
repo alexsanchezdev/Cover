@@ -13,6 +13,9 @@ extension NewMessageController {
     func searchUsersWithString(_ timer: Timer){
         if let searchString = timer.userInfo {
             
+            var uids = [String]()
+            tempUsers.removeAll()
+            
             if (searchString as! String).isEmpty {
                 //self.usersTableView.isHidden = true
                 self.users = []
@@ -20,41 +23,60 @@ extension NewMessageController {
                 self.usersTableView.reloadData()
                 print("Activated null string")
                 return
-            }
-            
-            let ref = FIRDatabase.database().reference().child("usernames-user")
-            ref.queryOrderedByKey().queryStarting(atValue: (searchString as! String).lowercased()).queryEnding(atValue: (searchString as! String).lowercased() + "\u{f8ff}").observe(.childAdded, with: {(snapshot) in
-                let uid = snapshot.value as! String
-                self.tempUsers.removeAll()
-                let refUsers = FIRDatabase.database().reference().child("users")
-                refUsers.child(uid).observeSingleEvent(of: .value, with: {(snapshot) in
-                    if let userDict = snapshot.value as? [String: AnyObject] {
-                        let user = User()
-                        
-                        user.id = uid
-                        user.name = userDict["name"] as? String
-                        user.username = userDict["username"] as? String
-                        user.profileImageURL = userDict["profileImg"] as? String
-                        
-                        if user.id == FIRAuth.auth()?.currentUser?.uid {
-                            return
-                        } else {
-                            self.tempUsers.append(user)
-                        }
-                        
-                        DispatchQueue.main.async {
-                            self.users.removeAll()
-                            self.users = self.tempUsers
-                            self.canSearchLabel.isHidden = true
-                            self.usersTableView.reloadData()
-                            //self.usersTableView.isHidden = false
+            } else {
+                let refNames = FIRDatabase.database().reference().child("usernames-user")
+                refNames.queryOrderedByKey().queryStarting(atValue: (searchString as! String).lowercased()).queryEnding(atValue: (searchString as! String).lowercased() + "\u{f8ff}").observe(.value, with: {(snapshot) in
+                    
+                    print(snapshot)
+                    if snapshot.value is NSNull {
+                        print("Snapshot is null")
+                        let refUsernames = FIRDatabase.database().reference().child("names-user")
+                        refUsernames.queryOrderedByValue().queryStarting(atValue: (searchString as! String).lowercased()).queryEnding(atValue: (searchString as! String).lowercased() + "\u{f8ff}").observe(.value, with: {(snapshot) in
+                            if let dict = snapshot.value as? [String: AnyObject] {
+                                for uid in dict.keys {
+                                    if !uids.contains(uid) {
+                                        uids.append(uid)
+                                    }
+                                }
+                                self.loadUsersResultsWithUids(uids)
+                            } else {
+                                self.loadUsersResultsWithUids(uids)
+                            }
+                        }, withCancel: nil)
+                    } else {
+                        print("Snapshot isn't null")
+                        if let dict = snapshot.value as? [String: AnyObject] {
+                            print(dict)
+                            for uid in dict.values {
+                                if !uids.contains(uid as! String) {
+                                    uids.append(uid as! String)
+                                }
+                            }
+                            
+                            let refUsernames = FIRDatabase.database().reference().child("names-user")
+                            refUsernames.queryOrderedByValue().queryStarting(atValue: (searchString as! String).lowercased()).queryEnding(atValue: (searchString as! String).lowercased() + "\u{f8ff}").observe(.value, with: {(snapshot) in
+                                if let dict = snapshot.value as? [String: AnyObject] {
+                                    for uid in dict.keys {
+                                        if !uids.contains(uid) {
+                                            uids.append(uid)
+                                        }
+                                    }
+                                    self.loadUsersResultsWithUids(uids)
+                                } else {
+                                    self.loadUsersResultsWithUids(uids)
+                                }
+                                
+                            }, withCancel: nil)
                         }
                         
                     }
                     
-                    
                 }, withCancel: nil)
-            })
+                
+            }
+
+            
+
             
         }
     }
@@ -106,6 +128,40 @@ extension NewMessageController {
         usernameSearchBar.delegate = self
         usersTableView.delegate = self
         usersTableView.dataSource = self
+    }
+    
+    func loadUsersResultsWithUids(_ uids: [String]){
+        let refUsers = FIRDatabase.database().reference().child("users")
+        
+        for uid in uids {
+            refUsers.child(uid).observeSingleEvent(of: .value, with: {(snapshot) in
+                if let userDict = snapshot.value as? [String: AnyObject] {
+                    let user = User()
+                    
+                    user.id = uid
+                    user.name = userDict["name"] as? String
+                    user.username = userDict["username"] as? String
+                    user.profileImageURL = userDict["profileImg"] as? String
+                    
+                    if user.id == FIRAuth.auth()?.currentUser?.uid {
+                        return
+                    } else {
+                        self.tempUsers.append(user)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.users.removeAll()
+                        self.users = self.tempUsers
+                        self.canSearchLabel.isHidden = true
+                        self.usersTableView.reloadData()
+                        //self.usersTableView.isHidden = false
+                    }
+                    
+                }
+                
+            })
+        }
+        
     }
 }
 

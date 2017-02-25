@@ -21,6 +21,8 @@
     MenuTitle = "Account options";
     Activities = "ACTIVITIES";
     TermsAdvise = "As a way to show you on search results we need your location and activities. What about configure them now?";
+    NoLocationAdvise = "We still need your location to show you on search results.";
+    NoActivitiesAdvise = "We still need your activities to show you on search results.";
     EditProfile = "Edit profile";
     NoLocation = "No location";
     SignOut = "Sign out";
