@@ -42,11 +42,11 @@
 		6BB64F421E02969000C26E53 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB64F411E02969000C26E53 /* User.swift */; };
 		6BC919481E5BBAC300D31D01 /* CountriesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC919471E5BBAC300D31D01 /* CountriesController.swift */; };
 		6BCC11D81E0ECA660075027F /* UserTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCC11D71E0ECA660075027F /* UserTagCell.swift */; };
+		6BD257A11E620C9F0047DE05 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BD257A01E620C9F0047DE05 /* GoogleService-Info.plist */; };
 		6BD5E7061DFEE84A007D02DF /* SearchHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E7051DFEE84A007D02DF /* SearchHandlers.swift */; };
 		6BD5E7081DFEE859007D02DF /* ProfileHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E7071DFEE859007D02DF /* ProfileHandlers.swift */; };
 		6BD5E70A1DFEEAD7007D02DF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E7091DFEEAD7007D02DF /* Extensions.swift */; };
 		6BD5E70C1DFF10EA007D02DF /* LoginHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E70B1DFF10EA007D02DF /* LoginHandlers.swift */; };
-		6BE211CA1E4D443C00CD861E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BE211C91E4D443C00CD861E /* GoogleService-Info.plist */; };
 		6BE399C71DFEE3C000C6F0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE399C61DFEE3C000C6F0DC /* AppDelegate.swift */; };
 		6BE399C91DFEE3C000C6F0DC /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE399C81DFEE3C000C6F0DC /* MainController.swift */; };
 		6BE399CE1DFEE3C000C6F0DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BE399CD1DFEE3C000C6F0DC /* Assets.xcassets */; };
@@ -106,11 +106,11 @@
 		6BC919471E5BBAC300D31D01 /* CountriesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountriesController.swift; sourceTree = "<group>"; };
 		6BC919491E5C789F00D31D01 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6BCC11D71E0ECA660075027F /* UserTagCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTagCell.swift; sourceTree = "<group>"; };
+		6BD257A01E620C9F0047DE05 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6BD5E7051DFEE84A007D02DF /* SearchHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchHandlers.swift; sourceTree = "<group>"; };
 		6BD5E7071DFEE859007D02DF /* ProfileHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileHandlers.swift; sourceTree = "<group>"; };
 		6BD5E7091DFEEAD7007D02DF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6BD5E70B1DFF10EA007D02DF /* LoginHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginHandlers.swift; sourceTree = "<group>"; };
-		6BE211C91E4D443C00CD861E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6BE399C31DFEE3C000C6F0DC /* SpontProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpontProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BE399C61DFEE3C000C6F0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BE399C81DFEE3C000C6F0DC /* MainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
@@ -286,7 +286,7 @@
 				6BE399CD1DFEE3C000C6F0DC /* Assets.xcassets */,
 				6BE399CF1DFEE3C000C6F0DC /* LaunchScreen.storyboard */,
 				6BE399D21DFEE3C000C6F0DC /* Info.plist */,
-				6BE211C91E4D443C00CD861E /* GoogleService-Info.plist */,
+				6BD257A01E620C9F0047DE05 /* GoogleService-Info.plist */,
 				6BF483B71E0BE2B800308C94 /* SpontProject-Bridging-Header.h */,
 				6B5DFB9D1E0DF74300D1EEA4 /* Localizable.strings */,
 				6BA0CC5E1E47EFEE00424945 /* CollapsibleTableViewHeader.swift */,
@@ -466,8 +466,8 @@
 			files = (
 				6B172D141E52B17F001CBCC8 /* activities.txt in Resources */,
 				6B5DFB9B1E0DF74300D1EEA4 /* Localizable.strings in Resources */,
+				6BD257A11E620C9F0047DE05 /* GoogleService-Info.plist in Resources */,
 				6BE399D11DFEE3C000C6F0DC /* LaunchScreen.storyboard in Resources */,
-				6BE211CA1E4D443C00CD861E /* GoogleService-Info.plist in Resources */,
 				6BE399CE1DFEE3C000C6F0DC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
