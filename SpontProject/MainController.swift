@@ -106,40 +106,44 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             
                 user.id = uid
                 
-                print(snapshot)
-                if let dict = snapshot.value as? [String: AnyObject] {
-                    user.name = dict["name"] as! String?
-                    user.profileImageURL = dict["profileImg"] as! String?
-                    user.caption = dict["caption"] as! String?
-                    user.username = dict["username"] as! String?
-                    user.activities = dict["activities"] as! [String: Int]?
-                    user.email = dict["email"] as! String?
-                    user.phone = dict["phone"] as! String?
-                    user.city =  dict["city"] as! String?
-                    user.street = dict["street"] as! String?
-                    
-                    if let activities = user.activities {
-                        for (key, value) in activities {
-                            self.tempTags.append(key)
-                            self.tempVerified.append(value)
+                if snapshot.value is NSNull {
+                    print("Called null")
+                    self.handleLogout()
+                } else {
+                    if let dict = snapshot.value as? [String: AnyObject] {
+                        user.name = dict["name"] as! String?
+                        user.profileImageURL = dict["profileImg"] as! String?
+                        user.caption = dict["caption"] as! String?
+                        user.username = dict["username"] as! String?
+                        user.activities = dict["activities"] as! [String: Int]?
+                        user.email = dict["email"] as! String?
+                        user.phone = dict["phone"] as! String?
+                        user.city =  dict["city"] as! String?
+                        user.street = dict["street"] as! String?
+                        
+                        if let activities = user.activities {
+                            for (key, value) in activities {
+                                self.tempTags.append(key)
+                                self.tempVerified.append(value)
+                            }
+                            
+                            user.tags = self.tempTags
+                            user.verified = self.tempVerified
                         }
                         
-                        user.tags = self.tempTags
-                        user.verified = self.tempVerified
+                        self.currentUser = user
+                        // TODO: Check for group when a change occur
+                        
+                        if self.freshLoad {
+                            self.freshLoad = false
+                            self.group.leave()
+                        } else {
+                            self.profileController.captionLabel.text = user.caption
+                            self.profileController.nameLabel.text = user.name
+                            self.profileController.view.layoutIfNeeded()
+                        }
+                        
                     }
-                    
-                    self.currentUser = user
-                    // TODO: Check for group when a change occur
-                    
-                    if self.freshLoad {
-                        self.freshLoad = false
-                        self.group.leave()
-                    } else {
-                        self.profileController.captionLabel.text = user.caption
-                        self.profileController.nameLabel.text = user.name
-                        self.profileController.view.layoutIfNeeded()
-                    }
-                    
                 }
                 
             }, withCancel: nil)
@@ -174,7 +178,7 @@ class MainController: UITabBarController, CLLocationManagerDelegate {
             print(logoutError)
         }
         
-        print("Calle logout")
+        
         self.dismiss(animated: true, completion: nil)
     }
     
