@@ -44,12 +44,40 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         super.viewWillAppear(animated)
         
         if let uid = FIRAuth.auth()?.currentUser?.uid {
-            if userToShow.activities == nil && uid == userToShow.id {
-                activitiesCollectionView.isHidden = true
-                activitiesLabel.isHidden = true
-                needInfoLabel.isHidden = false
-                editProfile.isHidden = false
+            if uid == userToShow.id {
+                if userToShow.activities == nil && userToShow.city == nil{
+                    needInfoLabel.text = "As a way to show you on search results we need your location and activities. What about configure them now?"
+                    activitiesCollectionView.isHidden = true
+                    activitiesLabel.isHidden = true
+                    needInfoLabel.isHidden = false
+                    editProfile.isHidden = false
+                } else if userToShow.activities == nil && userToShow.city != nil {
+                    needInfoLabel.text = "We still need your activities to show you on search results. Update them now!"
+                    activitiesIfLocation.isActive = true
+                    activitiesIfNotLocation.isActive = false
+                    activitiesCollectionView.isHidden = true
+                    activitiesLabel.isHidden = true
+                    needInfoLabel.isHidden = false
+                    editProfile.isHidden = false
+                } else if userToShow.activities != nil && userToShow.city == nil {
+                    needInfoLabel.text = "We still need your location to show you on search results. Update it now!"
+                    activitiesIfNotLocation.isActive = true
+                    activitiesIfLocation.isActive = false
+                    activitiesCollectionView.isHidden = false
+                    activitiesLabel.isHidden = false
+                    needInfoLabel.isHidden = false
+                    editProfile.isHidden = false
+                } else {
+                    activitiesIfNotLocation.isActive = false
+                    activitiesIfLocation.isActive = true
+                    activitiesCollectionView.isHidden = false
+                    activitiesLabel.isHidden = false
+                    needInfoLabel.isHidden = true
+                    editProfile.isHidden = true
+                }
             } else {
+                activitiesIfNotLocation.isActive = false
+                activitiesIfLocation.isActive = true
                 activitiesCollectionView.isHidden = false
                 activitiesLabel.isHidden = false
                 needInfoLabel.isHidden = true
@@ -88,7 +116,7 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
 
     var messagesController: MessagesController?
 
-    var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint, collectionHeight: NSLayoutConstraint!
+    var descriptionHeightConstraint, descriptionTopConstraint, profileTopConstraint, profileHeightConstraint, collectionHeight, activitiesIfLocation, activitiesIfNotLocation: NSLayoutConstraint!
     let locationManager = CLLocationManager()
     var activities = [String: Int]()
     
@@ -223,6 +251,13 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         return button
     }()
     
+    let searchTermsNeededView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
     // MARK: - Methods
     func setupViews(){
         
@@ -270,19 +305,29 @@ class ProfileController: UIViewController, CLLocationManagerDelegate, UICollecti
         captionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         captionLabelConstraint?.isActive = true
         
-        profileScrollView.addSubview(needInfoLabel)
+        profileScrollView.addSubview(searchTermsNeededView)
+        searchTermsNeededView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        searchTermsNeededView.topAnchor.constraint(equalTo: captionLabel.bottomAnchor).isActive = true
+        searchTermsNeededView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        
+        searchTermsNeededView.addSubview(needInfoLabel)
         needInfoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        needInfoLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        needInfoLabel.topAnchor.constraint(equalTo: searchTermsNeededView.topAnchor, constant: 20).isActive = true
         needInfoLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
-        profileScrollView.addSubview(editProfile)
+        searchTermsNeededView.addSubview(editProfile)
         editProfile.topAnchor.constraint(equalTo: needInfoLabel.bottomAnchor, constant: 20).isActive = true
         editProfile.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         editProfile.widthAnchor.constraint(equalToConstant: 192).isActive = true
         editProfile.heightAnchor.constraint(equalToConstant: 48).isActive = true
         
+        searchTermsNeededView.bottomAnchor.constraint(equalTo: editProfile.bottomAnchor, constant: 20).isActive = true
+        
+        
         profileScrollView.addSubview(activitiesLabel)
-        activitiesLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20).isActive = true
+        activitiesIfLocation = activitiesLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 20)
+        activitiesIfNotLocation = activitiesLabel.topAnchor.constraint(equalTo: searchTermsNeededView.bottomAnchor)
+        activitiesIfNotLocation.isActive = true
         activitiesLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         activitiesLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         activitiesLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
